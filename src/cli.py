@@ -82,7 +82,7 @@ def get_guess_input(word_length, valid_words=None, word_validator=None):
         ):
             return guess.upper()
         if valid_words is not None:
-            print(f"Invalid guess. Enter a {word_length}-letter word from the word pool.")
+            print(f"Invalid guess. Enter a {word_length}-letter valid word")
         else:
             print(f"Invalid guess. Please enter exactly {word_length} letters only.")
 

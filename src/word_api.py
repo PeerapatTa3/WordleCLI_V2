@@ -56,6 +56,7 @@ def is_valid_dictionary_word(word, length=5):
         return True
 
     url = DICTIONARY_API_URL.format(word=normalized)
+    print("Checking if the word is valid,this might take a while.")
     for _ in range(DICTIONARY_RETRIES):
         try:
             response = requests.get(url, timeout=(3, 8))

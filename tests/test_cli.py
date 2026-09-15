@@ -1,6 +1,6 @@
 import pytest
 
-from cli import (
+from src.cli import (
     colorize_feedback,
     display_how_to_play,
     display_menu,

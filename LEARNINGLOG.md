@@ -184,7 +184,7 @@
 
 ---
 
-### 🔹 Prompt 10: Selecting Meaningful Five-Letter Words
+### 🔹 Prompt 8: Selecting Meaningful Five-Letter Words
 - **Student Prompt:**
   ```text
   เปลี่ยน API ให้ดึงคำอังกฤษที่มีความหมายจำนวนมากขึ้น ไม่เอาคำสุ่มที่แปลกหรือไม่มีความหมาย และยังต้องใช้ fallback local pool ได้เมื่อ API ล้มเหลว
@@ -203,8 +203,26 @@
   ```
 
 ---
+### 🔹 Prompt 9: Adding a Safe Manual Test Answer Mode
+- **Student Prompt:**
+  ```text
+  เพิ่มวิธีทดสอบเกมแบบกำหนดคำเฉลยเองได้ เพื่อให้ทดสอบชนะหรือแพ้ได้ง่าย แต่โหมดปกติต้องยังสุ่มคำและไม่เปิดเผยคำตอบ
+  ```
+- **AI Response Summary:**
+  เพิ่มตัวแปรสภาพแวดล้อม `WORDLE_TEST_WORD` สำหรับกำหนดคำเฉลยชั่วคราว เมื่อไม่ได้กำหนดตัวแปร ระบบยังใช้ API และ local pool ตามปกติ และจะแสดงคำเฉลยเฉพาะเมื่อเปิด test mode
+- **Live Verification Code:**
+  ```powershell
+  $env:WORDLE_TEST_WORD="APPLE"
+  python game.py
+  ```
+- **Verified Result:**
+  ```text
+  Test mode helper passed; full suite: 24 passed
+  ```
 
-### 🔹 Prompt 8: Restoring Word-Meaning Validation from the Legacy Project
+---
+
+### 🔹 Prompt 10: Restoring Word-Meaning Validation from the Legacy Project
 - **Student Prompt:**
   ```text
   แก้ระบบตรวจคำทายให้เหมือนโปรเจกต์เก่า คือไม่รับแค่คำที่เป็นตัวอักษร 5 ตัว แต่ต้องเป็นคำที่อยู่ใน word pool ด้วย และต้องไม่ทำให้คำตอบที่มาจาก API ถูกปฏิเสธ
@@ -300,25 +318,6 @@
 - **Verified Result:**
   ```text
   HELLO and WORLD accepted from local fallback; full suite: 32 passed
-  ```
-
----
-
-### 🔹 Prompt 9: Adding a Safe Manual Test Answer Mode
-- **Student Prompt:**
-  ```text
-  เพิ่มวิธีทดสอบเกมแบบกำหนดคำเฉลยเองได้ เพื่อให้ทดสอบชนะหรือแพ้ได้ง่าย แต่โหมดปกติต้องยังสุ่มคำและไม่เปิดเผยคำตอบ
-  ```
-- **AI Response Summary:**
-  เพิ่มตัวแปรสภาพแวดล้อม `WORDLE_TEST_WORD` สำหรับกำหนดคำเฉลยชั่วคราว เมื่อไม่ได้กำหนดตัวแปร ระบบยังใช้ API และ local pool ตามปกติ และจะแสดงคำเฉลยเฉพาะเมื่อเปิด test mode
-- **Live Verification Code:**
-  ```powershell
-  $env:WORDLE_TEST_WORD="APPLE"
-  python game.py
-  ```
-- **Verified Result:**
-  ```text
-  Test mode helper passed; full suite: 24 passed
   ```
 
 ---

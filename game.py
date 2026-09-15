@@ -1,6 +1,6 @@
 """Entry point for the Wordle CLI app."""
 
-from cli import main
+from src.cli import main
 
 
 if __name__ == "__main__":
