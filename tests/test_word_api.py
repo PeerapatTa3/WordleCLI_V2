@@ -4,7 +4,7 @@ from src.word_api import (
     fetch_random_word,
     fetch_valid_words,
     fetch_word_pool,
-    is_valid_api_word,
+    is_valid_dictionary_word,
 )
 
 
@@ -62,20 +62,54 @@ def test_fetch_valid_words_returns_all_common_words(monkeypatch):
     assert fetch_valid_words() == ["APPLE", "GRAPE"]
 
 
-def test_is_valid_api_word_accepts_exact_meaningful_word(monkeypatch):
+def test_is_valid_dictionary_word_accepts_defined_word(monkeypatch):
     monkeypatch.setattr(
         "src.word_api.requests.get",
-        lambda url, timeout: FakeResponse([{"word": "hello", "score": 147072}]),
+        lambda url, timeout: FakeResponse(
+            [{"word": "hello", "meanings": [{"definitions": [{"definition": "a greeting"}]}]}]
+        ),
     )
-    assert is_valid_api_word("HELLO") is True
+    assert is_valid_dictionary_word("HELLO") is True
 
 
-def test_is_valid_api_word_rejects_unknown_word(monkeypatch):
+def test_is_valid_dictionary_word_rejects_unknown_word(monkeypatch):
     monkeypatch.setattr(
         "src.word_api.requests.get",
-        lambda url, timeout: FakeResponse([{"word": "hello", "score": 147072}]),
+        lambda url, timeout: FakeResponse([]),
     )
-    assert is_valid_api_word("QZXJK") is False
+    assert is_valid_dictionary_word("QZXJK") is False
+
+
+def test_is_valid_dictionary_word_retries_then_accepts(monkeypatch):
+    attempts = {"count": 0}
+
+    def flaky_request(url, timeout):
+        attempts["count"] += 1
+        if attempts["count"] < 3:
+            raise requests.Timeout("temporary timeout")
+        return FakeResponse(
+            [{"word": "world", "meanings": [{"definitions": [{"definition": "earth"}]}]}]
+        )
+
+    monkeypatch.setattr("src.word_api.requests.get", flaky_request)
+    assert is_valid_dictionary_word("WORLD") is True
+    assert attempts["count"] == 3
+
+
+def test_is_valid_dictionary_word_uses_cache(monkeypatch):
+    monkeypatch.setattr(
+        "src.word_api.requests.get",
+        lambda url, timeout: FakeResponse(
+            [{"word": "upper", "meanings": [{"definitions": [{"definition": "higher"}]}]}]
+        ),
+    )
+    assert is_valid_dictionary_word("UPPER") is True
+
+    def unexpected_request(url, timeout):
+        raise AssertionError("cached word should not call API")
+
+    monkeypatch.setattr("src.word_api.requests.get", unexpected_request)
+    assert is_valid_dictionary_word("UPPER") is True
 
 
 def test_fetch_random_word_returns_none_on_request_failure(monkeypatch):

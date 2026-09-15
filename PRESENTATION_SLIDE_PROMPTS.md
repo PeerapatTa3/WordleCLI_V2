@@ -23,6 +23,8 @@
 - อธิบาย `WORDLE_TEST_WORD` สำหรับการทดสอบด้วยคำเฉลยที่กำหนดเอง
 - แสดงความสามารถของ `get_guess_input()` ที่กรอกใหม่จนกว่าจะถูกต้อง
 - สาธิต logic ของการคำนวณ feedback, การบันทึก history และ JSON persistence
+- อ้างอิง [TEST_PLAN.md](./TEST_PLAN.md) เพื่อแสดง Test Cases และ Edge Cases ของ Sprint 1-3
+- ใช้ [TEST_CASES.md](./TEST_CASES.md) แสดง Quality Assurance & Test Suite Matrix ในสไลด์ QA
 
 ## ส่วนที่ 4: ปัญหาทางเทคนิค การแก้ไข และการเปรียบเทียบ (15%)
 - สรุปความท้าทายหลัก เช่น การแยก Presentation จาก Business Logic

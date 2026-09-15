@@ -12,7 +12,7 @@ from colorama import Fore, Style, init
 
 from src.data_manager import load_data, save_data, load_word_pool
 from src.game_logic import WordleGame, calculate_feedback, search_history, filter_history
-from src.word_api import fetch_random_word, fetch_valid_words, is_valid_api_word
+from src.word_api import fetch_random_word, fetch_valid_words, is_valid_dictionary_word
 
 
 init(autoreset=True)
@@ -88,18 +88,29 @@ def get_guess_input(word_length, valid_words=None, word_validator=None):
 
 
 def display_history():
-    """Show stored guess history from the JSON file."""
+    """Show saved history grouped by game like the legacy project."""
     history = load_data(HISTORY_PATH)
     if not history:
         print("No guess history yet.")
         return
 
-    print("\nGuess History:")
-    for index, record in enumerate(history, start=1):
-        guess = record.get("guess", "")
-        correct = record.get("correct", False)
-        feedback = record.get("feedback", [])
-        print(f"{index}. {guess} | correct={correct} | feedback={feedback}")
+    grouped_games = {}
+    has_game_numbers = any("game_number" in record for record in history)
+    if has_game_numbers:
+        for record in history:
+            game_number = record.get("game_number", 1)
+            grouped_games.setdefault(game_number, []).append(record)
+    else:
+        grouped_games[1] = history
+
+    print(f"\nTotal Games Played: {len(grouped_games)}")
+    for game_number, records in sorted(grouped_games.items()):
+        is_won = any(record.get("correct", False) for record in records)
+        status = "WON" if is_won else "LOST"
+        secret_word = records[-1].get("secret_word", "UNKNOWN")
+        guesses = [record.get("guess", "") for record in records]
+        print(f"\nGame {game_number} ({status}, secret: {secret_word})")
+        print(f"  Guesses: {' -> '.join(guesses)}")
 
 
 def display_statistics(history=None):
@@ -220,8 +231,7 @@ def play_game():
     history = load_data(HISTORY_PATH)
     game_number = _next_game_number(history)
     valid_words = set(fetch_valid_words(game.word_length))
-    if not valid_words:
-        valid_words = set(pool)
+    valid_words.update(pool)
     valid_words.add(secret_word)
     revealed_positions = set()
 
@@ -229,7 +239,7 @@ def play_game():
     if is_test_mode:
         print(f"[TEST MODE] Secret word: {game.secret_word}")
     for attempt in range(1, 7):
-        guess = get_guess_input(game.word_length, valid_words, is_valid_api_word)
+        guess = get_guess_input(game.word_length, valid_words, is_valid_dictionary_word)
         if guess == "hint":
             revealed_positions = display_hint(game.secret_word, revealed_positions)
             continue
@@ -245,6 +255,7 @@ def play_game():
             "feedback": feedback,
             "attempt": attempt,
             "game_number": game_number,
+            "secret_word": game.secret_word,
         })
         save_data(HISTORY_PATH, history)
 

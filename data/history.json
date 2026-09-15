@@ -241,5 +241,187 @@
     ],
     "attempt": 5,
     "game_number": 10
+  },
+  {
+    "guess": "HELLO",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "✓",
+      "-"
+    ],
+    "attempt": 1,
+    "game_number": 11
+  },
+  {
+    "guess": "WORLD",
+    "correct": false,
+    "feedback": [
+      "x",
+      "-",
+      "x",
+      "✓",
+      "✓"
+    ],
+    "attempt": 2,
+    "game_number": 11
+  },
+  {
+    "guess": "JELLY",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "✓",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 11
+  },
+  {
+    "guess": "KEEPE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 4,
+    "game_number": 11
+  },
+  {
+    "guess": "SSSSS",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 5,
+    "game_number": 11
+  },
+  {
+    "guess": "HELLO",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 12
+  },
+  {
+    "guess": "WORLD",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 12
+  },
+  {
+    "guess": "SOLID",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 12
+  },
+  {
+    "guess": "HELLO",
+    "correct": false,
+    "feedback": [
+      "-",
+      "-",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 13
+  },
+  {
+    "guess": "SOLID",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 13
+  },
+  {
+    "guess": "PAPER",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "-",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 13
+  },
+  {
+    "guess": "SUPER",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "-",
+      "-",
+      "x"
+    ],
+    "attempt": 4,
+    "game_number": 13
+  },
+  {
+    "guess": "AUDIO",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 5,
+    "game_number": 13
+  },
+  {
+    "guess": "PAPER",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "-",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 6,
+    "game_number": 13
   }
 ]

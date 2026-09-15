@@ -1,12 +1,13 @@
 """Helpers for fetching valid 5-letter words from a public API."""
 
 import random
-from urllib.parse import quote
-
 import requests
 
 DEFAULT_API_URL = "https://api.datamuse.com/words?sp=?????&max=1000"
+DICTIONARY_API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
 MIN_WORD_SCORE = 1000
+DICTIONARY_RETRIES = 1
+DICTIONARY_CACHE = set()
 
 
 def fetch_valid_words(length=5, url=DEFAULT_API_URL):
@@ -46,24 +47,32 @@ def fetch_random_word(length=5, url=DEFAULT_API_URL):
     return None
 
 
-def is_valid_api_word(word, length=5):
-    """Check an exact word against Datamuse when it is outside the main list."""
+def is_valid_dictionary_word(word, length=5):
+    """Check for a definition with retries and cache successful lookups."""
     normalized = str(word).strip().lower()
     if len(normalized) != length or not normalized.isalpha():
         return False
+    if normalized in DICTIONARY_CACHE:
+        return True
 
-    url = f"https://api.datamuse.com/words?sp={quote(normalized)}&max=10"
-    try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-        return any(
-            isinstance(item, dict)
-            and str(item.get("word", "")).strip().lower() == normalized
-            for item in data
-        )
-    except (requests.RequestException, ValueError, TypeError):
-        return False
+    url = DICTIONARY_API_URL.format(word=normalized)
+    for _ in range(DICTIONARY_RETRIES):
+        try:
+            response = requests.get(url, timeout=(3, 8))
+            response.raise_for_status()
+            data = response.json()
+            is_defined = isinstance(data, list) and any(
+                isinstance(item, dict)
+                and item.get("meanings")
+                and str(item.get("word", "")).strip().lower() == normalized
+                for item in data
+            )
+            if is_defined:
+                DICTIONARY_CACHE.add(normalized)
+            return is_defined
+        except (requests.RequestException, ValueError, TypeError):
+            continue
+    return False
 
 
 def fetch_word_pool(count=10, length=5):

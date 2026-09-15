@@ -268,10 +268,38 @@
   คำที่มีความหมายอย่าง HELLO ถูกปฏิเสธ เพราะไม่อยู่ในรายการ wildcard 1,000 คำ ให้ตรวจคำจริงเพิ่มเติมด้วย exact-word API โดยยังปฏิเสธคำมั่ว
   ```
 - **AI Response Summary:**
-  Datamuse wildcard endpoint ไม่ได้คืนคำศัพท์ทั้งหมด จึงเพิ่ม `is_valid_api_word()` สำหรับค้นคำที่ผู้เล่นกรอกแบบตรงตัว เช่น `sp=hello` เมื่อคำไม่อยู่ในรายการหลัก
+  Datamuse wildcard endpoint ไม่ได้คืนคำศัพท์ทั้งหมด จึงเพิ่ม `is_valid_dictionary_word()` สำหรับตรวจคำที่ผู้เล่นกรอกกับ `dictionaryapi.dev` เมื่อคำไม่อยู่ในรายการหลัก
 - **Verified Result:**
   ```text
-  HELLO exact lookup passed; unknown word rejected; full suite: 31 passed
+  Dictionary API integration tests passed; unknown word rejected; full suite: 31 passed
+  ```
+
+---
+
+### 🔹 Prompt 15: Restoring the Legacy Grouped History View
+- **Student Prompt:**
+  ```text
+  ปรับ View History ของเวอร์ชันใหม่ให้เหมือนโปรเจกต์เก่า โดยรวมข้อมูลเป็นรายเกม แสดงสถานะ WON/LOST คำเฉลย และลำดับคำที่ทาย
+  ```
+- **AI Response Summary:**
+  จัดกลุ่ม history ด้วย `game_number`, เพิ่ม `secret_word` ใน record ใหม่ และแสดงสรุปแต่ละเกมเป็น `Game N (STATUS, secret: WORD)` พร้อมลำดับคำทายด้วยลูกศร
+- **Verified Result:**
+  ```text
+  Legacy grouped history test passed; full suite: 33 passed
+  ```
+
+---
+
+### 🔹 Prompt 14: Keeping Common Words Available During API Timeout
+- **Student Prompt:**
+  ```text
+  HELLO และ WORLD เป็นคำมีความหมายแต่ใช้ไม่ได้เมื่อ Dictionary API timeout ให้แก้โดยไม่รับคำมั่วและยังเล่นคำมาตรฐานได้
+  ```
+- **AI Response Summary:**
+  เพิ่มคำมาตรฐานไว้ใน local read-only word pool และรวม local pool กับรายการจาก Datamuse ทุกครั้ง ทำให้ API ล่มหรือ timeout แล้วคำจริงยังใช้ได้
+- **Verified Result:**
+  ```text
+  HELLO and WORLD accepted from local fallback; full suite: 32 passed
   ```
 
 ---

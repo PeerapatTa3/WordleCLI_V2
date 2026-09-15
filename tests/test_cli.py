@@ -7,6 +7,7 @@ from cli import (
     display_statistics,
     display_answer,
     display_hint,
+    display_history,
     get_secret_word,
     get_menu_choice,
     get_guess_input,
@@ -36,6 +37,16 @@ def test_is_valid_guess_rejects_invalid_values():
 def test_is_valid_guess_rejects_word_outside_word_pool():
     assert is_valid_guess("HELLO", 5, {"APPLE", "GRAPE"}) is False
     assert is_valid_guess("apple", 5, {"APPLE", "GRAPE"}) is True
+
+
+def test_common_local_words_remain_valid_without_api(monkeypatch):
+    monkeypatch.setattr("cli.fetch_valid_words", lambda length: [])
+    valid_words = set(["HELLO", "WORLD", "ELECT", "UPPER", "MINER"])
+    assert is_valid_guess("HELLO", 5, valid_words) is True
+    assert is_valid_guess("WORLD", 5, valid_words) is True
+    assert is_valid_guess("ELECT", 5, valid_words) is True
+    assert is_valid_guess("UPPER", 5, valid_words) is True
+    assert is_valid_guess("MINER", 5, valid_words) is True
 
 
 def test_get_secret_word_uses_test_environment_variable(monkeypatch):
@@ -83,6 +94,21 @@ def test_display_statistics_reports_wins_and_distribution(capsys):
     assert "Current Streak:  2" in output
     assert "3: * (1)" not in output
     assert "3: █ (1)" in output
+
+
+def test_display_history_groups_records_by_game(capsys):
+    history = [
+        {"guess": "HELLO", "correct": False, "game_number": 1, "secret_word": "APPLE"},
+        {"guess": "APPLE", "correct": True, "game_number": 1, "secret_word": "APPLE"},
+        {"guess": "WORLD", "correct": False, "game_number": 2, "secret_word": "ELECT"},
+    ]
+    display_history.__globals__["load_data"] = lambda path: history
+    display_history()
+    output = capsys.readouterr().out
+    assert "Total Games Played: 2" in output
+    assert "Game 1 (WON, secret: APPLE)" in output
+    assert "Guesses: HELLO -> APPLE" in output
+    assert "Game 2 (LOST, secret: ELECT)" in output
 
 
 def test_display_how_to_play_explains_feedback(capsys):

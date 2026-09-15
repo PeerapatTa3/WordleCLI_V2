@@ -18,8 +18,9 @@
 - 🔍 ค้นหา/กรองคำที่เคยทาย
 - 💾 บันทึกและโหลดข้อมูลอัตโนมัติ (JSON)
 - 🛡️ ตรวจสอบและป้องกันข้อมูลนำเข้าที่ผิดพลาด (Input Validation + Exception Handling)
-- 📚 ตรวจคำทายจากรายการ API และค้น exact word เพิ่มเมื่อคำจริงไม่อยู่ใน top list
-- 📖 ใช้ Datamuse API เพื่อดึงคำศัพท์อังกฤษจริงที่มีคะแนนความนิยม
+- 📚 ตรวจคำทายจาก Datamuse, Dictionary API และ local fallback พร้อม retry/cache เพื่อไม่ให้คำจริง เช่น `UPPER` และ `MINER` ถูกปฏิเสธเมื่อ API timeout
+- คำที่ใช้ต้องเป็นคำอังกฤษ 5 ตัวอักษร เช่น `ELECT`; `PROFIT` ใช้ไม่ได้เพราะมี 6 ตัวอักษร และ `POFIT` ไม่ใช่คำมาตรฐาน
+- 📖 ใช้ Datamuse API ดึงรายการคำ 5 ตัวอักษร และ Dictionary API ตรวจ definition ของคำ
 - 💡 ใช้ `hint` และ `answer` เพื่อช่วยเล่นหรือทดสอบเกม
 - 🎨 แสดงผล feedback ด้วยสี 
 
@@ -132,7 +133,12 @@ python game.py
 pytest tests/
 ```
 
-Current verification: `31 passed`.
+Current verification: `35 passed`.
+
+รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](TEST_PLAN.md)
+ตาราง Test Cases แบบสรุปและรายละเอียดเชิงลึกอยู่ที่ [TEST_CASES.md](TEST_CASES.md)
+
+หน้าประวัติจะแสดงผลแบบสรุปรายเกมเหมือนเวอร์ชันเก่า โดยมีหมายเลขเกม, สถานะ WON/LOST, คำเฉลย และลำดับคำที่ทาย
 
 Test coverage includes CLI validation, full API word-list validation, exact-word fallback such as `HELLO`, colorized feedback, Wordle duplicate-letter rules, JSON persistence failures, Datamuse API response validation, network failure handling, statistics, hints, and answer reveal.
 
