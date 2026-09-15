@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced the disabled random-word endpoint with Datamuse API for larger lists of meaningful five-letter words.
 - Added popularity-score filtering and random selection from valid API results.
 - Added in-game `hint` and `answer` commands for assistance and manual testing.
-- Latest verification result: `28 passed`.
+- Latest verification result: `31 passed`.
 
 ---
 
@@ -61,6 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Connected CLI presentation, Wordle business logic, JSON persistence, and Datamuse API fallback through the main game flow.
 - Added synchronized history/statistics state with per-game numbering.
 - Added `hint` and `answer` commands that work inside an active game round.
+- Uses the complete filtered Datamuse word list to validate player guesses instead of only the local pool.
+- Added exact-word Datamuse fallback so common words omitted from the wildcard top list, such as `HELLO`, can still be used.
 
 ### Completed
 - Handles missing/corrupted local data and unavailable API responses without crashing.

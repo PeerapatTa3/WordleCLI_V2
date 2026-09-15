@@ -12,7 +12,7 @@ from colorama import Fore, Style, init
 
 from src.data_manager import load_data, save_data, load_word_pool
 from src.game_logic import WordleGame, calculate_feedback, search_history, filter_history
-from src.word_api import fetch_random_word
+from src.word_api import fetch_random_word, fetch_valid_words, is_valid_api_word
 
 
 init(autoreset=True)
@@ -69,13 +69,17 @@ def is_valid_guess(guess, word_length, valid_words=None):
     return True
 
 
-def get_guess_input(word_length, valid_words=None):
+def get_guess_input(word_length, valid_words=None, word_validator=None):
     """Prompt for a word or the supported ``hint``/``answer`` commands."""
     while True:
         guess = input(f"Enter a {word_length}-letter word: ").strip()
         if guess.lower() in {"hint", "answer"}:
             return guess.lower()
-        if is_valid_guess(guess, word_length, valid_words):
+        if is_valid_guess(guess, word_length, valid_words) or (
+            word_validator is not None
+            and is_valid_guess(guess, word_length)
+            and word_validator(guess, word_length)
+        ):
             return guess.upper()
         if valid_words is not None:
             print(f"Invalid guess. Enter a {word_length}-letter word from the word pool.")
@@ -215,7 +219,9 @@ def play_game():
     game = WordleGame(secret_word)
     history = load_data(HISTORY_PATH)
     game_number = _next_game_number(history)
-    valid_words = set(pool)
+    valid_words = set(fetch_valid_words(game.word_length))
+    if not valid_words:
+        valid_words = set(pool)
     valid_words.add(secret_word)
     revealed_positions = set()
 
@@ -223,7 +229,7 @@ def play_game():
     if is_test_mode:
         print(f"[TEST MODE] Secret word: {game.secret_word}")
     for attempt in range(1, 7):
-        guess = get_guess_input(game.word_length, valid_words)
+        guess = get_guess_input(game.word_length, valid_words, is_valid_api_word)
         if guess == "hint":
             revealed_positions = display_hint(game.secret_word, revealed_positions)
             continue
