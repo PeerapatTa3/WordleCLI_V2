@@ -30,6 +30,19 @@ def test_fetch_random_word_rejects_wrong_length(monkeypatch):
     assert fetch_random_word() is None
 
 
+def test_fetch_random_word_accepts_common_datamuse_words(monkeypatch):
+    monkeypatch.setattr(
+        "src.word_api.requests.get",
+        lambda url, timeout: FakeResponse(
+            [
+                {"word": "apple", "score": 5000},
+                {"word": "qzxjk", "score": 10},
+            ]
+        ),
+    )
+    assert fetch_random_word() == "APPLE"
+
+
 def test_fetch_random_word_returns_none_on_request_failure(monkeypatch):
     def raise_request_error(url, timeout):
         raise requests.RequestException("network unavailable")

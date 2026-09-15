@@ -1,4 +1,4 @@
-# QA Report — Sprint 1: Front-End App Dev
+# QA Report — Sprint 1-3 Integration
 
 **Project:** Wordle CLI V.2  
 **Sprint:** 1  
@@ -13,12 +13,15 @@
 - [x] Implemented welcome banner and main menu
 - [x] Completed input validation for menu and guess handling
 - [x] Added core game logic for Wordle feedback calculation
-- [x] Added JSON-based history and word pool persistence
+- [x] Added JSON-based history persistence and read-only word pool loading
 - [x] Added colorized feedback output using `colorama`
 - [x] Added fallback word fetching from public API through `src/word_api.py`
 - [x] Added unit tests for logic and CLI validation
 - [x] Added deterministic tests for API success, invalid responses, network failure, and duplicate removal
 - [x] Added edge-case tests for duplicate letters and corrupted JSON
+- [x] Restored and tested Statistics and How to Play menu features from the legacy project
+- [x] Restored word-pool validation so unknown words are rejected
+- [x] Added and tested in-game hint and answer commands
 - [x] Verified Python-based CLI flow works without crashing
 
 ---
@@ -38,6 +41,11 @@
 | Corrupted history file | JSON cannot be decoded | Loader returns an empty list without crashing | `load_data()` returns `[]` | PASS |
 | API network failure | API request raises an exception | Word fetch returns `None` safely | `fetch_random_word()` returns `None` | PASS |
 | Duplicate API words | API returns the same word more than once | Word pool contains unique words | `fetch_word_pool()` removes duplicates | PASS |
+| Statistics | Saved history contains multiple games | Show win rate, streak, and guess distribution | Statistics summary is displayed correctly | PASS |
+| How to Play | User selects the help menu | Explain rules and feedback markers | Help text is displayed | PASS |
+| Unknown word | User enters a 5-letter word outside the pool | Reject the guess and ask again | Unknown word is rejected | PASS |
+| Hint command | User enters `hint` during a round | Reveal one letter without consuming an attempt | One letter is shown | PASS |
+| Answer command | User enters `answer` during a round | Reveal the secret and end the round | Secret word is displayed | PASS |
 
 ---
 
@@ -56,12 +64,11 @@
 
 ## 4. Delivery Status
 
-**Status:** Sprint 1 and Sprint 2 core features completed; Sprint 3 integration is the next milestone.
+**Status:** Sprint 1-3 core features completed; Sprint Final CI/CD and AI integration remain.
 
 **Pull Request Summary:**
-- Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, word-pool management, and API fallback
+- Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hints, answer reveal, and meaningful-word API fallback
 - Testing: `pytest` executed successfully
-- Evidence: `13 passed in 0.04s`
-- Updated evidence: `20 passed in 0.19s`
+- Evidence: `28 passed`
 
 **PR Link:** To be filled when repository PR is created.
