@@ -1,4 +1,4 @@
-# PLAN.md — Miniproject_WordleCLI
+# PLAN.md — Miniproject_WordleCLI (Sprint1)
 > ร่างแผนงานทั้ง 4 Sprint (แต่ละ Sprint ควรแยกเป็นไฟล์ `PLAN.md` ของตัวเอง หรือ commit ทับใน Sprint ถัดไปตามที่ทีมตกลงกัน)
 
 ---
