@@ -1,0 +1,38 @@
+[
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1
+  },
+  {
+    "guess": "สสดหก",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 2
+  }
+]
