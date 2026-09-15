@@ -138,6 +138,7 @@ Current verification: `35 passed`.
 รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](TEST_PLAN.md)
 ตาราง Test Cases แบบสรุปและรายละเอียดเชิงลึกอยู่ที่ [TEST_CASES.md](TEST_CASES.md)
 
+
 หน้าประวัติจะแสดงผลแบบสรุปรายเกมเหมือนเวอร์ชันเก่า โดยมีหมายเลขเกม, สถานะ WON/LOST, คำเฉลย และลำดับคำที่ทาย
 
 Test coverage includes CLI validation, full API word-list validation, exact-word fallback such as `HELLO`, colorized feedback, Wordle duplicate-letter rules, JSON persistence failures, Datamuse API response validation, network failure handling, statistics, hints, and answer reveal.
