@@ -22,6 +22,8 @@
 - [x] Restored and tested Statistics and How to Play menu features from the legacy project
 - [x] Restored word-pool validation so unknown words are rejected
 - [x] Added and tested in-game hint and answer commands
+- [x] Added validation against the complete filtered API word list with local fallback
+- [x] Added exact-word API fallback for meaningful words omitted from the top list
 - [x] Verified Python-based CLI flow works without crashing
 
 ---
@@ -46,6 +48,8 @@
 | Unknown word | User enters a 5-letter word outside the pool | Reject the guess and ask again | Unknown word is rejected | PASS |
 | Hint command | User enters `hint` during a round | Reveal one letter without consuming an attempt | One letter is shown | PASS |
 | Answer command | User enters `answer` during a round | Reveal the secret and end the round | Secret word is displayed | PASS |
+| Exact API word | User enters meaningful word `HELLO` | Search exact API result and accept it | `HELLO` is accepted | PASS |
+| Unknown API word | User enters `QZXJK` | Reject when exact API result is absent | Unknown word is rejected | PASS |
 
 ---
 
@@ -69,6 +73,6 @@
 **Pull Request Summary:**
 - Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hints, answer reveal, and meaningful-word API fallback
 - Testing: `pytest` executed successfully
-- Evidence: `28 passed`
+- Evidence: `31 passed`
 
 **PR Link:** To be filled when repository PR is created.

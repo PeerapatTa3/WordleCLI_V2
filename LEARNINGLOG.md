@@ -244,6 +244,38 @@
 
 ---
 
+### 🔹 Prompt 12: Validating Guesses Against the Full API Word List
+- **Student Prompt:**
+  ```text
+  ให้ระบบเช็คคำที่ผู้เล่นกรอกจากคำอังกฤษ 5 ตัวอักษรทั้งหมดที่ API ดึงมาได้ ไม่จำกัดเฉพาะคำใน local word pool และยังต้อง fallback ได้เมื่อ API ล้มเหลว
+  ```
+- **AI Response Summary:**
+  เพิ่ม `fetch_valid_words()` เพื่อคืนรายการคำทั้งหมดที่ผ่าน length, alphabetic และ score filtering จาก Datamuse แล้วใช้รายการนี้เป็น `valid_words` ใน `play_game()` หาก API คืนค่าว่างจึง fallback ไป local word pool
+- **Test Command:**
+  ```text
+  python -m pytest -q
+  ```
+- **Verified Result:**
+  ```text
+  29 passed
+  ```
+
+---
+
+### 🔹 Prompt 13: Accepting Meaningful Words Outside the Top API List
+- **Student Prompt:**
+  ```text
+  คำที่มีความหมายอย่าง HELLO ถูกปฏิเสธ เพราะไม่อยู่ในรายการ wildcard 1,000 คำ ให้ตรวจคำจริงเพิ่มเติมด้วย exact-word API โดยยังปฏิเสธคำมั่ว
+  ```
+- **AI Response Summary:**
+  Datamuse wildcard endpoint ไม่ได้คืนคำศัพท์ทั้งหมด จึงเพิ่ม `is_valid_api_word()` สำหรับค้นคำที่ผู้เล่นกรอกแบบตรงตัว เช่น `sp=hello` เมื่อคำไม่อยู่ในรายการหลัก
+- **Verified Result:**
+  ```text
+  HELLO exact lookup passed; unknown word rejected; full suite: 31 passed
+  ```
+
+---
+
 ### 🔹 Prompt 9: Adding a Safe Manual Test Answer Mode
 - **Student Prompt:**
   ```text

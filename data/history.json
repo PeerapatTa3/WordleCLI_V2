@@ -176,5 +176,70 @@
     ],
     "attempt": 1,
     "game_number": 9
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "-",
+      "-",
+      "x",
+      "-",
+      "-"
+    ],
+    "attempt": 1,
+    "game_number": 10
+  },
+  {
+    "guess": "SUPER",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "-",
+      "-",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 10
+  },
+  {
+    "guess": "LOOPE",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "x",
+      "-",
+      "-"
+    ],
+    "attempt": 3,
+    "game_number": 10
+  },
+  {
+    "guess": "BAKER",
+    "correct": false,
+    "feedback": [
+      "x",
+      "-",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 4,
+    "game_number": 10
+  },
+  {
+    "guess": "SETER",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 5,
+    "game_number": 10
   }
 ]

@@ -82,6 +82,8 @@
 | `load_data(filepath)` | โหลดข้อมูล พร้อมจัดการกรณีไฟล์ไม่พบ (`FileNotFoundError`) |
 | `load_word_pool(filepath)` | โหลดคลังคำแบบอ่านอย่างเดียวและสร้างค่าเริ่มต้นเมื่อไฟล์หาย |
 | `fetch_random_word()` | ดึงคำที่มีความหมายจาก Datamuse และกรองตาม score |
+| `fetch_valid_words()` | ดึงและคืนรายการคำ 5 ตัวอักษรทั้งหมดที่ผ่านการกรองจาก Datamuse |
+| `is_valid_api_word()` | ค้น exact word สำหรับคำจริงที่ไม่อยู่ใน top list |
 
 ## 4. Definition of Done (DoD)
 - [x] `guess_history` ถูกบันทึกลงไฟล์ JSON และโหลดกลับมาได้ถูกต้องเมื่อเปิดโปรแกรมใหม่

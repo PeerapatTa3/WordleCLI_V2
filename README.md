@@ -18,7 +18,7 @@
 - 🔍 ค้นหา/กรองคำที่เคยทาย
 - 💾 บันทึกและโหลดข้อมูลอัตโนมัติ (JSON)
 - 🛡️ ตรวจสอบและป้องกันข้อมูลนำเข้าที่ผิดพลาด (Input Validation + Exception Handling)
-- 📚 ตรวจว่าคำทายอยู่ใน word pool หรือเป็นคำตอบที่ API สุ่มมา
+- 📚 ตรวจคำทายจากรายการ API และค้น exact word เพิ่มเมื่อคำจริงไม่อยู่ใน top list
 - 📖 ใช้ Datamuse API เพื่อดึงคำศัพท์อังกฤษจริงที่มีคะแนนความนิยม
 - 💡 ใช้ `hint` และ `answer` เพื่อช่วยเล่นหรือทดสอบเกม
 - 🎨 แสดงผล feedback ด้วยสี 
@@ -132,9 +132,9 @@ python game.py
 pytest tests/
 ```
 
-Current verification: `28 passed`.
+Current verification: `31 passed`.
 
-Test coverage includes CLI validation, colorized feedback, Wordle duplicate-letter rules, word-pool validation, JSON persistence failures, Datamuse API response validation, network failure handling, statistics, hints, and answer reveal.
+Test coverage includes CLI validation, full API word-list validation, exact-word fallback such as `HELLO`, colorized feedback, Wordle duplicate-letter rules, JSON persistence failures, Datamuse API response validation, network failure handling, statistics, hints, and answer reveal.
 
 การตั้งค่า CI/CD ผ่าน GitHub Actions ยังเป็นงานของ Sprint Final และยังไม่ได้เพิ่ม workflow ใน repository นี้
 
