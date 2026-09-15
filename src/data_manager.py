@@ -50,6 +50,3 @@ def load_word_pool(filepath):
     return DEFAULT_WORD_POOL.copy()
 
 
-def save_word_pool(filepath, words):
-    """Save the current word pool list."""
-    return save_data(filepath, words)

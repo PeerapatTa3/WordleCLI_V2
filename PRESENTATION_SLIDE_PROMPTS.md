@@ -8,37 +8,44 @@
 
 ## ส่วนที่ 2: Stack เทคโนโลยีและมาตรฐานการพัฒนา (10%)
 - ระบุ Python 3.x เป็นภาษาหลัก
-- ระบุไลบรารี: `colorama`, `pytest`
+- ระบุไลบรารี: `colorama`, `pytest`, `requests`
+- อธิบายการใช้ Datamuse API เพื่อดึงคำอังกฤษ 5 ตัวอักษรที่มีคะแนนความนิยม พร้อม local fallback
 - บอกว่าโครงสร้างโค้ดแยกตามชั้นเพื่อให้ดูเรียบร้อยและพัฒนาได้ต่อเนื่อง
 - อธิบายแนวคิดการออกแบบ: Separation of Concerns, Single Responsibility, Defensive Programming
 
 ## ส่วนที่ 3: การสาธิตฟังก์ชันและการทดสอบจริง (40%)
 - สาธิตการรันโปรแกรมจาก `python game.py`
 - แสดงเมนูหลักและการเลือกเมนูที่ผิด เช่น 0, abc, ว่าง
+- สาธิตเมนู Statistics และ How to Play
 - แสดงคำทายที่ผิดพลาด เช่น สั้น, ยาว, มีตัวเลข, มีช่องว่าง
+- สาธิตการปฏิเสธคำที่ไม่มีใน word pool
+- สาธิตการใช้ `hint` และ `answer` ระหว่างเล่น
+- อธิบาย `WORDLE_TEST_WORD` สำหรับการทดสอบด้วยคำเฉลยที่กำหนดเอง
 - แสดงความสามารถของ `get_guess_input()` ที่กรอกใหม่จนกว่าจะถูกต้อง
-- ถ้าต่อยอดได้ ให้สาธิต logic ของการคำนวณ feedback และการบันทึก history
+- สาธิต logic ของการคำนวณ feedback, การบันทึก history และ JSON persistence
 
 ## ส่วนที่ 4: ปัญหาทางเทคนิค การแก้ไข และการเปรียบเทียบ (15%)
 - สรุปความท้าทายหลัก เช่น การแยก Presentation จาก Business Logic
-- บอกว่าใน Sprint 1 ใช้การ normalize input เพื่อป้องกันข้อผิดพลาด
+- บอกว่าใช้การ normalize input และ word-pool validation เพื่อป้องกันข้อผิดพลาด
+- อธิบายการจัดการ API ล้มเหลวด้วย local word pool fallback
 - เปรียบเทียบแบบการเขียนโค้ดรวมในเดียวกับแบบแยกฟังก์ชันว่าแบบไหนสะอาดและทนต่อการขยายงานมากกว่า
 
 ## ส่วนที่ 5: ระบบ DevOps, CI/CD Pipeline และแนวโน้ม AI Integration (15%)
-- แสดงว่ามีแนวทาง CI/CD สำหรับ linting และ automated test
-- นำเสนอแนวทาง AI เช่น คำแนะนำคำใบ้อัตโนมัติ หรือสรุปสถิติการเล่น
-- บอกปัจจัยที่ต้องพัฒนาต่อ เช่น JSON persistence, filter/search, test coverage, GitHub Actions
+- ระบุว่า automated tests มี 28 เคส และ CI/CD ผ่าน GitHub Actions ยังเป็นงาน Sprint Final
+- นำเสนอ automation ปัจจุบัน: hint, answer mode และสรุปสถิติการเล่น
+- บอกปัจจัยที่ต้องพัฒนาต่อ เช่น GitHub Actions, coverage report และ AI feature
 
 ---
 
 ## Suggested Demo Script
 1. เปิด project และอธิบายวัตถุประสงค์สั้น ๆ
 2. รัน `python game.py`
-3. แสดงเมนู 1-4
+3. แสดงเมนู 1-5
 4. ทดสอบ `0` และ `abc` ให้เห็นการป้องกัน invalid input
 5. ป้อนคำทายที่ผิด เช่น `app`, `APP1E`, `HELLO WORLD`
-6. ป้อนคำทายที่ถูกต้อง เช่น `APPLE`
-7. สรุปว่า Sprint 2-3 จะต่อยอดด้วย logic, history, JSON, AI
+6. สาธิต `hint` และ `answer` ระหว่างเล่น
+7. เปิดดู Statistics และ History
+8. สรุปว่า Sprint Final จะต่อยอดด้วย CI/CD และ AI integration
 
 ---
 

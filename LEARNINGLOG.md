@@ -63,7 +63,7 @@
 ### 🔹 Prompt 3: Designing a Clean CLI Loop
 - **Student Prompt:**
   ```text
-  ออกแบบ main() สำหรับเกม Wordle ให้มีเมนู 1-4, เลือกเล่น / ดูประวัติ / ลบคำ / ออกจากเกม พร้อมการแสดงข้อความแจ้งเตือนเมื่ออินพุตผิด
+  ออกแบบ main() สำหรับเกม Wordle ให้มีเมนูเล่น / ดูประวัติ / ดูสถิติ / วิธีเล่น / ออกจากเกม พร้อมการแสดงข้อความแจ้งเตือนเมื่ออินพุตผิด
   ```
 - **AI Response Summary:**
   ควรใช้ `while True` สำหรับลูปหลัก, ใช้ `if/elif/else` สำหรับเมนู, และแยกฟังก์ชันสาขาให้อยู่คนละส่วน เพื่อให้โปรแกรมไม่พังเมื่อกรอกค่าผิด
@@ -71,14 +71,16 @@
   ```python
   def main():
       while True:
-          choice = input("Choose an option (1-4): ").strip().lower()
+          choice = input("Choose an option (1-5): ").strip().lower()
           if choice == "1":
               print("Play Wordle")
           elif choice == "2":
               print("View history")
           elif choice == "3":
-              print("Remove word")
-          elif choice == "4":
+                print("View statistics")
+              elif choice == "4":
+                print("How to play")
+              elif choice == "5":
               print("Goodbye!")
               break
           else:
@@ -154,6 +156,113 @@
 
 ---
 
+### 🔹 Prompt 7: Restoring Legacy Statistics and How-to-Play Features
+- **Student Prompt:**
+  ```text
+  นำฟีเจอร์ที่มีใน Wordle CLI เวอร์ชันเก่ากลับมาใส่เวอร์ชันใหม่ ได้แก่ Statistics และ How to Play โดยยังคง JSON persistence, Colorama และ API fallback ไว้
+  ```
+- **AI Response Summary:**
+  เพิ่มเมนู Statistics สำหรับคำนวณ Games Played, Win Rate, Current Streak และ Guess Distribution จาก history รวมทั้งเพิ่มเมนู How to Play อธิบายกติกาและสัญลักษณ์ feedback โดยเพิ่ม `game_number` ให้แต่ละรอบเพื่อแยกสถิติระหว่างเกม
+- **Live Verification Code:**
+  ```python
+  history = [
+      {"correct": False, "attempt": 1, "game_number": 1},
+      {"correct": True, "attempt": 3, "game_number": 1},
+      {"correct": True, "attempt": 2, "game_number": 2},
+  ]
+  display_statistics(history)
+  display_how_to_play()
+  ```
+- **Test Command:**
+  ```text
+  python -m pytest -q
+  ```
+- **Verified Result:**
+  ```text
+  22 passed
+  ```
+
+---
+
+### 🔹 Prompt 10: Selecting Meaningful Five-Letter Words
+- **Student Prompt:**
+  ```text
+  เปลี่ยน API ให้ดึงคำอังกฤษที่มีความหมายจำนวนมากขึ้น ไม่เอาคำสุ่มที่แปลกหรือไม่มีความหมาย และยังต้องใช้ fallback local pool ได้เมื่อ API ล้มเหลว
+  ```
+- **AI Response Summary:**
+  เปลี่ยนไปใช้ Datamuse API แบบ `sp=?????&max=1000` ซึ่งคืนคำศัพท์พร้อมคะแนนความนิยม ระบบกรองคำ 5 ตัวอักษรและตัดคำที่มี score ต่ำกว่า `1000` ก่อนสุ่มใช้งาน
+- **Live Verification Code:**
+  ```python
+  from src.word_api import fetch_random_word
+
+  print(fetch_random_word())
+  ```
+- **Verified Result:**
+  ```text
+  Datamuse response accepted; full suite: 25 passed
+  ```
+
+---
+
+### 🔹 Prompt 8: Restoring Word-Meaning Validation from the Legacy Project
+- **Student Prompt:**
+  ```text
+  แก้ระบบตรวจคำทายให้เหมือนโปรเจกต์เก่า คือไม่รับแค่คำที่เป็นตัวอักษร 5 ตัว แต่ต้องเป็นคำที่อยู่ใน word pool ด้วย และต้องไม่ทำให้คำตอบที่มาจาก API ถูกปฏิเสธ
+  ```
+- **AI Response Summary:**
+  เพิ่ม `valid_words` แบบ optional ให้ `is_valid_guess()` และ `get_guess_input()` เพื่อรักษา API เดิม พร้อมส่ง word pool รวมกับ secret word เข้าไปตรวจใน `play_game()` ทำให้คำที่ไม่มีในคลังถูกปฏิเสธ แต่คำตอบจาก API ยังเดาได้
+- **Live Verification Code:**
+  ```python
+  assert is_valid_guess("HELLO", 5, {"APPLE", "GRAPE"}) is False
+  assert is_valid_guess("apple", 5, {"APPLE", "GRAPE"}) is True
+  ```
+- **Verified Result:**
+  ```text
+  23 passed
+  ```
+
+---
+
+### 🔹 Prompt 11: Adding Hint and Answer Commands
+- **Student Prompt:**
+  ```text
+  เพิ่มฟังก์ชัน hint และ answer ระหว่างเล่นเกม โดย hint เปิดตัวอักษรทีละตำแหน่งโดยไม่เสียรอบ และ answer แสดงคำเฉลยเพื่อใช้ทดสอบ
+  ```
+- **AI Response Summary:**
+  เพิ่มคำสั่ง `hint` และ `answer` ใน input loop แยก `display_hint()` กับ `display_answer()` ออกจาก game loop เพื่อให้ทดสอบได้ง่ายและไม่กระทบจำนวน attempt ของผู้เล่น
+- **Live Verification Code:**
+  ```text
+  Enter a 5-letter word: hint
+  Hint: Letter 1 is 'A'.
+  Enter a 5-letter word: answer
+  Answer: APPLE
+  ```
+- **Verified Result:**
+  ```text
+  Hint and answer tests passed; full suite: 28 passed
+  ```
+
+---
+
+### 🔹 Prompt 9: Adding a Safe Manual Test Answer Mode
+- **Student Prompt:**
+  ```text
+  เพิ่มวิธีทดสอบเกมแบบกำหนดคำเฉลยเองได้ เพื่อให้ทดสอบชนะหรือแพ้ได้ง่าย แต่โหมดปกติต้องยังสุ่มคำและไม่เปิดเผยคำตอบ
+  ```
+- **AI Response Summary:**
+  เพิ่มตัวแปรสภาพแวดล้อม `WORDLE_TEST_WORD` สำหรับกำหนดคำเฉลยชั่วคราว เมื่อไม่ได้กำหนดตัวแปร ระบบยังใช้ API และ local pool ตามปกติ และจะแสดงคำเฉลยเฉพาะเมื่อเปิด test mode
+- **Live Verification Code:**
+  ```powershell
+  $env:WORDLE_TEST_WORD="APPLE"
+  python game.py
+  ```
+- **Verified Result:**
+  ```text
+  Test mode helper passed; full suite: 24 passed
+  ```
+
+---
+
 ## 3. Key Learning Outcomes
 
 - การแบ่งชั้นของโปรแกรมช่วยลดความซับซ้อนของโค้ดและทำให้การทดสอบง่ายขึ้น
@@ -170,7 +279,7 @@
 ### Wow!
 - โค้ด CLI มีกระบวนการแยกฟังก์ชันชัดเจนและง่ายต่อการวิเคราะห์
 - สามารถทดสอบ valid/invalid input ได้จริงและปรับปรุงความปลอดภัยของโปรแกรม
-- เพิ่ม automated test จาก 13 เป็น 21 เคส และครอบคลุม business logic, persistence และ API fallback มากขึ้น
+- เพิ่ม automated test จาก 13 เป็น 22 เคส และครอบคลุม business logic, persistence, API fallback และ legacy-compatible CLI features มากขึ้น
 
 ### Whoops!
 - ในช่วงแรกยังคงมีความสับสนเรื่องโครงสร้างโมดูลและการจัดการเอกสาร README
