@@ -302,7 +302,8 @@ def play_game():
     if is_test_mode:
         console.print(f"[bold yellow][TEST MODE] Secret word: {game.secret_word}[/bold yellow]")
 
-    for attempt in range(1, 7):
+    attempt = 1
+    while attempt <= 6:
         guess = get_guess_input(game.word_length, valid_words, is_valid_dictionary_word)
         if guess == "hint":
             revealed_positions = display_hint(game.secret_word, revealed_positions)
@@ -325,7 +326,6 @@ def play_game():
 
         board_history.append((guess, feedback))
         _render_wordle_board(board_history, max_attempts=6, word_length=game.word_length)
-        #console.print(f"Feedback: {colorize_feedback(feedback)}")
 
         if is_correct:
             console.print(Panel(
@@ -337,6 +337,7 @@ def play_game():
             return
 
         console.print(f"[bold cyan]Attempt {attempt}/6[/bold cyan]\n")
+        attempt += 1
 
     console.print(Panel(
         f"[bold white on red] 💥 GAME OVER! [/bold white on red]\n\nThe secret word was: [bold yellow]{game.secret_word}[/bold yellow]",
