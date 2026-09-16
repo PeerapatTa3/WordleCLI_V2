@@ -6,7 +6,7 @@ import requests
 DEFAULT_API_URL = "https://api.datamuse.com/words?sp=?????&max=1000"
 DICTIONARY_API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
 MIN_WORD_SCORE = 1000
-DICTIONARY_RETRIES = 1
+DICTIONARY_RETRIES = 3
 DICTIONARY_CACHE = set()
 
 
