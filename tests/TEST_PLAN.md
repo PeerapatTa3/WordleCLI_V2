@@ -3,7 +3,9 @@
 **Project:** Wordle CLI V.2  
 **Scope:** Sprint 1-3  
 **Test Tool:** `pytest`  
-**Latest Result:** `35 passed`
+**Latest Result:** `35 passed` (ก่อนอัปเกรด UI เป็น `rich`; ดู Known Issue ด้านล่าง)
+
+**Known Issue:** หลังเปลี่ยน `cli.py` ให้ใช้ `rich` (`console.input`/`console.print` แทน `input()`/`print()` และแสดงผลเป็น Panel/Table) เทสต์ที่ `monkeypatch("builtins.input", ...)` หรือตรวจ plain-text ผ่าน `capsys` (เช่น `test_get_menu_choice_normalizes_input`, `test_get_guess_input_retries_until_valid`, `test_display_menu_prints_options`, `test_display_history_groups_records_by_game`) ต้องปรับให้ mock `console.input`/`Console` หรือตรวจสอบข้อความภายใน Rich markup แทน ก่อนผลลัพธ์จะกลับมา `35 passed` ทั้งหมด
 
 ## 1. Test Objectives
 
@@ -18,7 +20,7 @@
 - Python 3.13
 - Windows
 - Virtual environment: `.venv`
-- Dependencies: `pytest`, `requests`, `colorama`
+- Dependencies: `pytest`, `requests`, `colorama`, `rich`
 - Test command:
 
 ```text

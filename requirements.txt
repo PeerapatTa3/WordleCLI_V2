@@ -1,3 +1,4 @@
 colorama
 pytest
 requests
+rich
