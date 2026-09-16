@@ -322,6 +322,21 @@
 
 ---
 
+### 🔹 Prompt 16: Upgrading to a Rich-based Visual UI
+- **Student Prompt:**
+  ```text
+  แก้ cli.py ปัจจุบันใน GitHub เป็นอันใหม่ที่ใช้ rich แสดงเมนู/กระดานทาย/ประวัติ/สถิติเป็น Panel และ Table พร้อม spinner ระหว่างตรวจคำ
+  ```
+- **AI Response Summary:**
+  แทนที่ `print()`/`input()` ตรง ๆ ด้วย `rich.console.Console` (`console.print`/`console.input`) เพิ่ม `_render_wordle_board()` เพื่อวาดกระดานทายเป็น `Table` ภายใน `Panel` ที่อัปเดตทุกรอบ ใช้ `console.status()` แสดง spinner ระหว่างตรวจคำ และเปลี่ยนเมนู/ประวัติ/สถิติ/how-to-play/hint/answer ให้แสดงผลผ่าน `Panel`/`Table` แทนข้อความธรรมดา เพิ่ม `rich` ใน `requirements.txt`
+- **Verified Result:**
+  ```text
+  `python -c "import src.cli"` imports cleanly; manual play-through renders bordered board/menus correctly.
+  6 of 15 tests in tests/test_cli.py now fail because they monkeypatch builtins.input or assert plain text via capsys — these need updating to mock rich's Console before the suite returns to 35 passed.
+  ```
+
+---
+
 ## 3. Key Learning Outcomes
 
 - การแบ่งชั้นของโปรแกรมช่วยลดความซับซ้อนของโค้ดและทำให้การทดสอบง่ายขึ้น

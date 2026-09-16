@@ -22,7 +22,8 @@
 - คำที่ใช้ต้องเป็นคำอังกฤษ 5 ตัวอักษร เช่น `ELECT`; `PROFIT` ใช้ไม่ได้เพราะมี 6 ตัวอักษร และ `POFIT` ไม่ใช่คำมาตรฐาน
 - 📖 ใช้ Datamuse API ดึงรายการคำ 5 ตัวอักษร และ Dictionary API ตรวจ definition ของคำ
 - 💡 ใช้ `hint` และ `answer` เพื่อช่วยเล่นหรือทดสอบเกม
-- 🎨 แสดงผล feedback ด้วยสี 
+- 🎨 แสดงผล feedback ด้วยสี
+- 🖼️ ส่วนติดต่อผู้ใช้แบบ Rich UI (`rich`) — เมนู, กระดานทาย, ประวัติ และสถิติแสดงผลเป็น Panel/Table แบบมีกรอบและสี พร้อม spinner ระหว่างตรวจคำ
 
 ---
 
@@ -66,6 +67,7 @@ Miniproject_WordleCLI/
 - ไลบรารีเพิ่มเติม (ดู `requirements.txt`):
   ```
    colorama
+   rich
    pytest
    requests
   ```
@@ -134,6 +136,8 @@ pytest tests/
 ```
 
 Current verification: `35 passed`.
+
+> ⚠️ หลังอัปเกรด `cli.py` ให้ใช้ `rich` (Panel/Table/spinner แทน `input()`/`print()` ตรง ๆ) เทสต์บางส่วนใน `tests/test_cli.py` ที่ `monkeypatch` บน `builtins.input` หรือตรวจ plain text ผ่าน `capsys` จะต้องปรับปรุงให้เข้ากับ Rich output ก่อนจึงจะกลับมาผ่านครบ
 
 รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](TEST_PLAN.md)
 ตาราง Test Cases แบบสรุปและรายละเอียดเชิงลึกอยู่ที่ [TEST_CASES.md](TEST_CASES.md)

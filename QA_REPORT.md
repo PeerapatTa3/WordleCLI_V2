@@ -15,6 +15,7 @@
 - [x] Added core game logic for Wordle feedback calculation
 - [x] Added JSON-based history persistence and read-only word pool loading
 - [x] Added colorized feedback output using `colorama`
+- [x] Upgraded the CLI presentation layer to a `rich`-based UI (Panel/Table for menu, board, history, and stats; spinner while validating a guess)
 - [x] Added fallback word fetching from public API through `src/word_api.py`
 - [x] Added unit tests for logic and CLI validation
 - [x] Added deterministic tests for API success, invalid responses, network failure, and duplicate removal
@@ -67,6 +68,7 @@
 ### Whoops!
 - ในช่วงแรกยังมีความสับสนเรื่องการจัดโครงสร้างไฟล์และ README
 - ได้แก้ไขด้วยการใช้ [PLAN.md](./PLAN.md) เป็นแผนงานหลักและจัดโครงสร้างโปรเจกต์ให้ชัดเจนตาม Sprint
+- การเปลี่ยน `cli.py` ไปใช้ `rich` ทำให้เทสต์เดิมบางส่วนที่ `monkeypatch` บน `builtins.input`/`capsys` plain text ไม่ผ่านอีกต่อไป ต้องปรับเทสต์ให้ mock `console` ของ Rich ก่อน (ดู [TEST_PLAN.md](./tests/TEST_PLAN.md))
 
 ---
 

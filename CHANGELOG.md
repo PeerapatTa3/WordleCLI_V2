@@ -64,6 +64,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] - UI Enhancement: Rich-based Presentation Layer
+### Added
+- Added `rich` as a new dependency in `requirements.txt`.
+- New `_render_wordle_board()` helper that renders each guess round as a bordered `rich.table.Table` inside a `rich.panel.Panel`.
+- Loading spinner (`console.status`) shown while a guess is checked against the word list/dictionary.
+
+### Changed
+- Replaced plain `print()`/`input()` calls throughout `cli.py` with `console.print()`/`console.input()` from `rich.console.Console`.
+- Welcome banner, main menu, invalid-guess messages, victory, and game-over messages now render as color-coded `Panel`s instead of plain text.
+- `View History` now renders each past game as a colored letter grid inside a `Panel` instead of a text line of guesses.
+- `View Statistics` now renders win rate/streak inside a `Panel` table; guess distribution bars are bold green.
+
+### Known Issue
+- Tests in `tests/test_cli.py` that `monkeypatch("builtins.input", ...)` or assert plain text via `capsys` need to be updated for the Rich-based I/O and markup output before the suite returns to `35 passed`.
+
+---
+
 ## [v1.0.0] - Sprint Final: CI/CD & AI Integration (Planned)
 ### Planned
 - Add automated CI workflow through GitHub Actions.
