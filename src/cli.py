@@ -34,6 +34,8 @@ def colorize_feedback(feedback):
 def display_welcome_message():
     """Display the welcome banner for the Wordle game."""
     print("\n========================================")
+    print("                WELCOME")
+    print("                  TO")
     print("            WORDLE CLI GAME")
     print("========================================\n")
 
