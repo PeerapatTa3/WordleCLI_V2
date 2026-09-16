@@ -6,8 +6,7 @@
 - Repository: [PeerapatTa3/Miniproject_WordleCLI](https://github.com/PeerapatTa3/Miniproject_WordleCLI)
 - Version: V.2 (current project state)
 - Status: Sprint 1-3 core features completed and verified; Sprint Final remains for CI/CD and AI integration
-- **สไลด์นำเสนอ:** [Wordle CLI Slide]([https://canva.link/8ar6q5q3ydr86pz](https://canva.link/hnnokmn8fgtewi9))
-
+- **สไลด์นำเสนอ:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
 ---
 
 ## 📋 คุณสมบัติ (Features)
