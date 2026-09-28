@@ -48,6 +48,8 @@
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
 - รายงาน QA (Observation / Expected / Actual) ตามแบบฟอร์ม
+- Test Plan และ Test Cases: [TEST_PLAN.md](./TEST_PLAN.md)
+- ตาราง Test Cases: [TEST_CASES.md](./TEST_CASES.md)
 
 ---
 
@@ -83,7 +85,8 @@
 | `load_word_pool(filepath)` | โหลดคลังคำแบบอ่านอย่างเดียวและสร้างค่าเริ่มต้นเมื่อไฟล์หาย |
 | `fetch_random_word()` | ดึงคำที่มีความหมายจาก Datamuse และกรองตาม score |
 | `fetch_valid_words()` | ดึงและคืนรายการคำ 5 ตัวอักษรทั้งหมดที่ผ่านการกรองจาก Datamuse |
-| `is_valid_api_word()` | ค้น exact word สำหรับคำจริงที่ไม่อยู่ใน top list |
+| `is_valid_dictionary_word()` | ตรวจ exact word ว่ามี definition จาก Dictionary API |
+| `DICTIONARY_RETRIES` / `DICTIONARY_CACHE` | retry การตรวจ definition และจำคำที่ตรวจผ่านแล้ว |
 
 ## 4. Definition of Done (DoD)
 - [x] `guess_history` ถูกบันทึกลงไฟล์ JSON และโหลดกลับมาได้ถูกต้องเมื่อเปิดโปรแกรมใหม่
@@ -102,6 +105,8 @@
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
 - ตัวอย่างไฟล์ข้อมูลที่ถูกบันทึก (เช่น `history.json`)
+- Test Plan และ Test Cases: [TEST_PLAN.md](./TEST_PLAN.md)
+- ตาราง Test Cases: [TEST_CASES.md](./TEST_CASES.md)
 
 ---
 
@@ -143,6 +148,8 @@
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
 - Diagram หรือคำอธิบายสั้นๆ ว่าแต่ละ Layer เชื่อมกันอย่างไร (เตรียมไว้ใช้ตอนนำเสนอส่วนที่ 1)
+- Test Plan และ Test Cases: [TEST_PLAN.md](./TEST_PLAN.md)
+- ตาราง Test Cases: [TEST_CASES.md](./TEST_CASES.md)
 
 ---
 

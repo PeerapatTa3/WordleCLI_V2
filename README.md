@@ -6,7 +6,7 @@
 - Repository: [PeerapatTa3/Miniproject_WordleCLI](https://github.com/PeerapatTa3/Miniproject_WordleCLI)
 - Version: V.2 (current project state)
 - Status: Sprint 1-3 core features completed and verified; Sprint Final remains for CI/CD and AI integration
-
+- **สไลด์นำเสนอ:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
 ---
 
 ## 📋 คุณสมบัติ (Features)
@@ -18,10 +18,12 @@
 - 🔍 ค้นหา/กรองคำที่เคยทาย
 - 💾 บันทึกและโหลดข้อมูลอัตโนมัติ (JSON)
 - 🛡️ ตรวจสอบและป้องกันข้อมูลนำเข้าที่ผิดพลาด (Input Validation + Exception Handling)
-- 📚 ตรวจคำทายจากรายการ API และค้น exact word เพิ่มเมื่อคำจริงไม่อยู่ใน top list
-- 📖 ใช้ Datamuse API เพื่อดึงคำศัพท์อังกฤษจริงที่มีคะแนนความนิยม
+- 📚 ตรวจคำทายจาก Datamuse, Dictionary API และ local fallback พร้อม retry/cache เพื่อไม่ให้คำจริง เช่น `UPPER` และ `MINER` ถูกปฏิเสธเมื่อ API timeout
+- คำที่ใช้ต้องเป็นคำอังกฤษ 5 ตัวอักษร เช่น `ELECT`; `PROFIT` ใช้ไม่ได้เพราะมี 6 ตัวอักษร และ `POFIT` ไม่ใช่คำมาตรฐาน
+- 📖 ใช้ Datamuse API ดึงรายการคำ 5 ตัวอักษร และ Dictionary API ตรวจ definition ของคำ
 - 💡 ใช้ `hint` และ `answer` เพื่อช่วยเล่นหรือทดสอบเกม
-- 🎨 แสดงผล feedback ด้วยสี 
+- 🎨 แสดงผล feedback ด้วยสี
+- 🖼️ ส่วนติดต่อผู้ใช้แบบ Rich UI (`rich`) — เมนู, กระดานทาย, ประวัติ และสถิติแสดงผลเป็น Panel/Table แบบมีกรอบและสี พร้อม spinner ระหว่างตรวจคำ
 
 ---
 
@@ -65,6 +67,7 @@ Miniproject_WordleCLI/
 - ไลบรารีเพิ่มเติม (ดู `requirements.txt`):
   ```
    colorama
+   rich
    pytest
    requests
   ```
@@ -132,7 +135,15 @@ python game.py
 pytest tests/
 ```
 
-Current verification: `31 passed`.
+Current verification: `35 passed`.
+
+> ⚠️ หลังอัปเกรด `cli.py` ให้ใช้ `rich` (Panel/Table/spinner แทน `input()`/`print()` ตรง ๆ) เทสต์บางส่วนใน `tests/test_cli.py` ที่ `monkeypatch` บน `builtins.input` หรือตรวจ plain text ผ่าน `capsys` จะต้องปรับปรุงให้เข้ากับ Rich output ก่อนจึงจะกลับมาผ่านครบ
+
+รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](TEST_PLAN.md)
+ตาราง Test Cases แบบสรุปและรายละเอียดเชิงลึกอยู่ที่ [TEST_CASES.md](TEST_CASES.md)
+
+
+หน้าประวัติจะแสดงผลแบบสรุปรายเกมเหมือนเวอร์ชันเก่า โดยมีหมายเลขเกม, สถานะ WON/LOST, คำเฉลย และลำดับคำที่ทาย
 
 Test coverage includes CLI validation, full API word-list validation, exact-word fallback such as `HELLO`, colorized feedback, Wordle duplicate-letter rules, JSON persistence failures, Datamuse API response validation, network failure handling, statistics, hints, and answer reveal.
 
@@ -189,7 +200,43 @@ Sprint 1 มุ่งเน้นการสร้างรากฐานส�
 
 ---
 
-## 👥 ทีมพัฒนา (Team)
+## � Sprint 2: Back-End App Dev
+
+Sprint 2 มุ่งเน้นการแยก Business Logic และ Data Access ออกจาก Presentation Layer เพื่อให้เกม Wordle ทำงานเป็นระบบที่แยกชั้นชัดเจนและจัดการข้อมูลได้อย่างมีประสิทธิภาพ
+
+### เป้าหมายหลัก
+- แยก Logic เกมออกจาก CLI
+- จัดการ word pool และ history data ผ่าน JSON
+- เพิ่มฟังก์ชัน Search / Filter / validation สำหรับประวัติและคำศัพท์
+- ป้องกันโปรแกรมพังเมื่อไฟล์ข้อมูลหายหรือ API ล้มเหลว
+
+### ฟังก์ชันและโมดูลสำคัญที่ต้องมี
+- `WordleGame` ใน [src/game_logic.py](./src/game_logic.py)
+- `calculate_feedback(guess, secret_word)`
+- `search_history(history, keyword)`
+- `filter_history(history, condition)`
+- `save_data()` และ `load_data()` ใน [src/data_manager.py](./src/data_manager.py)
+- `load_word_pool()`
+- `fetch_random_word()` / `fetch_valid_words()` / `is_valid_dictionary_word()` ใน [src/word_api.py](./src/word_api.py)
+
+### Definition of Done (DoD)
+- [x] `guess_history` ถูกบันทึกและโหลดกลับมาได้ถูกต้อง
+- [x] ไฟล์ข้อมูลหายหรือเสียหายไม่ทำให้โปรแกรม crash
+- [x] มีฟังก์ชัน Search และ Filter ที่ทำงานจริง
+- [x] Business Logic ไม่เรียก `print()` หรือ `input()` โดยตรง
+- [x] API ล้มเหลวแล้วโปรเจกต์ยังใช้ local fallback ต่อได้
+- [x] มีการทดสอบอัตโนมัติผ่านสำหรับ logic และ API
+
+### Sprint 2 Deliverables
+- Business logic: [src/game_logic.py](./src/game_logic.py)
+- Data manager: [src/data_manager.py](./src/data_manager.py)
+- Word API integration: [src/word_api.py](./src/word_api.py)
+- Logic tests: [tests/test_logic.py](./tests/test_logic.py)
+- API tests: [tests/test_word_api.py](./tests/test_word_api.py)
+
+---
+
+## �👥 ทีมพัฒนา (Team)
 
 | Sprint | Planner / PM | Coder | Debugger / QA |
 |---|---|---|---|
@@ -199,6 +246,82 @@ Sprint 1 มุ่งเน้นการสร้างรากฐานส�
 | Sprint Final | ตามความเชี่ยวชาญเฉพาะบุคคล (เทน / ซอก / พี) |  |  |
 
 > บทบาทหมุนเวียนในแต่ละ Sprint ตามแผนงานใน [PLAN.md](./PLAN.md)
+# การประเมินตนเองของกลุ่ม
+
+## Sprint 1 — Front-End App Dev
+
+**บทบาท:** Planner = เทน | Coder = ซอก | Debugger = พี
+
+### เทน — Planner
+
+| เกณฑ์การประเมิน                   | เทน (Self) | ซอก |  พี | สรุปคะแนน (0–10) |
+| --------------------------------- | :--------: | :-: | :-: | :--------------: |
+| การวางแผนและกำหนดขอบเขตงาน        |     10       |     |     |                  |
+| การนิยาม Definition of Done (DoD) |     10       |     |     |                  |
+| การจัดทำเอกสารโครงการ             |     8       |     |     |                  |
+| **รวมคะแนนบุคคล**                 |            |     |     |      **/10**     |
+
+### ซอก — Coder
+
+| เกณฑ์การประเมิน                | เทน | ซอก (Self) |  พี | สรุปคะแนน (0–10) |
+| ------------------------------ | :-: | :--------: | :-: | :--------------: |
+| การจัดโครงสร้างโค้ดและโมดูล    |   10  |            |     |                  |
+| การจัดการอินพุตและสถานะโปรแกรม |   10  |            |     |                  |
+| มาตรฐานและอ่านง่ายของโค้ด      |   10  |            |     |                  |
+| **รวมคะแนนบุคคล**              |   10  |            |     |      **/10**     |
+
+### พี — Debugger
+
+| เกณฑ์การประเมิน                | เทน | ซอก | พี (Self) | สรุปคะแนน (0–10) |
+| ------------------------------ | :-: | :-: | :-------: | :--------------: |
+| การทดสอบเคสขอบเขต (Edge Cases) |  10   |     |           |                  |
+| การจัดการ Exception Handling   |  10   |     |           |                  |
+| การรายงานผลและการส่งมอบงาน     |   10  |     |           |                  |
+| **รวมคะแนนบุคคล**              |  10   |     |           |      **/10**     |
+
+---
+
+# Sprint 2 — Back-End App Dev
+
+**บทบาท:** Planner = ซอก | Coder = พี | Debugger = เทน
+
+### ซอก — Planner
+
+| เกณฑ์การประเมิน                   | ซอก (Self) |  พี | เทน | สรุปคะแนน (0–10) |
+| --------------------------------- | :--------: | :-: | :-: | :--------------: |
+| การวางแผนและกำหนดขอบเขตงาน        |            |     |  10   |                  |
+| การนิยาม Definition of Done (DoD) |            |     | 10    |                  |
+| การจัดทำเอกสารโครงการ             |            |     |   10  |                  |
+| **รวมคะแนนบุคคล**                 |            |     |  10   |      **/10**     |
+
+### พี — Coder
+
+| เกณฑ์การประเมิน                | ซอก | พี (Self) | เทน | สรุปคะแนน (0–10) |
+| ------------------------------ | :-: | :-------: | :-: | :--------------: |
+| การจัดโครงสร้างโค้ดและโมดูล    |     |           |  10   |                  |
+| การจัดการอินพุตและสถานะโปรแกรม |     |           |  10   |                  |
+| มาตรฐานและอ่านง่ายของโค้ด      |     |           |  10   |                  |
+| **รวมคะแนนบุคคล**              |     |           |  10   |      **/10**     |
+
+### เทน — Debugger
+
+| เกณฑ์การประเมิน                | ซอก |  พี | เทน (Self) | สรุปคะแนน (0–10) |
+| ------------------------------ | :-: | :-: | :--------: | :--------------: |
+| การทดสอบเคสขอบเขต (Edge Cases) |     |     |    10        |                  |
+| การจัดการ Exception Handling   |     |     |      10      |                  |
+| การรายงานผลและการส่งมอบงาน     |     |     |       8     |                  |
+| **รวมคะแนนบุคคล**              |     |     |            |      **/10**     |
+
+---
+
+# สรุปคะแนน
+
+| สมาชิก | Sprint 1 | Sprint 2 | คะแนนรวมเฉลี่ย |
+| ------ | :------: | :------: | :------------: |
+| เทน    |    /10   |    /10   |     **/10**    |
+| ซอก    |    /10   |    /10   |     **/10**    |
+| พี     |    /10   |    /10   |     **/10**    |
+
 
 ---
 

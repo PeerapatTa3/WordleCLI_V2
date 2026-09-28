@@ -184,7 +184,7 @@
 
 ---
 
-### 🔹 Prompt 10: Selecting Meaningful Five-Letter Words
+### 🔹 Prompt 8: Selecting Meaningful Five-Letter Words
 - **Student Prompt:**
   ```text
   เปลี่ยน API ให้ดึงคำอังกฤษที่มีความหมายจำนวนมากขึ้น ไม่เอาคำสุ่มที่แปลกหรือไม่มีความหมาย และยังต้องใช้ fallback local pool ได้เมื่อ API ล้มเหลว
@@ -203,8 +203,26 @@
   ```
 
 ---
+### 🔹 Prompt 9: Adding a Safe Manual Test Answer Mode
+- **Student Prompt:**
+  ```text
+  เพิ่มวิธีทดสอบเกมแบบกำหนดคำเฉลยเองได้ เพื่อให้ทดสอบชนะหรือแพ้ได้ง่าย แต่โหมดปกติต้องยังสุ่มคำและไม่เปิดเผยคำตอบ
+  ```
+- **AI Response Summary:**
+  เพิ่มตัวแปรสภาพแวดล้อม `WORDLE_TEST_WORD` สำหรับกำหนดคำเฉลยชั่วคราว เมื่อไม่ได้กำหนดตัวแปร ระบบยังใช้ API และ local pool ตามปกติ และจะแสดงคำเฉลยเฉพาะเมื่อเปิด test mode
+- **Live Verification Code:**
+  ```powershell
+  $env:WORDLE_TEST_WORD="APPLE"
+  python game.py
+  ```
+- **Verified Result:**
+  ```text
+  Test mode helper passed; full suite: 24 passed
+  ```
 
-### 🔹 Prompt 8: Restoring Word-Meaning Validation from the Legacy Project
+---
+
+### 🔹 Prompt 10: Restoring Word-Meaning Validation from the Legacy Project
 - **Student Prompt:**
   ```text
   แก้ระบบตรวจคำทายให้เหมือนโปรเจกต์เก่า คือไม่รับแค่คำที่เป็นตัวอักษร 5 ตัว แต่ต้องเป็นคำที่อยู่ใน word pool ด้วย และต้องไม่ทำให้คำตอบที่มาจาก API ถูกปฏิเสธ
@@ -268,29 +286,53 @@
   คำที่มีความหมายอย่าง HELLO ถูกปฏิเสธ เพราะไม่อยู่ในรายการ wildcard 1,000 คำ ให้ตรวจคำจริงเพิ่มเติมด้วย exact-word API โดยยังปฏิเสธคำมั่ว
   ```
 - **AI Response Summary:**
-  Datamuse wildcard endpoint ไม่ได้คืนคำศัพท์ทั้งหมด จึงเพิ่ม `is_valid_api_word()` สำหรับค้นคำที่ผู้เล่นกรอกแบบตรงตัว เช่น `sp=hello` เมื่อคำไม่อยู่ในรายการหลัก
+  Datamuse wildcard endpoint ไม่ได้คืนคำศัพท์ทั้งหมด จึงเพิ่ม `is_valid_dictionary_word()` สำหรับตรวจคำที่ผู้เล่นกรอกกับ `dictionaryapi.dev` เมื่อคำไม่อยู่ในรายการหลัก
 - **Verified Result:**
   ```text
-  HELLO exact lookup passed; unknown word rejected; full suite: 31 passed
+  Dictionary API integration tests passed; unknown word rejected; full suite: 31 passed
   ```
 
 ---
 
-### 🔹 Prompt 9: Adding a Safe Manual Test Answer Mode
+### 🔹 Prompt 15: Restoring the Legacy Grouped History View
 - **Student Prompt:**
   ```text
-  เพิ่มวิธีทดสอบเกมแบบกำหนดคำเฉลยเองได้ เพื่อให้ทดสอบชนะหรือแพ้ได้ง่าย แต่โหมดปกติต้องยังสุ่มคำและไม่เปิดเผยคำตอบ
+  ปรับ View History ของเวอร์ชันใหม่ให้เหมือนโปรเจกต์เก่า โดยรวมข้อมูลเป็นรายเกม แสดงสถานะ WON/LOST คำเฉลย และลำดับคำที่ทาย
   ```
 - **AI Response Summary:**
-  เพิ่มตัวแปรสภาพแวดล้อม `WORDLE_TEST_WORD` สำหรับกำหนดคำเฉลยชั่วคราว เมื่อไม่ได้กำหนดตัวแปร ระบบยังใช้ API และ local pool ตามปกติ และจะแสดงคำเฉลยเฉพาะเมื่อเปิด test mode
-- **Live Verification Code:**
-  ```powershell
-  $env:WORDLE_TEST_WORD="APPLE"
-  python game.py
-  ```
+  จัดกลุ่ม history ด้วย `game_number`, เพิ่ม `secret_word` ใน record ใหม่ และแสดงสรุปแต่ละเกมเป็น `Game N (STATUS, secret: WORD)` พร้อมลำดับคำทายด้วยลูกศร
 - **Verified Result:**
   ```text
-  Test mode helper passed; full suite: 24 passed
+  Legacy grouped history test passed; full suite: 33 passed
+  ```
+
+---
+
+### 🔹 Prompt 14: Keeping Common Words Available During API Timeout
+- **Student Prompt:**
+  ```text
+  HELLO และ WORLD เป็นคำมีความหมายแต่ใช้ไม่ได้เมื่อ Dictionary API timeout ให้แก้โดยไม่รับคำมั่วและยังเล่นคำมาตรฐานได้
+  ```
+- **AI Response Summary:**
+  เพิ่มคำมาตรฐานไว้ใน local read-only word pool และรวม local pool กับรายการจาก Datamuse ทุกครั้ง ทำให้ API ล่มหรือ timeout แล้วคำจริงยังใช้ได้
+- **Verified Result:**
+  ```text
+  HELLO and WORLD accepted from local fallback; full suite: 32 passed
+  ```
+
+---
+
+### 🔹 Prompt 16: Upgrading to a Rich-based Visual UI
+- **Student Prompt:**
+  ```text
+  แก้ cli.py ปัจจุบันใน GitHub เป็นอันใหม่ที่ใช้ rich แสดงเมนู/กระดานทาย/ประวัติ/สถิติเป็น Panel และ Table พร้อม spinner ระหว่างตรวจคำ
+  ```
+- **AI Response Summary:**
+  แทนที่ `print()`/`input()` ตรง ๆ ด้วย `rich.console.Console` (`console.print`/`console.input`) เพิ่ม `_render_wordle_board()` เพื่อวาดกระดานทายเป็น `Table` ภายใน `Panel` ที่อัปเดตทุกรอบ ใช้ `console.status()` แสดง spinner ระหว่างตรวจคำ และเปลี่ยนเมนู/ประวัติ/สถิติ/how-to-play/hint/answer ให้แสดงผลผ่าน `Panel`/`Table` แทนข้อความธรรมดา เพิ่ม `rich` ใน `requirements.txt`
+- **Verified Result:**
+  ```text
+  `python -c "import src.cli"` imports cleanly; manual play-through renders bordered board/menus correctly.
+  6 of 15 tests in tests/test_cli.py now fail because they monkeypatch builtins.input or assert plain text via capsys — these need updating to mock rich's Console before the suite returns to 35 passed.
   ```
 
 ---

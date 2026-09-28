@@ -8,7 +8,8 @@
 
 ## ส่วนที่ 2: Stack เทคโนโลยีและมาตรฐานการพัฒนา (10%)
 - ระบุ Python 3.x เป็นภาษาหลัก
-- ระบุไลบรารี: `colorama`, `pytest`, `requests`
+- ระบุไลบรารี: `colorama`, `rich`, `pytest`, `requests`
+- อธิบายการใช้ `rich` (Panel, Table, Console.status) เพื่อสร้าง UI แบบกรอบ/สี และ spinner ระหว่างตรวจคำ แทนการ `print()`/`input()` ตรง ๆ
 - อธิบายการใช้ Datamuse API เพื่อดึงคำอังกฤษ 5 ตัวอักษรที่มีคะแนนความนิยม พร้อม local fallback
 - บอกว่าโครงสร้างโค้ดแยกตามชั้นเพื่อให้ดูเรียบร้อยและพัฒนาได้ต่อเนื่อง
 - อธิบายแนวคิดการออกแบบ: Separation of Concerns, Single Responsibility, Defensive Programming
@@ -16,6 +17,7 @@
 ## ส่วนที่ 3: การสาธิตฟังก์ชันและการทดสอบจริง (40%)
 - สาธิตการรันโปรแกรมจาก `python game.py`
 - แสดงเมนูหลักและการเลือกเมนูที่ผิด เช่น 0, abc, ว่าง
+- สาธิตกระดานทาย (Wordle Board) แบบ Rich Table/Panel ที่อัปเดตทุกครั้งที่ทาย พร้อม Panel สรุปตอนชนะ/แพ้
 - สาธิตเมนู Statistics และ How to Play
 - แสดงคำทายที่ผิดพลาด เช่น สั้น, ยาว, มีตัวเลข, มีช่องว่าง
 - สาธิตการปฏิเสธคำที่ไม่มีใน word pool
@@ -23,6 +25,8 @@
 - อธิบาย `WORDLE_TEST_WORD` สำหรับการทดสอบด้วยคำเฉลยที่กำหนดเอง
 - แสดงความสามารถของ `get_guess_input()` ที่กรอกใหม่จนกว่าจะถูกต้อง
 - สาธิต logic ของการคำนวณ feedback, การบันทึก history และ JSON persistence
+- อ้างอิง [TEST_PLAN.md](./TEST_PLAN.md) เพื่อแสดง Test Cases และ Edge Cases ของ Sprint 1-3
+- ใช้ [TEST_CASES.md](./TEST_CASES.md) แสดง Quality Assurance & Test Suite Matrix ในสไลด์ QA
 
 ## ส่วนที่ 4: ปัญหาทางเทคนิค การแก้ไข และการเปรียบเทียบ (15%)
 - สรุปความท้าทายหลัก เช่น การแยก Presentation จาก Business Logic

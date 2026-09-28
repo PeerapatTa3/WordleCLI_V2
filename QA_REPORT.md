@@ -15,6 +15,7 @@
 - [x] Added core game logic for Wordle feedback calculation
 - [x] Added JSON-based history persistence and read-only word pool loading
 - [x] Added colorized feedback output using `colorama`
+- [x] Upgraded the CLI presentation layer to a `rich`-based UI (Panel/Table for menu, board, history, and stats; spinner while validating a guess)
 - [x] Added fallback word fetching from public API through `src/word_api.py`
 - [x] Added unit tests for logic and CLI validation
 - [x] Added deterministic tests for API success, invalid responses, network failure, and duplicate removal
@@ -24,6 +25,7 @@
 - [x] Added and tested in-game hint and answer commands
 - [x] Added validation against the complete filtered API word list with local fallback
 - [x] Added exact-word API fallback for meaningful words omitted from the top list
+- [x] Kept common words available through local fallback during Dictionary API timeout
 - [x] Verified Python-based CLI flow works without crashing
 
 ---
@@ -48,8 +50,11 @@
 | Unknown word | User enters a 5-letter word outside the pool | Reject the guess and ask again | Unknown word is rejected | PASS |
 | Hint command | User enters `hint` during a round | Reveal one letter without consuming an attempt | One letter is shown | PASS |
 | Answer command | User enters `answer` during a round | Reveal the secret and end the round | Secret word is displayed | PASS |
-| Exact API word | User enters meaningful word `HELLO` | Search exact API result and accept it | `HELLO` is accepted | PASS |
-| Unknown API word | User enters `QZXJK` | Reject when exact API result is absent | Unknown word is rejected | PASS |
+| Dictionary word | Dictionary API returns a definition for `HELLO` | Accept the meaningful word | `HELLO` is accepted | PASS |
+| Unknown dictionary word | Dictionary API returns no entry for `QZXJK` | Reject when no definition exists | Unknown word is rejected | PASS |
+| Local fallback words | Dictionary API is unavailable | Accept known local words | `HELLO` and `WORLD` are accepted | PASS |
+| Local fallback word | Dictionary API is unavailable | Accept known word `ELECT` | `ELECT` is accepted | PASS |
+| Invalid spelling/length | User enters `POFIT` or `PROFIT` | Reject unknown or non-five-letter input | Invalid input is rejected | PASS |
 
 ---
 
@@ -63,6 +68,7 @@
 ### Whoops!
 - ในช่วงแรกยังมีความสับสนเรื่องการจัดโครงสร้างไฟล์และ README
 - ได้แก้ไขด้วยการใช้ [PLAN.md](./PLAN.md) เป็นแผนงานหลักและจัดโครงสร้างโปรเจกต์ให้ชัดเจนตาม Sprint
+- การเปลี่ยน `cli.py` ไปใช้ `rich` ทำให้เทสต์เดิมบางส่วนที่ `monkeypatch` บน `builtins.input`/`capsys` plain text ไม่ผ่านอีกต่อไป ต้องปรับเทสต์ให้ mock `console` ของ Rich ก่อน (ดู [TEST_PLAN.md](./tests/TEST_PLAN.md))
 
 ---
 
@@ -73,6 +79,11 @@
 **Pull Request Summary:**
 - Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hints, answer reveal, and meaningful-word API fallback
 - Testing: `pytest` executed successfully
-- Evidence: `31 passed`
+- Evidence: `33 passed`
 
 **PR Link:** To be filled when repository PR is created.
+
+## 5. Test Plan and Sprint Test Cases
+
+รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](./TEST_PLAN.md)
+ตาราง Test Cases แบบ Quality Assurance Matrix อยู่ที่ [TEST_CASES.md](./TEST_CASES.md)
