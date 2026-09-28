@@ -126,6 +126,10 @@
 - ปรับ `main()` ให้เรียกใช้ทั้งฟังก์ชัน Presentation (Sprint 1) และ Business/Data Layer (Sprint 2) ผ่าน interface เดียวกัน
 - ให้ State ของเกม (word_pool, guess_history, ผลของแต่ละตา) sync ระหว่างการเล่นและเมนูต่างๆ อย่างถูกต้อง
 - เพิ่มการจัดการ Edge Case ที่เกิดเฉพาะตอนระบบทำงานร่วมกัน เช่น pool ว่างระหว่างเล่น, ไฟล์ข้อมูลถูกแก้ไขระหว่างรัน
+- **Offline-first word pool:** ใช้ local word list เป็นค่าเริ่มต้นทั้งการสุ่มคำเฉลยและตรวจคำทาย เล่นได้ทั้ง online/offline
+  - `answers.json` = คำเฉลย (คำที่พบบ่อย), `valid_words.json` = คำที่ทายได้ (superset ของ answers)
+  - Datamuse API เป็น optional enrichment (timeout สั้น ~2 วินาที, ล้มเหลวต้องเงียบ) และ cache ผลลง `api_cache.json`
+  - เลิกเรียก Dictionary API ต่อคำทาย (ช้า 3-10 วินาที) → ตรวจด้วย `set` lookup ในเครื่องแทน
 
 ## 3. งานที่ต้องส่งมอบ
 | งาน | รายละเอียด |
@@ -133,17 +137,30 @@
 | Integration ของทุก Layer | `main()` เรียก Presentation → Business Logic → Data Access ตามลำดับชัดเจน |
 | State Management | ตรวจสอบว่าทุกเมนู (Play/History/Statistics/How to Play/Exit) เห็นข้อมูลชุดเดียวกันที่อัปเดตล่าสุด |
 | Edge Case: Full Integration | เช่น word pool ว่าง → ใช้ fallback, บันทึกไฟล์ทุกครั้งที่จบเกม |
+| `load_words()` | โหลด `(answers, valid_words)` จาก local ก่อน แล้วรวม `api_cache.json` (ถ้ามี) |
+| `refresh_from_api(valid, timeout)` | ดึงคำเพิ่มจาก Datamuse แบบ optional/background ล้มเหลวแล้วไม่กระทบเกม |
+| `is_valid_guess()` (ปรับปรุง) | ตรวจความยาว/ตัวอักษร/อยู่ใน `valid_words` ด้วย set lookup (ไม่เรียก network) |
+| สคริปต์ build word list (optional) | สร้าง `answers.json` / `valid_words.json` ครั้งเดียวจาก Datamuse + Dictionary API แล้ว commit เข้า repo |
 
 ## 4. Definition of Done (DoD)
 - [x] เล่นเกมจบ 1 ตา → history ถูกบันทึกลงไฟล์ทันที ไม่ต้องรอปิดโปรแกรม
 - [x] สลับเมนูไปมา (เล่น → ดู history → ดูสถิติ → เล่นอีกครั้ง) ข้อมูลต้อง consistent ไม่มีค่าตกหล่น
 - [x] ทดสอบ end-to-end ตั้งแต่เปิดโปรแกรมจนปิด ไม่มี unhandled exception
 - [x] ใช้ `hint` และ `answer` ระหว่างเล่นได้โดยไม่ทำให้เกม crash
+- [ ] ปิดอินเทอร์เน็ตแล้วเปิดเกม → เล่นได้ปกติ (สุ่มคำ + ตรวจคำทายจาก local)
+- [ ] ตรวจคำทายแต่ละครั้งเสร็จทันที (ไม่รอ network)
+- [ ] API ช้า/ล่ม/timeout → เกมไม่ค้างและไม่ crash
+- [ ] คำเฉลยทุกคำอยู่ใน `valid_words` เสมอ (answers ⊆ valid_words)
+- [ ] `WORDLE_TEST_WORD` ยังใช้งานได้ และคำนั้นถูกนับเป็นคำที่ทายได้
 
 ## 5. Edge Case ที่ต้องทดสอบ (Debugger)
 - word pool ว่างหรือ API ใช้งานไม่ได้ระหว่างเล่นหลายรอบติดกัน
 - ปิดโปรแกรมกลางเกม (เมนู 5) แล้วเปิดใหม่ ข้อมูลต้องยังอยู่ครบ
 - แก้ไข/ลบไฟล์ข้อมูลด้วยมือระหว่างที่โปรแกรมกำลังรัน
+- เปิดเกมตอน offline / ไม่มีไฟล์ `api_cache.json`
+- `api_cache.json` เสียหาย (JSON ผิดรูปแบบ) → ต้องถูกข้ามโดยไม่ crash
+- `answers.json` / `valid_words.json` หายหรือว่าง → สร้างค่าเริ่มต้น (built-in default) ได้
+- API ตอบช้าเกิน timeout ระหว่าง background refresh
 
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
@@ -162,7 +179,7 @@
 เพิ่มระบบทดสอบอัตโนมัติ ตั้งค่า CI/CD ผ่าน GitHub Actions และผนวกฟีเจอร์ AI/Automation เข้ากับโปรเจกต์ พร้อมสรุปแนวทางต่อยอด
 
 ## 2. ขอบเขตระบบ (Scope)
-- เขียน Unit Test ครอบคลุม Business Logic (`calculate_feedback`, `search_history`, `filter_history`, `save_data`/`load_data`)
+- เขียน Unit Test ครอบคลุม Business Logic (`calculate_feedback`, `search_history`, `filter_history`, `save_data`/`load_data`, `load_words`, `is_valid_guess`)
 - ตั้งค่า GitHub Actions workflow: รัน Linting + Unit Test อัตโนมัติทุกครั้งที่ push/PR
 - เพิ่มฟีเจอร์ AI หรือ Automation Agent เช่น วิเคราะห์สถิติการเล่น หรือแนะนำคำใบ้อัตโนมัติ
 - สรุปอุปสรรคที่พบตลอด Sprint 1-3 และแนวทาง Refactor
@@ -173,7 +190,7 @@
 | `tests/test_logic.py` | Unit test ด้วย `unittest` หรือ `pytest` |
 | `.github/workflows/ci.yml` | Workflow รัน lint (เช่น `flake8`) + test อัตโนมัติ |
 | ฟีเจอร์ AI/Automation | เช่น สรุปสถิติคำที่ทายบ่อย หรือ agent ช่วยวิเคราะห์ผล |
-| เอกสารสรุป Refactor | เปรียบเทียบทางเลือกโครงสร้างข้อมูล/สถาปัตยกรรมที่ใช้จริงกับทางเลือกอื่น |
+| เอกสารสรุป Refactor | เปรียบเทียบทางเลือกโครงสร้างข้อมูล/สถาปัตยกรรมที่ใช้จริงกับทางเลือกอื่น (รวมกรณี validate คำผ่าน API ต่อคำทาย vs local set ใน Sprint 3) |
 
 ## 4. Definition of Done (DoD)
 - [ ] Unit test ครอบคลุมฟังก์ชันหลักของ Business/Data Layer อย่างน้อย 80% ของเคสสำคัญ (ปกติ + edge case)
