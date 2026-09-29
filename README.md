@@ -3,27 +3,27 @@
 โปรแกรมเกมทายคำศัพท์ (Wordle) แบบ Command Line Interface พัฒนาด้วย Python
 โปรเจกต์นี้จัดทำเป็น Final Project รายวิชา **CP352301 Script Programming**
 
-- Repository: [PeerapatTa3/Miniproject_WordleCLI](https://github.com/PeerapatTa3/Miniproject_WordleCLI)
-- Version: V.2 (current project state)
-- Status: Sprint 1-3 core features completed and verified; Sprint Final remains for CI/CD and AI integration
+- Repository: [PeerapatTa3/WordleCLI_V2](https://github.com/PeerapatTa3/WordleCLI_V2)
+- Version: V.2 (สถานะปัจจุบัน: จบ Sprint 3)
+- Status: Sprint 1-3 เสร็จและใช้งานได้; Sprint Final (CI/CD, AI integration, global `wordle` command) ยังไม่เริ่ม
 - **สไลด์นำเสนอ:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
+
 ---
 
 ## 📋 คุณสมบัติ (Features)
 
 - 🎮 เล่นเกม Wordle ทายคำศัพท์ 5 ตัวอักษร ภายใน 6 ครั้ง
-- 📊 ดูและเรียงลำดับประวัติการทาย (Guess History)
-- 📈 ดูสถิติการเล่น เช่น Win Rate, Current Streak และ Guess Distribution
+- 📴 **Offline-first:** สุ่มคำเฉลยและตรวจคำทายจากไฟล์ในเครื่อง (`data/answers.txt` 1,984 คำ, `data/valid_words.txt` 8,636 คำ) ไม่มีการเรียก network ตอนเล่น ตรวจคำเสร็จทันทีด้วย `set` lookup
+- 🖼️ Rich UI (`rich`) — เมนู, กระดานทาย, ประวัติ, สถิติ และวิธีเล่นแสดงเป็น Panel/Table มีกรอบและสี
+- ♻️ **In-place redraw:** กระดานวาดทับตำแหน่งเดิม คำที่พิมพ์ไม่ค้างบนจอ และข้อความ `Invalid guess` ถูกแทนที่เมื่อทายใหม่ (ไม่ส่ง escape code เมื่อ output ไม่ใช่ terminal)
+- 📊 ดูประวัติรายเกม (WON/LOST, คำเฉลย, ลำดับคำทายเป็นตารางสี)
+- 📈 ดูสถิติ: Games Played, Win Rate, Current Streak และ Guess Distribution
 - 📖 ดูวิธีเล่นและความหมายของ feedback แต่ละแบบ
-- 🔍 ค้นหา/กรองคำที่เคยทาย
-- 💾 บันทึกและโหลดข้อมูลอัตโนมัติ (JSON)
-- 🛡️ ตรวจสอบและป้องกันข้อมูลนำเข้าที่ผิดพลาด (Input Validation + Exception Handling)
-- 📚 ตรวจคำทายจาก Datamuse, Dictionary API และ local fallback พร้อม retry/cache เพื่อไม่ให้คำจริง เช่น `UPPER` และ `MINER` ถูกปฏิเสธเมื่อ API timeout
-- คำที่ใช้ต้องเป็นคำอังกฤษ 5 ตัวอักษร เช่น `ELECT`; `PROFIT` ใช้ไม่ได้เพราะมี 6 ตัวอักษร และ `POFIT` ไม่ใช่คำมาตรฐาน
-- 📖 ใช้ Datamuse API ดึงรายการคำ 5 ตัวอักษร และ Dictionary API ตรวจ definition ของคำ
-- 💡 ใช้ `hint` และ `answer` เพื่อช่วยเล่นหรือทดสอบเกม
-- 🎨 แสดงผล feedback ด้วยสี
-- 🖼️ ส่วนติดต่อผู้ใช้แบบ Rich UI (`rich`) — เมนู, กระดานทาย, ประวัติ และสถิติแสดงผลเป็น Panel/Table แบบมีกรอบและสี พร้อม spinner ระหว่างตรวจคำ
+- 🔍 ค้นหา/กรองประวัติ (`search_history`, `filter_history`)
+- 💾 บันทึกประวัติเป็น JSON ทุกครั้งที่ทาย และโหลด history ใหม่จากดิสก์ก่อนเขียนทุกครั้ง (แก้/ลบไฟล์ระหว่างเล่นได้โดยไม่ถูกเขียนทับ)
+- 🛡️ Input Validation + Exception Handling: ไฟล์ history หาย/เสีย/ไม่ใช่ list → คืน `[]` ไม่ crash; ไฟล์ word list หาย/ว่าง → ใช้ `DEFAULT_WORD_POOL`
+- 💡 ใช้ `hint` (เปิดตัวอักษรทีละตำแหน่งโดยไม่เสียรอบ) และ `answer` (ยอมแพ้ — ตัดเกมที่ยังไม่จบออกจาก history/สถิติ)
+- 🧪 `WORDLE_TEST_WORD` สำหรับกำหนดคำเฉลยตอนทดสอบ
 
 ---
 
@@ -33,44 +33,43 @@
 
 | เลเยอร์ | หน้าที่ | ไฟล์ |
 |---|---|---|
-| **Presentation Layer** | แสดงเมนู, รับอินพุตจากผู้ใช้ | `cli.py` |
-| **Business Logic Layer** | กติกาเกม, คำนวณ feedback, search/filter | `src/game_logic.py` |
-| **Data Access Layer** | อ่าน/เขียนไฟล์ข้อมูล (JSON) | `src/data_manager.py` |
+| **Presentation Layer** | เมนู, รับอินพุต, วาดหน้าจอเกม | `src/cli.py`, `src/board_renderer.py` |
+| **Business Logic Layer** | กติกาเกม, คำนวณ feedback, สถิติ, search/filter | `src/game_logic.py`, `src/history_manager.py` |
+| **Data Access Layer** | อ่าน/เขียน history (JSON), โหลดคลังคำ (txt) | `src/data_manager.py`, `src/word_bank.py` |
 
 ```
-Miniproject_WordleCLI/
-├── game.py              # Entry point หลัก
-├── cli.py                # Presentation Layer
+WordleCLI_V2/
+├── game.py                 # Entry point หลัก
+├── cli.py                  # wrapper: from src.cli import * (ให้ import แบบเดิมยังใช้ได้)
 ├── src/
-│   ├── game_logic.py      # Business Logic Layer
-│   ├── data_manager.py    # Data Access Layer
-│   └── word_api.py        # Meaningful word API integration
+│   ├── cli.py              # Presentation: เมนู, game loop, redraw, hint/answer
+│   ├── board_renderer.py   # BoardRenderer: tile/table ที่ใช้ร่วมกันทั้งกระดาน ประวัติ และ legend
+│   ├── game_logic.py       # WordleGame, calculate_feedback, search/filter
+│   ├── history_manager.py  # group_history_by_game, calculate_stats
+│   ├── data_manager.py     # save_data / load_data (HISTORY_PATH อิงจาก Path(__file__))
+│   ├── word_bank.py        # load_word_bank() -> (answers, valid_words) จากไฟล์ local
+│   └── word_api.py         # today_word() ดึงคำเฉลย NYT ของวันนี้ (ไม่ได้ใช้ตอนเล่น)
+├── scripts/                # เครื่องมือ build-time (ไม่ใช้ตอนรันเกม)
+│   ├── build_wordlists.py  # สร้าง data/answers.txt และ data/valid_words.txt
+│   └── word_api.py         # ตัวช่วยดึงคำจาก Datamuse
 ├── data/
-│   ├── history.json       # ไฟล์เก็บ guess history
-│   └── word_pool.json     # คลังคำ fallback แบบอ่านอย่างเดียว
-├── tests/
-│   ├── test_cli.py         # CLI tests
-│   ├── test_logic.py       # Business/data tests
-│   └── test_word_api.py    # API tests
-├── requirements.txt
-├── PLAN.md
+│   ├── answers.txt         # คำเฉลย (1,984 คำ)
+│   ├── valid_words.txt     # คำที่ทายได้ (8,636 คำ; ⊇ answers)
+│   └── history.json        # ประวัติการเล่น
+├── tests/                  # pytest (7 ไฟล์ รวม 72 เคส)
+├── Sprints/                # สรุปผลแต่ละ Sprint
+├── PLAN.md  CHANGELOG.md  QA_REPORT.md  LEARNINGLOG.md  Sprint3_todo.md
 └── README.md
 ```
-
-> โค้ดปัจจุบันแยกเป็น Presentation, Business Logic, Data Access และ API Integration แล้ว
 
 ---
 
 ## ⚙️ ความต้องการของระบบ (Requirements)
 
-- Python 3.x ขึ้นไป
-- ไลบรารีเพิ่มเติม (ดู `requirements.txt`):
-  ```
-   colorama
-   rich
-   pytest
-   requests
-  ```
+- Python 3.x ขึ้นไป (ทดสอบบน Python 3.13 / Windows และ 3.12 / Linux)
+- ไลบรารีเพิ่มเติม (ดู `requirements.txt`): `rich`, `pytest`, `requests`
+  - `requests` ใช้เฉพาะ `src/word_api.py` และ `scripts/`; ตัวเกมไม่เรียก network
+  - `colorama` ยังเหลืออยู่ใน `requirements.txt` แต่โค้ดเลิกใช้แล้ว (ลบได้)
 
 ---
 
@@ -78,76 +77,80 @@ Miniproject_WordleCLI/
 
 1. Clone โปรเจกต์
    ```bash
-   git clone https://github.com/PeerapatTa3/Miniproject_WordleCLI.git
-   cd Miniproject_WordleCLI
+   git clone https://github.com/PeerapatTa3/WordleCLI_V2.git
+   cd WordleCLI_V2
    ```
-
-   > โครงการปัจจุบันคือเวอร์ชัน V.2 ของ [PeerapatTa3/Miniproject_WordleCLI](https://github.com/PeerapatTa3/Miniproject_WordleCLI)
 
 2. ติดตั้ง dependencies
    ```bash
    pip install -r requirements.txt
    ```
 
-3. รันโปรแกรม
+3. รันโปรแกรม (รันจากโฟลเดอร์ไหนก็ได้ — path ของ history และ word list อิงจากตำแหน่งไฟล์โค้ด)
    ```bash
    python game.py
    ```
 
 4. เลือกเมนูจากตัวเลข 1-5 ตามที่แสดงในหน้าจอ
 
-สำหรับทดสอบแบบรู้คำเฉลยล่วงหน้า สามารถกำหนดคำก่อนรันโปรแกรมได้:
+สำหรับทดสอบแบบรู้คำเฉลยล่วงหน้า:
 
 ```powershell
 $env:WORDLE_TEST_WORD="APPLE"
 python game.py
 ```
 
-โหมดนี้จะแสดงคำเฉลยพร้อมข้อความ `[TEST MODE]` เฉพาะรอบที่กำหนดตัวแปรเท่านั้น
+โหมดนี้จะแสดงคำเฉลยพร้อมข้อความ `[TEST MODE]` และคำนั้นถูกนับเป็นคำที่ทายได้เสมอ
+
+### สร้าง word list ใหม่ (ไม่จำเป็นตอนเล่น)
+
+```bash
+python scripts/build_wordlists.py <path-to-source-word-list> -o data
+```
 
 ---
 
 ## 🕹️ วิธีเล่น (How to Play)
 
 1. เลือกเมนู `1. Play Wordle`
-2. พิมพ์คำทาย 5 ตัวอักษร แล้วกด Enter
-   - คำทายต้องอยู่ใน word pool หรือเป็นคำตอบที่ระบบสุ่มจาก API
-3. ระบบจะแสดง feedback:
-   - `✓` (สีเขียว) = ตัวอักษรถูกและอยู่ตำแหน่งที่ถูกต้อง
-   - `-` (สีเหลือง) = ตัวอักษรมีในคำตอบ แต่ผิดตำแหน่ง
-   - `x` (สีแดง) = ตัวอักษรไม่มีในคำตอบ
+2. พิมพ์คำทาย 5 ตัวอักษร แล้วกด Enter (ต้องเป็นคำที่อยู่ใน `valid_words.txt`)
+3. ระบบจะแสดง feedback เป็นช่องสี:
+   - `✓` (เขียว) = ตัวอักษรถูกและอยู่ตำแหน่งที่ถูกต้อง
+   - `-` (เหลือง) = ตัวอักษรมีในคำตอบ แต่ผิดตำแหน่ง
+   - `x` (เทา) = ตัวอักษรไม่มีในคำตอบ
 4. ทายให้ถูกภายใน 6 ครั้ง
 
-ระหว่างเล่นสามารถใช้คำสั่งช่วยได้:
-- พิมพ์ `hint` เพื่อเปิดตัวอักษรทีละตำแหน่ง โดยไม่เสียจำนวนครั้ง
-- พิมพ์ `answer` เพื่อแสดงคำเฉลยและจบรอบปัจจุบัน
+คำสั่งช่วยระหว่างเล่น:
+- `hint` เปิดตัวอักษรทีละตำแหน่ง โดยไม่เสียจำนวนครั้ง (ข้อความอยู่ใต้กระดานจนกว่าจะวาดใหม่)
+- `answer` แสดงคำเฉลยและจบรอบ — เกมที่ยอมแพ้จะไม่ถูกนับในประวัติ/สถิติ
 
-เมนูเพิ่มเติม:
-- `3. View Statistics` แสดงสถิติการเล่นจากประวัติที่บันทึกไว้
-- `4. How to Play` แสดงกติกาและความหมายของ feedback
-- `5. Exit` ออกจากโปรแกรม
+เมนูอื่น: `2. View History`, `3. View Statistics`, `4. How to Play`, `5. Exit`
 
 ---
 
 ## 🧪 การทดสอบ (Testing)
 
 ```bash
-pytest tests/
+python -m pytest -q
 ```
 
-Current verification: `35 passed`.
+ผลล่าสุด: **72 เคส — ผ่าน 71, ไม่ผ่าน 1**
 
-> ⚠️ หลังอัปเกรด `cli.py` ให้ใช้ `rich` (Panel/Table/spinner แทน `input()`/`print()` ตรง ๆ) เทสต์บางส่วนใน `tests/test_cli.py` ที่ `monkeypatch` บน `builtins.input` หรือตรวจ plain text ผ่าน `capsys` จะต้องปรับปรุงให้เข้ากับ Rich output ก่อนจึงจะกลับมาผ่านครบ
+| ไฟล์ | เคส | ครอบคลุม |
+|---|---:|---|
+| `tests/test_cli.py` | 20 | validation, เมนู, สถิติ, ประวัติ, hint/answer, erase/clear |
+| `tests/test_logic.py` | 10 | feedback (ตัวอักษรซ้ำ), search/filter, JSON round-trip |
+| `tests/test_word_bank.py` | 13 | โหลดไฟล์จริง, fallback, กรอง/normalize, ไม่เรียก network, ทำงานได้จากทุก CWD |
+| `tests/test_sprint3.py` | 17 | hint, แทนที่ error line, answer ทิ้งเกมที่ไม่จบ, history hardening, integration ทั้งเกม |
+| `tests/test_boardrenderer.py` | 2 | สี tile, แถวว่างของกระดาน |
+| `tests/test_word_api.py` | 5 | helper Datamuse ใน `scripts/` |
+| `tests/test_today_word.py` | 5 | `today_word()` (NYT endpoint) |
 
-รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](TEST_PLAN.md)
-ตาราง Test Cases แบบสรุปและรายละเอียดเชิงลึกอยู่ที่ [TEST_CASES.md](TEST_CASES.md)
+**เคสที่ยังไม่ผ่าน:** `test_hint_message_is_passed_to_next_redraw` (ใน `tests/test_sprint3.py`) — เทสต์คาดว่า hint จะถูกส่งเป็น `message=` ให้ `render_game_screen()` แต่โค้ดปัจจุบันพิมพ์ hint ใต้กระดานโดยตรงแล้วบวก `_last_render_lines` เอง ฟังก์ชันทำงานถูกต้อง (hint มองเห็นได้) ความไม่ตรงอยู่ที่วิธีที่เทสต์ตรวจ ต้องเลือกแก้ที่เทสต์หรือแก้โค้ดให้ตรงกัน
 
+รายละเอียด: [tests/TEST_PLAN.md](tests/TEST_PLAN.md) และ [tests/TEST_CASES.md](tests/TEST_CASES.md)
 
-หน้าประวัติจะแสดงผลแบบสรุปรายเกมเหมือนเวอร์ชันเก่า โดยมีหมายเลขเกม, สถานะ WON/LOST, คำเฉลย และลำดับคำที่ทาย
-
-Test coverage includes CLI validation, full API word-list validation, exact-word fallback such as `HELLO`, colorized feedback, Wordle duplicate-letter rules, JSON persistence failures, Datamuse API response validation, network failure handling, statistics, hints, and answer reveal.
-
-การตั้งค่า CI/CD ผ่าน GitHub Actions ยังเป็นงานของ Sprint Final และยังไม่ได้เพิ่ม workflow ใน repository นี้
+การตั้งค่า CI/CD ผ่าน GitHub Actions เป็นงานของ Sprint Final และยังไม่มี workflow ใน repository นี้
 
 ---
 
@@ -156,87 +159,43 @@ Test coverage includes CLI validation, full API word-list validation, exact-word
 | Sprint | โฟกัส | สถานะ |
 |---|---|---|
 | Sprint 1 | Front-End App Dev (CLI, Input Validation) | ✅ |
-| Sprint 2 | Back-End App Dev (Logic, File I/O, Search/Filter/Sort) | ✅ |
-| Sprint 3 | Full-Stack Integration | ✅ |
-| Sprint Final | CI/CD & AI Integration | ⏳ |
+| Sprint 2 | Back-End App Dev (Logic, File I/O, Search/Filter) | ✅ |
+| Sprint 3 | Full-Stack Integration (offline-first, in-place redraw) | ✅ (เหลือเทสต์ 1 เคสและ manual check) |
+| Sprint Final | CI/CD, AI Integration, global `wordle` command | ⏳ ยังไม่เริ่ม |
 
-รายละเอียดแต่ละ Sprint ดูได้ที่ [`PLAN.md`](./PLAN.md)
+รายละเอียดแต่ละ Sprint ดูได้ที่ [`PLAN.md`](./PLAN.md) และโฟลเดอร์ [`Sprints/`](./Sprints)
 
 ---
 
 ## 🔹 Sprint 1: Front-End App Dev
 
-Sprint 1 มุ่งเน้นการสร้างรากฐานส่วนโต้ตอบผู้ใช้ให้ทำงานได้อย่างถูกต้องก่อนเชื่อมต่อกับ Logic และ Data Layer
+สร้างส่วนโต้ตอบผู้ใช้: banner, เมนูหลัก, รับอินพุตแบบปลอดภัย (`.strip().lower()`), ตรวจคำทาย 5 ตัวอักษร
 
-### เป้าหมายหลัก
-- แสดง banner ต้อนรับและเมนูหลัก
-- รับคำสั่งจากผู้ใช้แบบปลอดภัยและยอมรับการพิมพ์เล็ก/ใหญ่ต่างกันได้
-- ตรวจสอบความถูกต้องของคำทาย 5 ตัวอักษร
-- ป้องกันการพังของโปรแกรมจากอินพุตผิดพลาด
+- ฟังก์ชันหลัก: `display_welcome_message()`, `display_menu()`, `get_menu_choice()`, `get_guess_input()`, `is_valid_guess()`, `display_hint()` / `display_answer()`, `main()`
+- Deliverables: [Sprints/Sprint1.md](./Sprints/Sprint1.md), [QA_REPORT.md](./QA_REPORT.md), [LEARNINGLOG.md](./LEARNINGLOG.md), [src/cli.py](./src/cli.py)
 
-### ฟังก์ชันสำคัญที่ต้องมี
-- `display_welcome_message()`
-- `display_menu()`
-- `get_menu_choice()`
-- `get_guess_input(word_length, valid_words)`
-- `is_valid_guess(guess, word_length, valid_words)`
-- `display_hint()` / `display_answer()`
-- `main()`
+## 🔹 Sprint 2: Back-End App Dev
 
-### Definition of Done (DoD)
-- [x] เลือกเมนูนอกช่วง 1-5 ต้องไม่ทำให้โปรแกรม crash
-- [x] คำทายที่มีความยาวไม่ตรง 5 หรือมีตัวเลข/สัญลักษณ์ต้องถูกปฏิเสธ
-- [x] คำทายที่ไม่อยู่ใน word pool ต้องถูกปฏิเสธ
-- [x] พิมพ์เล็ก/ใหญ่ปนกันให้ทำงานเหมือนกัน
-- [x] ใช้ `hint` และ `answer` ระหว่างเล่นได้
-- [x] ทุกฟังก์ชันมี Docstring และโค้ดแยกหน้าที่ชัดเจน
+แยก Business Logic และ Data Access ออกจาก CLI
 
-### Sprint 1 Deliverables
-- QA Report: [QA_REPORT.md](./QA_REPORT.md)
-- Changelog: [CHANGELOG.md](./CHANGELOG.md)
-- Learning Log: [LEARNINGLOG.md](./LEARNINGLOG.md)
-- CLI implementation: [cli.py](./cli.py)
-- Tests: [tests/test_cli.py](./tests/test_cli.py)
+- `WordleGame`, `calculate_feedback()`, `search_history()`, `filter_history()` ใน [src/game_logic.py](./src/game_logic.py)
+- `save_data()` / `load_data()` ใน [src/data_manager.py](./src/data_manager.py)
+- ตอนจบ Sprint 2 ตรวจคำทายผ่าน Datamuse + Dictionary API พร้อม retry/cache — **ถูกแทนที่ใน Sprint 3**
+- Deliverables: [Sprints/Sprint2.md](./Sprints/Sprint2.md), [tests/test_logic.py](./tests/test_logic.py)
+
+## 🔹 Sprint 3: Full-Stack Integration
+
+เชื่อมทุกเลเยอร์เข้าด้วยกันและแก้จุดอ่อนที่เห็นจากการใช้งานจริง
+
+- **Offline-first word bank:** `src/word_bank.py` + `data/answers.txt` / `data/valid_words.txt` แทนการเรียก API ต่อคำทาย (เดิมช้า 3-10 วินาที/คำ และ `fetch_word_pool()` อาจวนไม่รู้จบเมื่อ API ล่ม) โค้ด API ย้ายไป `scripts/` เป็นเครื่องมือ build-time
+- **In-place redraw:** `erase_lines()`, `clear_screen()`, `render_game_screen()` — กระดานไม่ซ้อน, error ไม่ซ้อน
+- **Refactor:** แยก `BoardRenderer` (`src/board_renderer.py`) และ `history_manager` (`src/history_manager.py`) ออกจาก `cli.py`; เพิ่ม `MAX_ATTEMPTS`, `WORD_LENGTH`; ลบ `colorize_feedback()` และการใช้ colorama
+- **State/Data hardening:** โหลด history ใหม่ก่อนเขียนทุกครั้ง, `HISTORY_PATH` อิงจาก `Path(__file__)`, `load_data()` คืน `[]` ถ้าไม่ใช่ list และทิ้ง record ที่ไม่ใช่ dict, เตือนเมื่อบันทึกไม่สำเร็จ, `answer` ทิ้งเกมที่ไม่จบ
+- Deliverables: [Sprints/Sprint3.md](./Sprints/Sprint3.md), [Sprint3_todo.md](./Sprint3_todo.md), [tests/test_word_bank.py](./tests/test_word_bank.py), [tests/test_sprint3.py](./tests/test_sprint3.py)
 
 ---
 
-## � Sprint 2: Back-End App Dev
-
-Sprint 2 มุ่งเน้นการแยก Business Logic และ Data Access ออกจาก Presentation Layer เพื่อให้เกม Wordle ทำงานเป็นระบบที่แยกชั้นชัดเจนและจัดการข้อมูลได้อย่างมีประสิทธิภาพ
-
-### เป้าหมายหลัก
-- แยก Logic เกมออกจาก CLI
-- จัดการ word pool และ history data ผ่าน JSON
-- เพิ่มฟังก์ชัน Search / Filter / validation สำหรับประวัติและคำศัพท์
-- ป้องกันโปรแกรมพังเมื่อไฟล์ข้อมูลหายหรือ API ล้มเหลว
-
-### ฟังก์ชันและโมดูลสำคัญที่ต้องมี
-- `WordleGame` ใน [src/game_logic.py](./src/game_logic.py)
-- `calculate_feedback(guess, secret_word)`
-- `search_history(history, keyword)`
-- `filter_history(history, condition)`
-- `save_data()` และ `load_data()` ใน [src/data_manager.py](./src/data_manager.py)
-- `load_word_pool()`
-- `fetch_random_word()` / `fetch_valid_words()` / `is_valid_dictionary_word()` ใน [src/word_api.py](./src/word_api.py)
-
-### Definition of Done (DoD)
-- [x] `guess_history` ถูกบันทึกและโหลดกลับมาได้ถูกต้อง
-- [x] ไฟล์ข้อมูลหายหรือเสียหายไม่ทำให้โปรแกรม crash
-- [x] มีฟังก์ชัน Search และ Filter ที่ทำงานจริง
-- [x] Business Logic ไม่เรียก `print()` หรือ `input()` โดยตรง
-- [x] API ล้มเหลวแล้วโปรเจกต์ยังใช้ local fallback ต่อได้
-- [x] มีการทดสอบอัตโนมัติผ่านสำหรับ logic และ API
-
-### Sprint 2 Deliverables
-- Business logic: [src/game_logic.py](./src/game_logic.py)
-- Data manager: [src/data_manager.py](./src/data_manager.py)
-- Word API integration: [src/word_api.py](./src/word_api.py)
-- Logic tests: [tests/test_logic.py](./tests/test_logic.py)
-- API tests: [tests/test_word_api.py](./tests/test_word_api.py)
-
----
-
-## �👥 ทีมพัฒนา (Team)
+## 👥 ทีมพัฒนา (Team)
 
 | Sprint | Planner / PM | Coder | Debugger / QA |
 |---|---|---|---|
@@ -246,6 +205,7 @@ Sprint 2 มุ่งเน้นการแยก Business Logic และ Dat
 | Sprint Final | ตามความเชี่ยวชาญเฉพาะบุคคล (เทน / ซอก / พี) |  |  |
 
 > บทบาทหมุนเวียนในแต่ละ Sprint ตามแผนงานใน [PLAN.md](./PLAN.md)
+
 # การประเมินตนเองของกลุ่ม
 
 ## Sprint 1 — Front-End App Dev
@@ -256,8 +216,8 @@ Sprint 2 มุ่งเน้นการแยก Business Logic และ Dat
 
 | เกณฑ์การประเมิน                   | เทน (Self) | ซอก |  พี | สรุปคะแนน (0–10) |
 | --------------------------------- | :--------: | :-: | :-: | :--------------: |
-| การวางแผนและกำหนดขอบเขตงาน        |     10       |     |     |                  |
-| การนิยาม Definition of Done (DoD) |     10       |     |     |                  |
+| การวางแผนและกำหนดขอบเขตงาน        |            |     |     |                  |
+| การนิยาม Definition of Done (DoD) |            |     |     |                  |
 | การจัดทำเอกสารโครงการ             |     8       |     |     |                  |
 | **รวมคะแนนบุคคล**                 |            |     |     |      **/10**     |
 
@@ -265,19 +225,19 @@ Sprint 2 มุ่งเน้นการแยก Business Logic และ Dat
 
 | เกณฑ์การประเมิน                | เทน | ซอก (Self) |  พี | สรุปคะแนน (0–10) |
 | ------------------------------ | :-: | :--------: | :-: | :--------------: |
-| การจัดโครงสร้างโค้ดและโมดูล    |   10  |            |     |                  |
-| การจัดการอินพุตและสถานะโปรแกรม |   10  |            |     |                  |
-| มาตรฐานและอ่านง่ายของโค้ด      |   10  |            |     |                  |
-| **รวมคะแนนบุคคล**              |   10  |            |     |      **/10**     |
+| การจัดโครงสร้างโค้ดและโมดูล    |     |            |     |                  |
+| การจัดการอินพุตและสถานะโปรแกรม |     |            |     |                  |
+| มาตรฐานและอ่านง่ายของโค้ด      |     |            |     |                  |
+| **รวมคะแนนบุคคล**              |     |            |     |      **/10**     |
 
 ### พี — Debugger
 
 | เกณฑ์การประเมิน                | เทน | ซอก | พี (Self) | สรุปคะแนน (0–10) |
 | ------------------------------ | :-: | :-: | :-------: | :--------------: |
-| การทดสอบเคสขอบเขต (Edge Cases) |  10   |     |           |                  |
-| การจัดการ Exception Handling   |  10   |     |           |                  |
-| การรายงานผลและการส่งมอบงาน     |   10  |     |           |                  |
-| **รวมคะแนนบุคคล**              |  10   |     |           |      **/10**     |
+| การทดสอบเคสขอบเขต (Edge Cases) |     |     |           |                  |
+| การจัดการ Exception Handling   |     |     |           |                  |
+| การรายงานผลและการส่งมอบงาน     |     |     |           |                  |
+| **รวมคะแนนบุคคล**              |     |     |           |      **/10**     |
 
 ---
 
@@ -314,13 +274,48 @@ Sprint 2 มุ่งเน้นการแยก Business Logic และ Dat
 
 ---
 
+# Sprint 3 — Full-Stack App Dev
+
+**บทบาท:** Planner = พี | Coder = เทน | Debugger = ซอก
+
+> ช่องคะแนน Sprint 3 เว้นว่างไว้ให้ทีมกรอกเอง
+
+### พี — Planner
+
+| เกณฑ์การประเมิน                   | พี (Self) | เทน | ซอก | สรุปคะแนน (0–10) |
+| --------------------------------- | :-------: | :-: | :-: | :--------------: |
+| การวางแผนและกำหนดขอบเขตงาน        |           |     |     |                  |
+| การนิยาม Definition of Done (DoD) |           |     |     |                  |
+| การจัดทำเอกสารโครงการ             |           |     |     |                  |
+| **รวมคะแนนบุคคล**                 |           |     |     |      **/10**     |
+
+### เทน — Coder
+
+| เกณฑ์การประเมิน                | พี | เทน (Self) | ซอก | สรุปคะแนน (0–10) |
+| ------------------------------ | :-: | :--------: | :-: | :--------------: |
+| การจัดโครงสร้างโค้ดและโมดูล    |     |            |     |                  |
+| การจัดการอินพุตและสถานะโปรแกรม |     |            |     |                  |
+| มาตรฐานและอ่านง่ายของโค้ด      |     |            |     |                  |
+| **รวมคะแนนบุคคล**              |     |            |     |      **/10**     |
+
+### ซอก — Debugger
+
+| เกณฑ์การประเมิน                | พี | เทน | ซอก (Self) | สรุปคะแนน (0–10) |
+| ------------------------------ | :-: | :-: | :--------: | :--------------: |
+| การทดสอบเคสขอบเขต (Edge Cases) |     |     |            |                  |
+| การจัดการ Exception Handling   |     |     |            |                  |
+| การรายงานผลและการส่งมอบงาน     |     |     |            |                  |
+| **รวมคะแนนบุคคล**              |     |     |            |      **/10**     |
+
+---
+
 # สรุปคะแนน
 
-| สมาชิก | Sprint 1 | Sprint 2 | คะแนนรวมเฉลี่ย |
-| ------ | :------: | :------: | :------------: |
-| เทน    |    /10   |    /10   |     **/10**    |
-| ซอก    |    /10   |    /10   |     **/10**    |
-| พี     |    /10   |    /10   |     **/10**    |
+| สมาชิก | Sprint 1 | Sprint 2 | Sprint 3 | คะแนนรวมเฉลี่ย |
+| ------ | :------: | :------: | :------: | :------------: |
+| เทน    |    /10   |    /10   |    /10   |     **/10**    |
+| ซอก    |    /10   |    /10   |    /10   |     **/10**    |
+| พี     |    /10   |    /10   |    /10   |     **/10**    |
 
 
 ---
