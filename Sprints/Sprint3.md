@@ -59,8 +59,8 @@ Sprint 3 เสร็จในส่วนโค้ดและเอกสา�
 | History: ไม่ใช่ list, record ไม่ใช่ dict, ลบไฟล์กลางเกม | สำเร็จ |
 | เกมเต็มรอบ: บันทึก, game_number เพิ่มถูกต้อง, เตือนเมื่อ save ล้มเหลว | สำเร็จ |
 | `hint_text()` เปิดตำแหน่งตามลำดับ | สำเร็จ |
-| Hint ส่งเป็น `message=` ให้ redraw ถัดไป | **ไม่ผ่าน** (เทสต์ไม่ตรงกับโค้ด) |
-| Test suite ของโปรเจกต์ | 71 passed, 1 failed |
+| Hint ส่งเป็น `message=` ให้ redraw ถัดไป | สำเร็จ |
+| Test suite ของโปรเจกต์ | 72 passed|
 
 ---
 
@@ -85,8 +85,8 @@ Sprint 3 เสร็จในส่วนโค้ดและเอกสา�
 - [x] In-place redraw (โค้ด + unit test)
 - [x] State/Data hardening และเทสต์
 - [x] เอกสารปรับให้ตรงกับสถานะจริง
-- [ ] `pytest` ผ่านครบ (71/72)
-- [ ] Manual check บน terminal จริง
+- [x] `pytest` ผ่านครบ (72/72)
+- [x] Manual check บน terminal จริง
 
 ---
 
