@@ -48,8 +48,8 @@
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
 - รายงาน QA (Observation / Expected / Actual) ตามแบบฟอร์ม
-- Test Plan และ Test Cases: [TEST_PLAN.md](./TEST_PLAN.md)
-- ตาราง Test Cases: [TEST_CASES.md](./TEST_CASES.md)
+- Test Plan และ Test Cases: [TEST_PLAN.md](./tests/TEST_PLAN.md)
+- ตาราง Test Cases: [TEST_CASES.md](./tests/TEST_CASES.md)
 
 ---
 
@@ -71,6 +71,7 @@
 - เพิ่ม Data Persistence: บันทึก/โหลด `guess_history` และ/หรือ word pool ลงไฟล์ JSON
 - ครอบข้อผิดพลาดที่อาจเกิดขึ้น (อ่าน/เขียนไฟล์, อินพุตผิดประเภท) ด้วย `try-except`
 - เชื่อม Datamuse API สำหรับคำอังกฤษ 5 ตัวอักษร พร้อม fallback ไป local word pool
+  - *(หมายเหตุ: ออกแบบเดิมของ Sprint 2 — ถูกแทนที่ใน Sprint 3 ด้วย offline-first word bank)*
 - รองรับ `WORDLE_TEST_WORD` สำหรับการทดสอบแบบกำหนดคำเฉลย โดยไม่เปิดเผยคำตอบในโหมดปกติ
 
 ## 3. ฟังก์ชัน/คลาสที่ต้องส่งมอบ
@@ -105,8 +106,8 @@
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
 - ตัวอย่างไฟล์ข้อมูลที่ถูกบันทึก (เช่น `history.json`)
-- Test Plan และ Test Cases: [TEST_PLAN.md](./TEST_PLAN.md)
-- ตาราง Test Cases: [TEST_CASES.md](./TEST_CASES.md)
+- Test Plan และ Test Cases: [TEST_PLAN.md](./tests/TEST_PLAN.md)
+- ตาราง Test Cases: [TEST_CASES.md](./tests/TEST_CASES.md)
 
 ---
 
@@ -124,49 +125,61 @@
 
 ## 2. ขอบเขตระบบ (Scope)
 - ปรับ `main()` ให้เรียกใช้ทั้งฟังก์ชัน Presentation (Sprint 1) และ Business/Data Layer (Sprint 2) ผ่าน interface เดียวกัน
-- ให้ State ของเกม (word_pool, guess_history, ผลของแต่ละตา) sync ระหว่างการเล่นและเมนูต่างๆ อย่างถูกต้อง
-- เพิ่มการจัดการ Edge Case ที่เกิดเฉพาะตอนระบบทำงานร่วมกัน เช่น pool ว่างระหว่างเล่น, ไฟล์ข้อมูลถูกแก้ไขระหว่างรัน
-- **Offline-first word pool:** ใช้ local word list เป็นค่าเริ่มต้นทั้งการสุ่มคำเฉลยและตรวจคำทาย เล่นได้ทั้ง online/offline
-  - `answers.json` = คำเฉลย (คำที่พบบ่อย), `valid_words.json` = คำที่ทายได้ (superset ของ answers)
-  - Datamuse API เป็น optional enrichment (timeout สั้น ~2 วินาที, ล้มเหลวต้องเงียบ) และ cache ผลลง `api_cache.json`
-  - เลิกเรียก Dictionary API ต่อคำทาย (ช้า 3-10 วินาที) → ตรวจด้วย `set` lookup ในเครื่องแทน
+- ให้ State ของเกม (word bank, history, ผลของแต่ละตา) sync ระหว่างการเล่นและเมนูต่างๆ อย่างถูกต้อง
+- เพิ่มการจัดการ Edge Case ที่เกิดเฉพาะตอนระบบทำงานร่วมกัน เช่น ไฟล์ข้อมูลถูกแก้ไข/ลบระหว่างรัน, บันทึกไม่สำเร็จ, เกมที่ยอมแพ้กลางคัน
+- **Offline-first word bank:** ใช้ local word list ทั้งการสุ่มคำเฉลยและตรวจคำทาย เล่นได้ทั้ง online/offline
+  - `data/answers.txt` = คำเฉลย, `data/valid_words.txt` = คำที่ทายได้ (`answers ⊆ valid_words` เสมอ)
+  - ไม่มีการเรียก network ตอนเล่น ตรวจคำด้วย `set` lookup (เดิม Dictionary API ต่อคำทายช้า 3-10 วินาที)
+  - โค้ด Datamuse ย้ายไป `scripts/` เป็นเครื่องมือ build-time (ยกเลิกแนวคิด `api_cache.json` / `refresh_from_api`)
+- **In-place redraw:** กระดานวาดทับที่เดิม, คำที่พิมพ์ไม่ค้างบนจอ, error ของคำทายผิดแทนที่บรรทัดเดิม, ไม่ส่ง escape code เมื่อ output ไม่ใช่ terminal
+- **Refactor เพื่อ Single Responsibility:** แยก `BoardRenderer` และ `history_manager` ออกจาก `cli.py`
 
 ## 3. งานที่ต้องส่งมอบ
 | งาน | รายละเอียด |
 |---|---|
 | Integration ของทุก Layer | `main()` เรียก Presentation → Business Logic → Data Access ตามลำดับชัดเจน |
-| State Management | ตรวจสอบว่าทุกเมนู (Play/History/Statistics/How to Play/Exit) เห็นข้อมูลชุดเดียวกันที่อัปเดตล่าสุด |
-| Edge Case: Full Integration | เช่น word pool ว่าง → ใช้ fallback, บันทึกไฟล์ทุกครั้งที่จบเกม |
-| `load_words()` | โหลด `(answers, valid_words)` จาก local ก่อน แล้วรวม `api_cache.json` (ถ้ามี) |
-| `refresh_from_api(valid, timeout)` | ดึงคำเพิ่มจาก Datamuse แบบ optional/background ล้มเหลวแล้วไม่กระทบเกม |
-| `is_valid_guess()` (ปรับปรุง) | ตรวจความยาว/ตัวอักษร/อยู่ใน `valid_words` ด้วย set lookup (ไม่เรียก network) |
-| สคริปต์ build word list (optional) | สร้าง `answers.json` / `valid_words.json` ครั้งเดียวจาก Datamuse + Dictionary API แล้ว commit เข้า repo |
+| State Management | ทุกเมนูเห็นข้อมูลชุดเดียวกัน; โหลด history ใหม่จากดิสก์ก่อนเขียนทุกครั้ง (`_persist`) |
+| `load_word_bank(length)` | ใน `src/word_bank.py` คืน `(answers, valid_words)` จากไฟล์ local (path จาก `Path(__file__)`); ไฟล์หาย/ว่างใช้ `DEFAULT_WORD_POOL` |
+| `is_valid_guess()` (ปรับปรุง) | ตรวจความยาว/ตัวอักษร/อยู่ใน `valid_words` ด้วย membership test (ไม่เรียก network) |
+| `scripts/build_wordlists.py` | สร้าง `data/answers.txt` / `data/valid_words.txt` จาก source word list ครั้งเดียวแล้ว commit |
+| `erase_lines()` / `clear_screen()` / `render_game_screen()` | redraw กระดานในที่เดิม |
+| `BoardRenderer`, `history_manager` | แยกการวาดตารางและการคำนวณสถิติออกจาก `cli.py` |
+| `MAX_ATTEMPTS`, `WORD_LENGTH` | แทนตัวเลข 6 / 5 ที่กระจายในโค้ด |
+| `HISTORY_PATH` | อิงจาก `Path(__file__)` (เตรียมพร้อมสำหรับ global command ใน Sprint Final) |
 
 ## 4. Definition of Done (DoD)
 - [x] เล่นเกมจบ 1 ตา → history ถูกบันทึกลงไฟล์ทันที ไม่ต้องรอปิดโปรแกรม
 - [x] สลับเมนูไปมา (เล่น → ดู history → ดูสถิติ → เล่นอีกครั้ง) ข้อมูลต้อง consistent ไม่มีค่าตกหล่น
 - [x] ทดสอบ end-to-end ตั้งแต่เปิดโปรแกรมจนปิด ไม่มี unhandled exception
 - [x] ใช้ `hint` และ `answer` ระหว่างเล่นได้โดยไม่ทำให้เกม crash
-- [ ] ปิดอินเทอร์เน็ตแล้วเปิดเกม → เล่นได้ปกติ (สุ่มคำ + ตรวจคำทายจาก local)
-- [ ] ตรวจคำทายแต่ละครั้งเสร็จทันที (ไม่รอ network)
-- [ ] API ช้า/ล่ม/timeout → เกมไม่ค้างและไม่ crash
-- [ ] คำเฉลยทุกคำอยู่ใน `valid_words` เสมอ (answers ⊆ valid_words)
-- [ ] `WORDLE_TEST_WORD` ยังใช้งานได้ และคำนั้นถูกนับเป็นคำที่ทายได้
+- [x] เปิดเกมโดยไม่ต้องใช้อินเทอร์เน็ต → สุ่มคำและตรวจคำทายจาก local (มีเทสต์ยืนยันว่า `load_word_bank()` ไม่เปิด socket)
+- [x] ตรวจคำทายแต่ละครั้งเสร็จทันที (ไม่รอ network)
+- [x] ไม่มีการเรียก API ตอนเล่น จึงไม่มีกรณี API ช้า/ล่ม/timeout ที่ทำให้เกมค้าง
+- [x] คำเฉลยทุกคำอยู่ใน `valid_words` เสมอ (answers ⊆ valid_words)
+- [x] `WORDLE_TEST_WORD` ยังใช้งานได้ และคำนั้นถูกนับเป็นคำที่ทายได้
+- [x] ไฟล์ word list หาย/ว่าง → ใช้ default pool ได้
+- [x] ไฟล์ history ถูกลบ/แก้ระหว่างเล่น → ไม่ถูกเขียนทับด้วยข้อมูลเก่าในหน่วยความจำ
+- [x] บันทึก history ไม่สำเร็จ → เตือนผู้เล่น 1 ครั้ง ไม่ crash
+- [ ] `pytest` ผ่านทั้งหมด (ปัจจุบัน 71 จาก 72 เคส — เหลือ `test_hint_message_is_passed_to_next_redraw` ที่คาดพฤติกรรมต่างจากโค้ดปัจจุบัน)
+- [ ] Manual check: Windows Terminal + Unix terminal, กระดานเดียวบนจอ, error ทับบรรทัดเดิมเมื่อผิดหลายครั้งติด
 
 ## 5. Edge Case ที่ต้องทดสอบ (Debugger)
-- word pool ว่างหรือ API ใช้งานไม่ได้ระหว่างเล่นหลายรอบติดกัน
 - ปิดโปรแกรมกลางเกม (เมนู 5) แล้วเปิดใหม่ ข้อมูลต้องยังอยู่ครบ
 - แก้ไข/ลบไฟล์ข้อมูลด้วยมือระหว่างที่โปรแกรมกำลังรัน
-- เปิดเกมตอน offline / ไม่มีไฟล์ `api_cache.json`
-- `api_cache.json` เสียหาย (JSON ผิดรูปแบบ) → ต้องถูกข้ามโดยไม่ crash
-- `answers.json` / `valid_words.json` หายหรือว่าง → สร้างค่าเริ่มต้น (built-in default) ได้
-- API ตอบช้าเกิน timeout ระหว่าง background refresh
+- เปิดเกมตอน offline
+- `answers.txt` / `valid_words.txt` หาย ว่าง หรือมีแต่คำความยาวผิด → ใช้ built-in default ได้
+- `history.json` ไม่ใช่ list (`{}`, `"abc"`, `42`, `null`) หรือมี record ที่ไม่ใช่ dict
+- ใช้ `answer` กลางเกมแล้วดู history/สถิติ ต้องไม่มีเกมค้าง
+- ป้อนคำผิดหลายครั้งติดกัน error ต้องไม่ซ้อน
+- รันเกมจาก working directory อื่น ต้องใช้ history.json ไฟล์เดิม
+- redirect output ไปไฟล์ ต้องไม่มี escape code หลุด
 
 ## 6. Deliverable
 - PR พร้อมสรุป **Wow!** / **Whoops!**
-- Diagram หรือคำอธิบายสั้นๆ ว่าแต่ละ Layer เชื่อมกันอย่างไร (เตรียมไว้ใช้ตอนนำเสนอส่วนที่ 1)
-- Test Plan และ Test Cases: [TEST_PLAN.md](./TEST_PLAN.md)
-- ตาราง Test Cases: [TEST_CASES.md](./TEST_CASES.md)
+- Diagram หรือคำอธิบายสั้นๆ ว่าแต่ละ Layer เชื่อมกันอย่างไร (ดู "สถาปัตยกรรม" ใน [README.md](./README.md))
+- สรุปผล Sprint: [Sprints/Sprint3.md](./Sprints/Sprint3.md)
+- Test Plan และ Test Cases: [TEST_PLAN.md](./tests/TEST_PLAN.md)
+- ตาราง Test Cases: [TEST_CASES.md](./tests/TEST_CASES.md)
 
 ---
 
@@ -179,12 +192,12 @@
 เพิ่มระบบทดสอบอัตโนมัติ ตั้งค่า CI/CD ผ่าน GitHub Actions และผนวกฟีเจอร์ AI/Automation เข้ากับโปรเจกต์ พร้อมสรุปแนวทางต่อยอด
 
 ## 2. ขอบเขตระบบ (Scope)
-- เขียน Unit Test ครอบคลุม Business Logic (`calculate_feedback`, `search_history`, `filter_history`, `save_data`/`load_data`, `load_words`, `is_valid_guess`)
+- เขียน Unit Test ครอบคลุม Business Logic (`calculate_feedback`, `search_history`, `filter_history`, `save_data`/`load_data`, `load_word_bank`, `is_valid_guess`) — ส่วนใหญ่มีแล้วจาก Sprint 1-3 (72 เคส) งานที่เหลือคือวัด coverage
 - ตั้งค่า GitHub Actions workflow: รัน Linting + Unit Test อัตโนมัติทุกครั้งที่ push/PR
 - เพิ่มฟีเจอร์ AI หรือ Automation Agent เช่น วิเคราะห์สถิติการเล่น หรือแนะนำคำใบ้อัตโนมัติ
 - สรุปอุปสรรคที่พบตลอด Sprint 1-3 และแนวทาง Refactor
 - **Packaging ให้รันได้ทั่วเครื่อง (global install):** ทำให้เรียกเกมด้วยคำสั่ง `wordle` จาก terminal ไดเรกทอรีไหนก็ได้ ไม่ต้อง `cd` เข้า repo หรือพิมพ์ `python game.py`
-  - แก้ path ของ `history.json` / `answers.txt` / `valid_words.txt` ให้อ้างอิงจากตำแหน่งแพ็กเกจ (`Path(__file__)`) แทน current working directory
+  - path ของ `history.json` / `answers.txt` / `valid_words.txt` อิงจาก `Path(__file__)` แล้ว (ทำใน Sprint 3) — เหลือตรวจตอนติดตั้งแบบ package จริง และเพิ่ม `package-data` สำหรับไฟล์ `data/`
   - เพิ่ม `pyproject.toml` พร้อม `[project.scripts]` ให้ `wordle = "src.cli:main"` เป็น entry point
   - เพิ่มคำสั่งย่อย `wordle start` (ด้วย `argparse`) ให้เริ่มเกมทันทีโดยไม่ต้องผ่าน banner/เมนู
 
@@ -196,7 +209,7 @@
 | ฟีเจอร์ AI/Automation | เช่น สรุปสถิติคำที่ทายบ่อย หรือ agent ช่วยวิเคราะห์ผล |
 | `pyproject.toml` | Package metadata + `[project.scripts]` entry point (`wordle`) + `package-data` สำหรับไฟล์ word list |
 | `wordle start` subcommand | `argparse` sub-command เริ่มเกมทันที ข้าม banner/เมนู |
-| เอกสารสรุป Refactor | เปรียบเทียบทางเลือกโครงสร้างข้อมูล/สถาปัตยกรรมที่ใช้จริงกับทางเลือกอื่น (รวมกรณี validate คำผ่าน API ต่อคำทาย vs local set ใน Sprint 3) |
+| เอกสารสรุป Refactor | เปรียบเทียบทางเลือกโครงสร้างข้อมูล/สถาปัตยกรรมที่ใช้จริงกับทางเลือกอื่น (รวมกรณี validate คำผ่าน API ต่อคำทาย (3-10 วินาที, ต้องใช้ network) vs local set ใน Sprint 3) และตัวเลือก class extraction ที่ยังไม่ทำ: `HistoryRepository`, `GameSession`, `ConsoleUI` |
 
 ## 4. Definition of Done (DoD)
 - [ ] Unit test ครอบคลุมฟังก์ชันหลักของ Business/Data Layer อย่างน้อย 80% ของเคสสำคัญ (ปกติ + edge case)
