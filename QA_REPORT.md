@@ -121,7 +121,7 @@
 
 **Pull Request Summary:**
 - Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hint/answer, offline-first word bank, in-place redraw, Rich UI
-- Testing: `python -m pytest -q` → 72 tests, **71 passed, 1 failed** (see 2.3)
+- Testing: `python -m pytest -q` → **72 passed in 0.82s**
 
 **PR Link:** To be filled when repository PR is created.
 
