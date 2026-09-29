@@ -134,7 +134,7 @@ python scripts/build_wordlists.py <path-to-source-word-list> -o data
 python -m pytest -q
 ```
 
-ผลล่าสุด: **72 เคส — ผ่าน 71, ไม่ผ่าน 1**
+ผลล่าสุด: **72 เคส — ผ่าน 72**
 
 | ไฟล์ | เคส | ครอบคลุม |
 |---|---:|---|
@@ -145,8 +145,6 @@ python -m pytest -q
 | `tests/test_boardrenderer.py` | 2 | สี tile, แถวว่างของกระดาน |
 | `tests/test_word_api.py` | 5 | helper Datamuse ใน `scripts/` |
 | `tests/test_today_word.py` | 5 | `today_word()` (NYT endpoint) |
-
-**เคสที่ยังไม่ผ่าน:** `test_hint_message_is_passed_to_next_redraw` (ใน `tests/test_sprint3.py`) — เทสต์คาดว่า hint จะถูกส่งเป็น `message=` ให้ `render_game_screen()` แต่โค้ดปัจจุบันพิมพ์ hint ใต้กระดานโดยตรงแล้วบวก `_last_render_lines` เอง ฟังก์ชันทำงานถูกต้อง (hint มองเห็นได้) ความไม่ตรงอยู่ที่วิธีที่เทสต์ตรวจ ต้องเลือกแก้ที่เทสต์หรือแก้โค้ดให้ตรงกัน
 
 รายละเอียด: [tests/TEST_PLAN.md](tests/TEST_PLAN.md) และ [tests/TEST_CASES.md](tests/TEST_CASES.md)
 

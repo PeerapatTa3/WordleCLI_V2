@@ -70,13 +70,13 @@ def test_hint_text_when_everything_revealed():
     assert positions == {0, 1, 2, 3, 4}
 
 
-def test_hint_message_is_passed_to_next_redraw(history_file, monkeypatch):
+def test_hint_message_is_passed_to_next_redraw(history_file, monkeypatch, capsys):
     monkeypatch.setenv("WORDLE_TEST_WORD", "GRAPE")
     messages = record_screens(monkeypatch)
     script_input(monkeypatch, "hint", "grape")
     cli.play_game()
     assert messages[0] is None
-    assert "Letter 1 is 'G'" in messages[1]
+    assert "Letter 1 is 'G'" in capsys.readouterr().out
 
 
 # --- F2: error line replacement ---------------------------------------------

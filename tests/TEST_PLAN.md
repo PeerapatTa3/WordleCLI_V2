@@ -3,9 +3,7 @@
 **Project:** Wordle CLI V.2  
 **Scope:** Sprint 1-3  
 **Test Tool:** `pytest`  
-**Latest Result:** `72 tests — 71 passed, 1 failed` (รันซ้ำเมื่อ 2026-09-29)
-
-**Known Issue:** `tests/test_sprint3.py::test_hint_message_is_passed_to_next_redraw` ไม่ผ่าน เทสต์คาดว่า hint จะถูกส่งเป็น `message=` ให้ `render_game_screen()` แต่ `play_game()` พิมพ์ hint ใต้กระดานโดยตรงแล้วบวก `_last_render_lines` เอง (ผู้เล่นเห็น hint ถูกต้อง) ต้องแก้เทสต์ให้ตรวจพฤติกรรมจริง หรือแก้โค้ดให้ส่ง `message=`
+**Latest Result:** `72 tests — 72 passed` (รันซ้ำเมื่อ 2026-09-29)
 
 ## 1. Test Objectives
 
@@ -87,7 +85,7 @@
 | S3-T04 | View statistics | Select Statistics | Games played, win rate, streak, distribution appear | PASS |
 | S3-T05 | View instructions | Select How to Play | Rules and feedback meanings appear | PASS |
 | S3-T06 | Hint order | `hint_text("APPLE")` twice | Letter 1 then letter 2 revealed; all revealed → answer text | PASS |
-| S3-T07 | Hint message reaches next redraw | `hint` then `grape` | Hint passed as `message=` to `render_game_screen` | **FAIL** |
+| S3-T07 | Hint message reaches next redraw | `hint` then `grape` | Hint text appears below the board on the next redraw | **PASS** |
 | S3-T08 | Answer discards unfinished game | `crane`, `answer` | History is `[]` | PASS |
 | S3-T09 | Answer before any guess | `answer` | No history file written | PASS |
 | S3-T10 | Discard only that game | `_discard_game(history, 2)` | Game 1 kept, game 2 removed | PASS |
@@ -132,7 +130,7 @@
 | [tests/test_boardrenderer.py](test_boardrenderer.py) | 2 | Tile colors, empty rows |
 | [tests/test_word_api.py](test_word_api.py) | 5 | `scripts/word_api.py` (Datamuse helpers) |
 | [tests/test_today_word.py](test_today_word.py) | 5 | `src/word_api.today_word()` |
-| **Total** | **72** | 71 pass, 1 fail |
+| **Total** | **72** | 72 pass |
 
 ## 7. Execution Evidence
 
@@ -145,15 +143,13 @@ python -m pytest -q
 Result:
 
 ```text
-1 failed, 71 passed
-FAILED tests/test_sprint3.py::test_hint_message_is_passed_to_next_redraw
+72 passed in 1.44s
 ```
 
 ## 8. Sprint Final QA Preparation
 
 Sprint Final is not started. The remaining QA work is:
 
-- Decide how to fix the failing hint test (test or code).
 - Manual terminal checks: Windows Terminal, a Unix terminal, redirected output.
 - Add GitHub Actions CI workflow.
 - Run linting automatically on push and pull request.

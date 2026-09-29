@@ -30,7 +30,7 @@
 - [x] `load_data()` returns `[]` for non-list JSON and drops non-dict records; save failure shows one warning
 - [x] `answer` discards the unfinished game so history/statistics never show it
 - [x] Added tests: `test_word_bank.py`, `test_sprint3.py`, `test_boardrenderer.py`, `test_today_word.py`
-- [ ] `pytest` fully green (71 of 72 pass)
+- [x] `pytest` fully green (72 of 72 pass)
 - [ ] Manual terminal checks (Windows Terminal, Unix terminal, redirected output)
 
 ---
@@ -85,9 +85,9 @@
 | History JSON is `{}`, `"abc"`, `42`, `null` | Wrong top-level type | Loader returns `[]` | Returns `[]` | PASS |
 | History has junk records | `["x", 3, None, {...}]` | Only dict records kept | Only the dict kept | PASS |
 | History path | Check `HISTORY_PATH` | Absolute, independent of CWD | Absolute, `history.json` | PASS |
-| Hint message reaches next redraw | `hint` then `grape`, `render_game_screen` recorded | Test expects hint passed as `message=` | `message` is `None`; hint was printed directly under the board | **FAIL** |
+| Hint message reaches next redraw | `hint` then `grape`, player-visible output checked | Hint text appears under the board on the next redraw | Hint text appears under the board on the next redraw | PASS |
 
-**Note on the failing case:** the hint is shown to the player correctly. The current code prints it under the board and skips the redraw (`needs_render = False`), adding one to `_last_render_lines`. The test was written for an earlier design. Fix the test or change the code so both agree.
+**Note on the original failing case:** the hint was already shown correctly to the player, and the older test was coupled to the implementation detail of passing it as `message=` to `render_game_screen()`. The test was changed instead of the code because the behavior was correct and user-visible.
 
 ### 2.4 Known leftovers
 

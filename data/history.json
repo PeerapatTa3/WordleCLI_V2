@@ -488,5 +488,89 @@
     "attempt": 1,
     "game_number": 11,
     "secret_word": "APPLE"
+  },
+  {
+    "guess": "SOLID",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "-",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 12,
+    "secret_word": "TESLA"
+  },
+  {
+    "guess": "BOOST",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "-",
+      "-"
+    ],
+    "attempt": 2,
+    "game_number": 12,
+    "secret_word": "TESLA"
+  },
+  {
+    "guess": "TOPIC",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 12,
+    "secret_word": "TESLA"
+  },
+  {
+    "guess": "TAMAL",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "-",
+      "x",
+      "x",
+      "-"
+    ],
+    "attempt": 4,
+    "game_number": 12,
+    "secret_word": "TESLA"
+  },
+  {
+    "guess": "TOPER",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 5,
+    "game_number": 12,
+    "secret_word": "TESLA"
+  },
+  {
+    "guess": "TALER",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "-",
+      "-",
+      "-",
+      "x"
+    ],
+    "attempt": 6,
+    "game_number": 12,
+    "secret_word": "TESLA"
   }
 ]

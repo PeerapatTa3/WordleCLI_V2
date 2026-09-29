@@ -93,13 +93,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `src/word_api.py`: `today_word()` fetches the daily Wordle answer from the NYT endpoint (not used by the game at runtime) with `tests/test_today_word.py` (5 tests).
 - `load_data()` hardening tests: non-list JSON and non-dict records (`tests/test_sprint3.py`).
 
+### Fixed
+- S3-T07: test now checks the hint text shown to the player instead of the `message=` argument of `render_game_screen()`.
+
 ### Changed
 - Replaced plain `print()`/`input()` in `cli.py` with `rich.console.Console` (`console.print` / `console.input`).
 - `View History` renders each past game as a colored letter grid; statistics use a Panel table with green bars.
 - Test suite now has 72 tests across 7 files.
 
 ### Known issues
-- `tests/test_sprint3.py::test_hint_message_is_passed_to_next_redraw` fails: it expects the hint to be passed as `message=` to `render_game_screen()`, but `play_game()` prints the hint directly under the board. Last run: 71 passed, 1 failed.
 - `colorama` is still in `requirements.txt` although no code imports it.
 - `search_history` / `filter_history` are defined in both `src/game_logic.py` and `src/history_manager.py`.
 
