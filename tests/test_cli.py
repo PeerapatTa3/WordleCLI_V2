@@ -3,7 +3,6 @@ import io
 import pytest
 
 from src.cli import (
-    colorize_feedback,
     display_how_to_play,
     display_menu,
     display_statistics,
@@ -18,15 +17,6 @@ from src.cli import (
     clear_screen,
 )
 from src.word_bank import load_word_bank
-
-
-# def test_colorize_feedback_uses_ansi_colors():
-#     rendered = colorize_feedback(["✓", "-", "x"])
-#     assert "✓" in rendered
-#     assert "-" in rendered
-#     assert "x" in rendered
-#     assert "\x1b[" in rendered
-
 
 def test_is_valid_guess_accepts_five_letters():
     assert is_valid_guess("APPLE", 5) is True

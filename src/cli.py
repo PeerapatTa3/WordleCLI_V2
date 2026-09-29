@@ -6,9 +6,7 @@ and integration with the game logic and JSON persistence modules.
 
 import os
 import random
-from pathlib import Path
 
-from colorama import Fore, Style, init
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -19,20 +17,11 @@ from src.word_bank import load_word_bank
 from src.history_manager import calculate_stats
 from src.board_renderer import BoardRenderer
 
-init(autoreset=True)
+MAX_ATTEMPTS = 6
+WORD_LENGTH = 5
+
 console = Console()
 renderer = BoardRenderer(console)
-
-def colorize_feedback(feedback):#currently not in use
-    
-    """Convert Wordle feedback markers into colored ANSI output."""
-    color_map = {
-        "✓": Fore.GREEN,
-        "-": Fore.YELLOW,
-        "x": Fore.RED,
-    }
-
-    return " ".join(f"{color_map.get(str(item), '')}{str(item)}{Style.RESET_ALL}" for item in feedback)
 
 
 def display_welcome_message():
@@ -85,6 +74,7 @@ def clear_screen():
     if console.is_terminal:
         console.clear()
 
+
 def render_game_screen(board_history, attempt, max_attempts, word_length, message=None):
     """Redraw the full game screen in place."""
     clear_screen()
@@ -98,19 +88,23 @@ def get_guess_input(word_length, valid_words=None):
     """Prompt for a word or the supported ``hint``/``answer`` commands.
 
     Uses fast local validation — no network calls, no spinner.
-    Invalid guesses print a single red line (replaced on retry).
+    An invalid guess prints a single red line; on retry that line and the
+    previous prompt are erased together so errors never stack.
     """
+    error_shown = False
     while True:
         guess = console.input(f"[bold white]Enter a {word_length}-letter word: [/bold white]").strip()
+        erase_lines(2 if error_shown else 1)
+        error_shown = False
+
         if guess.lower() in {"hint", "answer"}:
             return guess.lower()
 
         if is_valid_guess(guess, word_length, valid_words):
-            erase_lines(1)
             return guess.upper()
 
-        erase_lines(1)
         console.print("[bold red]Invalid guess[/bold red]")
+        error_shown = True
 
 
 def display_history():
@@ -134,7 +128,7 @@ def display_history():
         is_won = any(record.get("correct", False) for record in records)
         status = "[bold green]WON[/bold green]" if is_won else "[bold red]LOST[/bold red]"
         secret_word = records[-1].get("secret_word", "UNKNOWN")
-        word_len = len(secret_word) if secret_word != "UNKNOWN" else 5
+        word_len = len(secret_word) if secret_word != "UNKNOWN" else WORD_LENGTH
 
         rows = [(r.get("guess", ""), r.get("feedback", [])) for r in records]
         table = renderer.build_history_table(rows, word_len)
@@ -146,6 +140,7 @@ def display_history():
             expand=False,
             border_style=border_color
         ))
+
 
 def display_statistics(history=None):
     """Display win rate, streak, and guess distribution."""
@@ -172,11 +167,12 @@ def display_statistics(history=None):
         bar = "█" * count
         console.print(f"  [bold green]{attempt}[/bold green]: [bold green]{bar}[/bold green] ({count})")
 
+
 def display_how_to_play():
     """Display the game rules and feedback marker explanations."""
     tile = BoardRenderer.tile
     rules = (
-        "1. Guess the secret 5-letter word in 6 tries.\n"
+        f"1. Guess the secret {WORD_LENGTH}-letter word in {MAX_ATTEMPTS} tries.\n"
         "2. Each guess must contain letters only.\n"
         "3. Feedback markers show how close your guess is:\n"
         f"   {tile('✓', '✓')} Correct letter in the correct position.\n"
@@ -187,19 +183,30 @@ def display_how_to_play():
     console.print(Panel(rules, title="[bold yellow]HOW TO PLAY[/bold yellow]", expand=False, border_style="blue"))
 
 
-def display_hint(secret_word, revealed_positions=None):
-    """Reveal one new secret-word position and return the updated positions."""
+def hint_text(secret_word, revealed_positions=None):
+    """Return ``(message, updated_positions)`` for the next hint (no printing)."""
     revealed_positions = set(revealed_positions or set())
     hidden_positions = [
         position for position in range(len(secret_word)) if position not in revealed_positions
     ]
     if not hidden_positions:
-        console.print(f"[bold cyan]Hint: All letters are revealed. The answer is {secret_word}.[/bold cyan]")
-        return revealed_positions
+        return (
+            f"[bold cyan]Hint: All letters are revealed. The answer is {secret_word}.[/bold cyan]",
+            revealed_positions,
+        )
 
     position = hidden_positions[0]
     revealed_positions.add(position)
-    console.print(f"[bold cyan]Hint: Letter {position + 1} is '{secret_word[position]}'.[/bold cyan]")
+    return (
+        f"[bold cyan]Hint: Letter {position + 1} is '{secret_word[position]}'.[/bold cyan]",
+        revealed_positions,
+    )
+
+
+def display_hint(secret_word, revealed_positions=None):
+    """Print one new hint and return the updated revealed positions."""
+    message, revealed_positions = hint_text(secret_word, revealed_positions)
+    console.print(message)
     return revealed_positions
 
 
@@ -218,11 +225,29 @@ def _next_game_number(history):
     return max(numbered_games, default=0) + 1
 
 
+def _discard_game(history, game_number):
+    """Return history without the records of ``game_number`` (abandoned game)."""
+    return [
+        record for record in history
+        if not (isinstance(record, dict) and record.get("game_number") == game_number)
+    ]
+
+
+def _persist(update):
+    """Reload history from disk, apply ``update(history) -> history``, save it.
+
+    Reloading right before writing means manual edits or a deleted file made
+    while the game is running are respected instead of being overwritten by a
+    stale in-memory copy. Returns True when the save succeeded.
+    """
+    return save_data(update(load_data()))
+
+
 def get_secret_word(answers):
     """Return a test word when configured, otherwise pick randomly from answers."""
     test_word = os.getenv("WORDLE_TEST_WORD", "").strip().upper()
     if test_word:
-        if is_valid_guess(test_word, 5):
+        if is_valid_guess(test_word, WORD_LENGTH):
             return test_word, True
         console.print("[bold yellow]Invalid WORDLE_TEST_WORD. Using the normal word source instead.[/bold yellow]")
 
@@ -232,14 +257,14 @@ def get_secret_word(answers):
 
 def play_game():
     """Run a full Wordle game round using the local word bank."""
-    answers, valid_words = load_word_bank(5)
+    answers, valid_words = load_word_bank(WORD_LENGTH)
     if not answers:
         console.print("[bold red]No words available to play.[/bold red]")
         return
 
     secret_word, is_test_mode = get_secret_word(answers)
     valid_words = valid_words | {secret_word}
-    game = WordleGame(secret_word)
+    game = WordleGame(secret_word, WORD_LENGTH)
     history = load_data()
     game_number = _next_game_number(history)
     revealed_positions = set()
@@ -248,33 +273,42 @@ def play_game():
     if is_test_mode:
         console.print(f"[bold yellow][TEST MODE] Secret word: {game.secret_word}[/bold yellow]")
 
+    save_warned = False
     attempt = 1
-    while attempt <= 6:
-        render_game_screen(board_history, attempt, 6, game.word_length)
+    message = None
+    while attempt <= MAX_ATTEMPTS:
+        render_game_screen(board_history, attempt, MAX_ATTEMPTS, game.word_length, message)
+        message = None
         guess = get_guess_input(game.word_length, valid_words)
         if guess == "hint":
-            revealed_positions = display_hint(game.secret_word, revealed_positions)
+            message, revealed_positions = hint_text(game.secret_word, revealed_positions)
             continue
         if guess == "answer":
+            # Giving up is a testing aid: drop this game's partial records so
+            # history/statistics never show an unfinished game.
+            if board_history:
+                _persist(lambda records: _discard_game(records, game_number))
             display_answer(game.secret_word)
             return
         feedback = calculate_feedback(guess, game.secret_word)
         is_correct = guess == game.secret_word
 
-        history.append({
+        record = {
             "guess": guess,
             "correct": is_correct,
             "feedback": feedback,
             "attempt": attempt,
             "game_number": game_number,
             "secret_word": game.secret_word,
-        })
-        save_data(history)
+        }
+        if not _persist(lambda records: records + [record]) and not save_warned:
+            message = "[bold yellow]Warning: could not save game history.[/bold yellow]"
+            save_warned = True
 
         board_history.append((guess, feedback))
 
         if is_correct:
-            render_game_screen(board_history, attempt, 6, game.word_length)
+            render_game_screen(board_history, attempt, MAX_ATTEMPTS, game.word_length)
             console.print(Panel(
                 f"[bold white on green] 🎉 CONGRATULATIONS! [/bold white on green]\n\nYou solved it in [bold yellow]{attempt}[/bold yellow] attempts!",
                 title="[bold green]VICTORY[/bold green]",
@@ -285,7 +319,7 @@ def play_game():
 
         attempt += 1
 
-    render_game_screen(board_history, attempt - 1, 6, game.word_length)
+    render_game_screen(board_history, attempt - 1, MAX_ATTEMPTS, game.word_length)
     console.print(Panel(
         f"[bold white on red] 💥 GAME OVER! [/bold white on red]\n\nThe secret word was: [bold yellow]{game.secret_word}[/bold yellow]",
         title="[bold red]OUT OF TRIES[/bold red]",

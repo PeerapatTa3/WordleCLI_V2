@@ -6,114 +6,43 @@
       "x",
       "x",
       "x",
-      "x",
-      "x"
-    ],
-    "attempt": 1
-  },
-  {
-    "guess": "สสดหก",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 1
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
       "-",
       "x"
     ],
-    "attempt": 2
+    "attempt": 1,
+    "game_number": 1,
+    "secret_word": "STOOL"
   },
   {
-    "guess": "PEEKY",
+    "guess": "SOUND",
     "correct": false,
     "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 3
-  },
-  {
-    "guess": "PEEKY",
-    "correct": false,
-    "feedback": [
-      "x",
+      "✓",
       "-",
       "x",
       "x",
       "x"
     ],
-    "attempt": 1,
-    "game_number": 1
+    "attempt": 2,
+    "game_number": 1,
+    "secret_word": "STOOL"
   },
   {
-    "guess": "APPLE",
+    "guess": "SKATE",
     "correct": false,
     "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "-"
-    ],
-    "attempt": 1,
-    "game_number": 2
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
+      "✓",
       "x",
       "x",
       "-",
       "x"
     ],
-    "attempt": 1,
-    "game_number": 3
+    "attempt": 3,
+    "game_number": 1,
+    "secret_word": "STOOL"
   },
   {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "-",
-      "x"
-    ],
-    "attempt": 1,
-    "game_number": 4
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "-",
-      "x"
-    ],
-    "attempt": 1,
-    "game_number": 5
-  },
-  {
-    "guess": "APPLE",
+    "guess": "STOOL",
     "correct": true,
     "feedback": [
       "✓",
@@ -122,24 +51,26 @@
       "✓",
       "✓"
     ],
-    "attempt": 1,
-    "game_number": 6
+    "attempt": 4,
+    "game_number": 1,
+    "secret_word": "STOOL"
   },
   {
-    "guess": "APPLE",
+    "guess": "HOUSE",
     "correct": false,
     "feedback": [
-      "x",
-      "x",
-      "x",
+      "✓",
       "-",
+      "x",
+      "x",
       "x"
     ],
     "attempt": 1,
-    "game_number": 7
+    "game_number": 2,
+    "secret_word": "HAVOC"
   },
   {
-    "guess": "CLOUD",
+    "guess": "HAVOC",
     "correct": true,
     "feedback": [
       "✓",
@@ -149,419 +80,7 @@
       "✓"
     ],
     "attempt": 2,
-    "game_number": 7
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "-",
-      "x",
-      "x",
-      "✓"
-    ],
-    "attempt": 1,
-    "game_number": 8
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 1,
-    "game_number": 9
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "-",
-      "-",
-      "x",
-      "-",
-      "-"
-    ],
-    "attempt": 1,
-    "game_number": 10
-  },
-  {
-    "guess": "SUPER",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "-",
-      "-",
-      "x"
-    ],
-    "attempt": 2,
-    "game_number": 10
-  },
-  {
-    "guess": "LOOPE",
-    "correct": false,
-    "feedback": [
-      "-",
-      "x",
-      "x",
-      "-",
-      "-"
-    ],
-    "attempt": 3,
-    "game_number": 10
-  },
-  {
-    "guess": "BAKER",
-    "correct": false,
-    "feedback": [
-      "x",
-      "-",
-      "x",
-      "-",
-      "x"
-    ],
-    "attempt": 4,
-    "game_number": 10
-  },
-  {
-    "guess": "SETER",
-    "correct": false,
-    "feedback": [
-      "x",
-      "✓",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 5,
-    "game_number": 10
-  },
-  {
-    "guess": "HELLO",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "✓",
-      "-"
-    ],
-    "attempt": 1,
-    "game_number": 11
-  },
-  {
-    "guess": "WORLD",
-    "correct": false,
-    "feedback": [
-      "x",
-      "-",
-      "x",
-      "✓",
-      "✓"
-    ],
-    "attempt": 2,
-    "game_number": 11
-  },
-  {
-    "guess": "JELLY",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "✓",
-      "x"
-    ],
-    "attempt": 3,
-    "game_number": 11
-  },
-  {
-    "guess": "KEEPE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 4,
-    "game_number": 11
-  },
-  {
-    "guess": "SSSSS",
-    "correct": false,
-    "feedback": [
-      "✓",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 5,
-    "game_number": 11
-  },
-  {
-    "guess": "HELLO",
-    "correct": false,
-    "feedback": [
-      "x",
-      "✓",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 1,
-    "game_number": 12
-  },
-  {
-    "guess": "WORLD",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 2,
-    "game_number": 12
-  },
-  {
-    "guess": "SOLID",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 3,
-    "game_number": 12
-  },
-  {
-    "guess": "HELLO",
-    "correct": false,
-    "feedback": [
-      "-",
-      "-",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 1,
-    "game_number": 13
-  },
-  {
-    "guess": "SOLID",
-    "correct": false,
-    "feedback": [
-      "-",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 2,
-    "game_number": 13
-  },
-  {
-    "guess": "PAPER",
-    "correct": false,
-    "feedback": [
-      "✓",
-      "-",
-      "x",
-      "-",
-      "x"
-    ],
-    "attempt": 3,
-    "game_number": 13
-  },
-  {
-    "guess": "SUPER",
-    "correct": false,
-    "feedback": [
-      "-",
-      "x",
-      "-",
-      "-",
-      "x"
-    ],
-    "attempt": 4,
-    "game_number": 13
-  },
-  {
-    "guess": "AUDIO",
-    "correct": false,
-    "feedback": [
-      "-",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 5,
-    "game_number": 13
-  },
-  {
-    "guess": "PAPER",
-    "correct": false,
-    "feedback": [
-      "✓",
-      "-",
-      "x",
-      "-",
-      "x"
-    ],
-    "attempt": 6,
-    "game_number": 13
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "✓",
-      "x",
-      "x",
-      "✓",
-      "✓"
-    ],
-    "attempt": 1,
-    "game_number": 14,
-    "secret_word": "AGILE"
-  },
-  {
-    "guess": "ATTLE",
-    "correct": false,
-    "feedback": [
-      "✓",
-      "x",
-      "x",
-      "✓",
-      "✓"
-    ],
-    "attempt": 2,
-    "game_number": 14,
-    "secret_word": "AGILE"
-  },
-  {
-    "guess": "SOUND",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 3,
-    "game_number": 14,
-    "secret_word": "AGILE"
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "✓"
-    ],
-    "attempt": 1,
-    "game_number": 15,
-    "secret_word": "TRUCE"
-  },
-  {
-    "guess": "SOUND",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "✓",
-      "x",
-      "x"
-    ],
-    "attempt": 2,
-    "game_number": 15,
-    "secret_word": "TRUCE"
-  },
-  {
-    "guess": "SMOKE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "✓"
-    ],
-    "attempt": 3,
-    "game_number": 15,
-    "secret_word": "TRUCE"
-  },
-  {
-    "guess": "SOUND",
-    "correct": false,
-    "feedback": [
-      "-",
-      "✓",
-      "x",
-      "-",
-      "x"
-    ],
-    "attempt": 1,
-    "game_number": 16,
-    "secret_word": "NOSEY"
-  },
-  {
-    "guess": "APPLE",
-    "correct": false,
-    "feedback": [
-      "x",
-      "x",
-      "x",
-      "x",
-      "✓"
-    ],
-    "attempt": 1,
-    "game_number": 17,
-    "secret_word": "CHORE"
-  },
-  {
-    "guess": "SOUND",
-    "correct": false,
-    "feedback": [
-      "x",
-      "-",
-      "x",
-      "x",
-      "x"
-    ],
-    "attempt": 2,
-    "game_number": 17,
-    "secret_word": "CHORE"
-  },
-  {
-    "guess": "OCEAN",
-    "correct": false,
-    "feedback": [
-      "-",
-      "-",
-      "-",
-      "x",
-      "x"
-    ],
-    "attempt": 3,
-    "game_number": 17,
-    "secret_word": "CHORE"
+    "game_number": 2,
+    "secret_word": "HAVOC"
   }
 ]
