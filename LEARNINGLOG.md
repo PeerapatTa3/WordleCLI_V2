@@ -111,6 +111,7 @@
 ---
 
 ### 🔹 Prompt 5: Adding Colorized Feedback and Offline Fallback
+> ⚠️ *Superseded:* colorama ถูกเลิกใช้ใน Sprint 3 (ใช้ `rich` แทน) และ API fallback ถูกแทนที่ด้วย offline word bank
 - **Student Prompt:**
   ```text
   เพิ่มฟีเจอร์สีให้ผลลัพธ์ Wordle แบบ ✓, -, x และทำให้โปรแกรมรองรับ Windows โดยใช้ colorama พร้อม fallback เมื่อ API ดึงคำไม่ได้
@@ -185,6 +186,7 @@
 ---
 
 ### 🔹 Prompt 8: Selecting Meaningful Five-Letter Words
+> ⚠️ *Superseded in Sprint 3:* Datamuse ย้ายไป `scripts/` เป็นเครื่องมือ build-time
 - **Student Prompt:**
   ```text
   เปลี่ยน API ให้ดึงคำอังกฤษที่มีความหมายจำนวนมากขึ้น ไม่เอาคำสุ่มที่แปลกหรือไม่มีความหมาย และยังต้องใช้ fallback local pool ได้เมื่อ API ล้มเหลว
@@ -263,6 +265,7 @@
 ---
 
 ### 🔹 Prompt 12: Validating Guesses Against the Full API Word List
+> ⚠️ *Superseded in Sprint 3:* ตรวจคำจาก `data/valid_words.txt` แทน API
 - **Student Prompt:**
   ```text
   ให้ระบบเช็คคำที่ผู้เล่นกรอกจากคำอังกฤษ 5 ตัวอักษรทั้งหมดที่ API ดึงมาได้ ไม่จำกัดเฉพาะคำใน local word pool และยังต้อง fallback ได้เมื่อ API ล้มเหลว
@@ -281,6 +284,7 @@
 ---
 
 ### 🔹 Prompt 13: Accepting Meaningful Words Outside the Top API List
+> ⚠️ *Superseded in Sprint 3:* ลบ Dictionary API ออก (ช้า 3-10 วินาทีต่อคำ)
 - **Student Prompt:**
   ```text
   คำที่มีความหมายอย่าง HELLO ถูกปฏิเสธ เพราะไม่อยู่ในรายการ wildcard 1,000 คำ ให้ตรวจคำจริงเพิ่มเติมด้วย exact-word API โดยยังปฏิเสธคำมั่ว
@@ -290,20 +294,6 @@
 - **Verified Result:**
   ```text
   Dictionary API integration tests passed; unknown word rejected; full suite: 31 passed
-  ```
-
----
-
-### 🔹 Prompt 15: Restoring the Legacy Grouped History View
-- **Student Prompt:**
-  ```text
-  ปรับ View History ของเวอร์ชันใหม่ให้เหมือนโปรเจกต์เก่า โดยรวมข้อมูลเป็นรายเกม แสดงสถานะ WON/LOST คำเฉลย และลำดับคำที่ทาย
-  ```
-- **AI Response Summary:**
-  จัดกลุ่ม history ด้วย `game_number`, เพิ่ม `secret_word` ใน record ใหม่ และแสดงสรุปแต่ละเกมเป็น `Game N (STATUS, secret: WORD)` พร้อมลำดับคำทายด้วยลูกศร
-- **Verified Result:**
-  ```text
-  Legacy grouped history test passed; full suite: 33 passed
   ```
 
 ---
@@ -322,6 +312,20 @@
 
 ---
 
+### 🔹 Prompt 15: Restoring the Legacy Grouped History View
+- **Student Prompt:**
+  ```text
+  ปรับ View History ของเวอร์ชันใหม่ให้เหมือนโปรเจกต์เก่า โดยรวมข้อมูลเป็นรายเกม แสดงสถานะ WON/LOST คำเฉลย และลำดับคำที่ทาย
+  ```
+- **AI Response Summary:**
+  จัดกลุ่ม history ด้วย `game_number`, เพิ่ม `secret_word` ใน record ใหม่ และแสดงสรุปแต่ละเกมเป็น `Game N (STATUS, secret: WORD)` พร้อมลำดับคำทายด้วยลูกศร
+- **Verified Result:**
+  ```text
+  Legacy grouped history test passed; full suite: 33 passed
+  ```
+
+---
+
 ### 🔹 Prompt 16: Upgrading to a Rich-based Visual UI
 - **Student Prompt:**
   ```text
@@ -332,7 +336,69 @@
 - **Verified Result:**
   ```text
   `python -c "import src.cli"` imports cleanly; manual play-through renders bordered board/menus correctly.
-  6 of 15 tests in tests/test_cli.py now fail because they monkeypatch builtins.input or assert plain text via capsys — these need updating to mock rich's Console before the suite returns to 35 passed.
+  ตอนนั้นคาดว่าเทสต์ใน tests/test_cli.py จะพังเพราะเปลี่ยนไปใช้ rich; ตรวจซ้ำใน Sprint 3 พบว่า `console.input` เรียก `input()` ภายใน
+  และ capsys ยังจับ output ได้ จึงผ่านครบ (tests/test_cli.py: 20 passed)
+  ```
+
+---
+
+### 🔹 Sprint 3 work records (17-19)
+
+> **ทีมต้องเติมช่อง Student Prompt ด้วย prompt จริงที่ใช้** — ส่วน AI Response Summary และ Verified Result ด้านล่างสรุปจากการเปลี่ยนแปลงใน repo และผลรัน `pytest`
+
+### 🔹 Prompt 17: Offline-First Word Bank
+- **Student Prompt:**
+  ```text
+  ปรับระบบ Word Bank ของเกมให้เล่นแบบ Offline ได้ โดยไม่ต้องเรียก Datamuse หรือ Dictionary API ตอนเล่นเกมและให้คำศัพท์ถูกเก็บไว้ในไฟล์ภายในโปรเจกต์ และถ้าไฟล์มีปัญหาก็ยังสามารถรันเกมได้
+  จากนั้นให้ช่วยปรับ test ที่เกี่ยวข้องให้ด้วย
+
+  ```
+- **AI Response Summary:**
+  เลิกเรียก Datamuse/Dictionary API ตอนเล่น เปลี่ยนเป็นไฟล์ `data/answers.txt` และ `data/valid_words.txt` โหลดผ่าน `load_word_bank()` (path จาก `Path(__file__)`, มี default pool เมื่อไฟล์หาย/ว่าง) และตรวจคำด้วย `set` lookup; ย้าย Datamuse ไป `scripts/`; เพิ่ม `scripts/build_wordlists.py`
+- **Live Verification Code:**
+  ```python
+  from src.word_bank import load_word_bank
+  answers, valid = load_word_bank(5)
+  print(len(answers), len(valid), set(answers) <= set(valid))
+  ```
+- **Verified Result:**
+  ```text
+  1984 8636 True; tests/test_word_bank.py: 13 passed (รวมเทสต์ไม่เรียก network และทำงานจากทุก CWD)
+  ```
+
+---
+
+### 🔹 Prompt 18: In-Place Redraw and Cleaner Error Handling
+- **Student Prompt:**
+  ```text
+  ปรับหน้าจอ CLI ของเกมให้ดูสะอาดขึ้น โดยไม่ต้อง print ข้อความที่ขึ้นดันต่อกันยาวๆ ทุกครั้งที่มีการทายใหม่หน่อย และอยากให้ข้อความ error และ input เก่าถูกจัดการให้เรียบร้อย และต้องไม่ขัดกับตัว test เดิม
+
+ช่วยเพิ่มหรือแก้ test ที่เกี่ยวข้องด้วย
+
+  ```
+- **AI Response Summary:**
+  เพิ่ม `erase_lines()`, `clear_screen()`, `render_game_screen()` ให้กระดานวาดทับที่เดิม; `get_guess_input()` ลบบรรทัดที่พิมพ์และ error เดิมก่อนทายใหม่ (รวมถึง input ยาวที่ขึ้นบรรทัดใหม่); ทุกอย่างไม่ทำงานเมื่อ output ไม่ใช่ terminal; hint แสดงใต้กระดานโดยนับบรรทัดเพิ่ม
+- **Verified Result:**
+  ```text
+  erase_lines เรียกด้วย [1, 2, 2] เมื่อผิดสองครั้งแล้วถูก; erase/clear เป็น no-op เมื่อไม่ใช่ terminal
+  หมายเหตุ: test_hint_message_is_passed_to_next_redraw ยังไม่ผ่าน เพราะเทสต์คาดว่า hint ถูกส่งเป็น message= แต่โค้ดพิมพ์ตรง
+  ```
+
+---
+
+### 🔹 Prompt 19: Refactor and State/Data Hardening
+- **Student Prompt:**
+  ```text
+  refactor โค้ดของเกมให้เป็นระเบียบมากขึ้นหน่อย โดยแยกส่วนที่เกี่ยวกับการแสดงผลและการจัดการ history ออกจาก cli.py 
+  แล้วตรวจสอบการจัดการข้อมูลและ state ต่าง ๆ ให้ปลอดภัยขึ้น และทำให้ history จัดการข้อมูลไม่ให้มีข้อมูลผิดรูปแบบหรือบันทึกข้อมูลไม่สำเร็จ
+  หลังจากแก้แล้วรัน test ทั้งหมดและตรวจสอบว่ามีอะไร fail อีกหรือไม่
+
+  ```
+- **AI Response Summary:**
+  แยก `BoardRenderer` และ `history_manager` ออกจาก `cli.py`; เพิ่ม `MAX_ATTEMPTS` / `WORD_LENGTH`; ลบ `colorize_feedback()`; `_persist()` โหลด history ใหม่ก่อนเขียนทุกครั้ง; `HISTORY_PATH` อิงจาก `Path(__file__)`; `load_data()` ทนไฟล์ที่ไม่ใช่ list และ record ที่ไม่ใช่ dict; `answer` ทิ้งเกมที่ไม่จบ; เตือนเมื่อบันทึกไม่สำเร็จ
+- **Verified Result:**
+  ```text
+  tests/test_sprint3.py: 16 passed, 1 failed (hint redraw); full suite: 71 passed, 1 failed (72 tests)
   ```
 
 ---
@@ -345,6 +411,9 @@
 - การทำ unit test สำหรับ edge case เป็นส่วนสำคัญของ QA และช่วยลดความเสี่ยงก่อนเขียน Sprint ถัดไป
 - การใช้ `monkeypatch` ทำให้ทดสอบ network failure และ API response ได้โดยไม่พึ่งพาอินเทอร์เน็ตจริง
 - การใช้ `tmp_path` ช่วยทดสอบการอ่านเขียนไฟล์โดยไม่เปลี่ยนแปลงข้อมูลจริงในโฟลเดอร์ `data/`
+- การพึ่งพา API ภายนอกทุกคำทายทำให้ช้าและเปราะบาง การย้ายไปใช้ข้อมูลในเครื่อง (offline-first) ทำให้เร็วและทดสอบง่ายขึ้น
+- การอ่านไฟล์ประวัติใหม่ก่อนเขียนทุกครั้งช่วยไม่ให้ข้อมูลในหน่วยความจำที่เก่าไปทับไฟล์ที่ถูกแก้ระหว่างรัน
+- เมื่อเปลี่ยน design ต้องอัปเดตเทสต์และเอกสารตามทันที (เช่น เคส hint ที่ยังค้าง)
 
 ---
 
@@ -355,7 +424,10 @@
 - สามารถทดสอบ valid/invalid input ได้จริงและปรับปรุงความปลอดภัยของโปรแกรม
 - เพิ่ม automated test จาก 13 เป็น 22 เคส และครอบคลุม business logic, persistence, API fallback และ legacy-compatible CLI features มากขึ้น
 
+- (Sprint 3) เล่นได้ offline และตรวจคำทันที; กระดานและ error ไม่ซ้อนกันอีก; `cli.py` เบาลงหลังแยก `BoardRenderer` และ `history_manager`
+
 ### Whoops!
+- (Sprint 3) เปลี่ยนวิธีแสดง hint แล้วเทสต์เก่าไม่ตรง (ค้าง 1 เคส); `colorama` ยังค้างใน `requirements.txt`; เอกสารตามโค้ดไม่ทันจนต้องไล่แก้ทีเดียว
 - ในช่วงแรกยังคงมีความสับสนเรื่องโครงสร้างโมดูลและการจัดการเอกสาร README
 - ได้แก้ไขโดยปรับใช้แผนงานใน [PLAN.md](./PLAN.md) และจัดทีมตามบทบาทตาม Sprint
 
@@ -363,12 +435,12 @@
 
 ## 5. Evidence of Work
 
-- CLI implementation: [cli.py](./cli.py)
 - Entry point: [game.py](./game.py)
-- Game logic: [src/game_logic.py](./src/game_logic.py)
-- Data manager: [src/data_manager.py](./src/data_manager.py)
-- Live word API fallback: [src/word_api.py](./src/word_api.py)
-- Tests: [tests/test_cli.py](./tests/test_cli.py) and [tests/test_logic.py](./tests/test_logic.py)
-- API tests: [tests/test_word_api.py](./tests/test_word_api.py)
+- Presentation layer: [src/cli.py](./src/cli.py), [src/board_renderer.py](./src/board_renderer.py) (root [cli.py](./cli.py) เป็น wrapper)
+- Game logic: [src/game_logic.py](./src/game_logic.py), [src/history_manager.py](./src/history_manager.py)
+- Data access: [src/data_manager.py](./src/data_manager.py), [src/word_bank.py](./src/word_bank.py), [data/](./data)
+- Build-time tools: [scripts/build_wordlists.py](./scripts/build_wordlists.py), [scripts/word_api.py](./scripts/word_api.py)
+- Tests: [tests/](./tests) (72 เคส, 7 ไฟล์)
 - Plan: [PLAN.md](./PLAN.md)
 - Changelog: [CHANGELOG.md](./CHANGELOG.md)
+- QA: [QA_REPORT.md](./QA_REPORT.md), [Sprint3_todo.md](./Sprint3_todo.md), [Sprints/](./Sprints)
