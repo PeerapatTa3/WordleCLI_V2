@@ -82,5 +82,243 @@
     "attempt": 2,
     "game_number": 2,
     "secret_word": "HAVOC"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "-",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 3,
+    "secret_word": "CHIRP"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "-"
+    ],
+    "attempt": 1,
+    "game_number": 4,
+    "secret_word": "SEWED"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 2,
+    "game_number": 4,
+    "secret_word": "SEWED"
+  },
+  {
+    "guess": "SANDS",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 4,
+    "secret_word": "SEWED"
+  },
+  {
+    "guess": "STAND",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 4,
+    "game_number": 4,
+    "secret_word": "SEWED"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 5,
+    "game_number": 4,
+    "secret_word": "SEWED"
+  },
+  {
+    "guess": "DRAWN",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 6,
+    "game_number": 4,
+    "secret_word": "SEWED"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 5,
+    "secret_word": "SOLVE"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "-",
+      "✓"
+    ],
+    "attempt": 2,
+    "game_number": 5,
+    "secret_word": "SOLVE"
+  },
+  {
+    "guess": "SOLVE",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 3,
+    "game_number": 5,
+    "secret_word": "SOLVE"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 6,
+    "secret_word": "PATTY"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 7,
+    "secret_word": "TOTAL"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 7,
+    "secret_word": "TOTAL"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 7,
+    "secret_word": "TOTAL"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 4,
+    "game_number": 7,
+    "secret_word": "TOTAL"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 5,
+    "game_number": 7,
+    "secret_word": "TOTAL"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 6,
+    "game_number": 7,
+    "secret_word": "TOTAL"
   }
 ]

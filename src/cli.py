@@ -7,6 +7,7 @@ and integration with the game logic and JSON persistence modules.
 import os
 import random
 
+from rich.cells import cell_len
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -22,6 +23,9 @@ WORD_LENGTH = 5
 
 console = Console()
 renderer = BoardRenderer(console)
+
+# Number of terminal lines used by the last game-screen render.
+_last_render_lines = 0
 
 
 def display_welcome_message():
@@ -76,12 +80,21 @@ def clear_screen():
 
 
 def render_game_screen(board_history, attempt, max_attempts, word_length, message=None):
-    """Redraw the full game screen in place."""
-    clear_screen()
-    console.print(f"[bold cyan]Attempt {attempt}/{max_attempts}[/bold cyan]\n")
-    renderer.render_board(board_history, max_attempts, word_length)
-    if message:
-        console.print(message)
+    """Redraw the game screen over the previous one instead of clearing the terminal."""
+    global _last_render_lines
+
+    # Render to a string first so we know how many lines it takes.
+    with console.capture() as capture:
+        console.print(f"[bold cyan]Attempt {attempt}/{max_attempts}[/bold cyan]\n")
+        renderer.render_board(board_history, max_attempts, word_length)
+        if message:
+            console.print(message)
+    output = capture.get()
+
+    erase_lines(_last_render_lines)  # move up and wipe the old board
+    console.file.write(output)
+    console.file.flush()
+    _last_render_lines = output.count("\n")
 
 
 def get_guess_input(word_length, valid_words=None):
@@ -92,10 +105,14 @@ def get_guess_input(word_length, valid_words=None):
     previous prompt are erased together so errors never stack.
     """
     error_shown = False
+    prompt = f"Enter a {word_length}-letter word: "
     while True:
-        guess = console.input(f"[bold white]Enter a {word_length}-letter word: [/bold white]").strip()
-        erase_lines(2 if error_shown else 1)
+        raw = console.input(f"[bold white]{prompt}[/bold white]")
+        # Long input wraps onto extra terminal rows; erase all of them.
+        typed_rows = max(1, -(-(cell_len(prompt) + cell_len(raw)) // console.width))
+        erase_lines(typed_rows + (1 if error_shown else 0))
         error_shown = False
+        guess = raw.strip()
 
         if guess.lower() in {"hint", "answer"}:
             return guess.lower()
@@ -257,6 +274,9 @@ def get_secret_word(answers):
 
 def play_game():
     """Run a full Wordle game round using the local word bank."""
+    global _last_render_lines
+    _last_render_lines = 0  # first render must not erase the menu above
+
     answers, valid_words = load_word_bank(WORD_LENGTH)
     if not answers:
         console.print("[bold red]No words available to play.[/bold red]")
@@ -276,12 +296,20 @@ def play_game():
     save_warned = False
     attempt = 1
     message = None
+    needs_render = True
     while attempt <= MAX_ATTEMPTS:
-        render_game_screen(board_history, attempt, MAX_ATTEMPTS, game.word_length, message)
-        message = None
+        if needs_render:
+            render_game_screen(board_history, attempt, MAX_ATTEMPTS, game.word_length, message)
+            message = None
+        needs_render = True
         guess = get_guess_input(game.word_length, valid_words)
         if guess == "hint":
-            message, revealed_positions = hint_text(game.secret_word, revealed_positions)
+            # Print the hint below the board without redrawing it. Count the
+            # extra line so the next redraw erases it together with the board.
+            hint_message, revealed_positions = hint_text(game.secret_word, revealed_positions)
+            console.print(hint_message)
+            _last_render_lines += 1
+            needs_render = False
             continue
         if guess == "answer":
             # Giving up is a testing aid: drop this game's partial records so
