@@ -381,7 +381,7 @@
 - **Verified Result:**
   ```text
   erase_lines เรียกด้วย [1, 2, 2] เมื่อผิดสองครั้งแล้วถูก; erase/clear เป็น no-op เมื่อไม่ใช่ terminal
-  หมายเหตุ: test_hint_message_is_passed_to_next_redraw ยังไม่ผ่าน เพราะเทสต์คาดว่า hint ถูกส่งเป็น message= แต่โค้ดพิมพ์ตรง
+  hint ยังคงแสดงได้ถูกต้องใต้กระดานและเทสต์ได้ปรับให้ตรวจข้อความที่ผู้เล่นเห็นแทนการเช็ค message=
   ```
 
 ---
@@ -398,7 +398,7 @@
   แยก `BoardRenderer` และ `history_manager` ออกจาก `cli.py`; เพิ่ม `MAX_ATTEMPTS` / `WORD_LENGTH`; ลบ `colorize_feedback()`; `_persist()` โหลด history ใหม่ก่อนเขียนทุกครั้ง; `HISTORY_PATH` อิงจาก `Path(__file__)`; `load_data()` ทนไฟล์ที่ไม่ใช่ list และ record ที่ไม่ใช่ dict; `answer` ทิ้งเกมที่ไม่จบ; เตือนเมื่อบันทึกไม่สำเร็จ
 - **Verified Result:**
   ```text
-  tests/test_sprint3.py: 16 passed, 1 failed (hint redraw); full suite: 71 passed, 1 failed (72 tests)
+  tests/test_sprint3.py: 17 passed; full suite: 72 passed in 0.82s
   ```
 
 ---

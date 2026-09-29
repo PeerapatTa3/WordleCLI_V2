@@ -2,8 +2,8 @@
 
 Two changes: (A) offline-first local dictionary, (B) in-place redraw for a cleaner CLI.
 
-> **Status (checked against the full repo and a `pytest` run, 2026-09-29):** 72 tests, 71 pass, 1 fails
-> (`test_hint_message_is_passed_to_next_redraw`, see F1). Manual terminal checks (section D) are not verified yet.
+> **Status (checked against the full repo and a `pytest` run, 2026-09-29):** 72 tests, 72 pass
+> Manual terminal checks (section D) are not verified yet.
 
 ## A. Local dictionary (no network at runtime)
 
@@ -43,7 +43,7 @@ Two changes: (A) offline-first local dictionary, (B) in-place redraw for a clean
 - [x] Update `tests/test_cli.py` (20 tests, all pass; no reference to `fetch_valid_words`).
 - [x] New: game works with no network (`test_load_word_bank_makes_no_network_calls`); missing/empty word file → default list; `answers ⊆ valid_words`; `WORDLE_TEST_WORD` accepted as a guess. `cli.py` imports no network library, so guess validation cannot call `requests`.
 - [x] New: `erase_lines` / `clear_screen` write nothing when not a terminal; invalid guess prints one "Invalid guess" line; consecutive errors erase `[1, 2, 2]` lines.
-- [ ] `hint` keeps its message visible: test exists but **fails** (`test_hint_message_is_passed_to_next_redraw` expects the hint via `message=`, code prints it directly). `answer` handling is covered and passes (see F3).
+- [x] `hint` keeps its message visible: the test now checks the on-screen hint text rather than `message=` to `render_game_screen()`. `answer` handling is covered and passes (see F3).
 - [x] `tests/test_word_api.py` now targets `scripts.word_api`; `tests/test_today_word.py` covers `src.word_api.today_word`.
 
 ## D. Manual checks
@@ -62,7 +62,7 @@ Two changes: (A) offline-first local dictionary, (B) in-place redraw for a clean
 
 ## F. Follow-ups found in code review
 
-- [x] **F1. `hint` message is erased immediately.** Fixed in the code: the hint is printed under the board, the loop skips the redraw (`needs_render = False`) and the extra line is counted. **Open:** `tests/test_sprint3.py::test_hint_message_is_passed_to_next_redraw` still asserts the older design (hint passed as `message=`) and fails. Either rewrite that test to check the printed hint / `_last_render_lines`, or change `play_game()` to pass the message.
+- [x] **F1. `hint` message is erased immediately.** Fixed in the code and the test: the hint is printed under the board, the loop skips the redraw (`needs_render = False`), and the regression check asserts the actual player-visible hint text instead of a `message=` argument.
 - [x] **F2. Invalid-guess errors stack.** `get_guess_input()` tracks `error_shown` and erases the typed rows (including wrapped long input) plus the old error line.
 - [x] **F3. `answer` leaves an unfinished game.** Decided: discard the game's records (`_discard_game`). Tested by `test_answer_discards_partial_game` and `test_answer_before_any_guess_writes_nothing`.
 - [x] **F4. `HISTORY_PATH`** now resolves from `Path(__file__)` (`test_history_path_is_not_cwd_relative`).
@@ -85,4 +85,4 @@ Two changes: (A) offline-first local dictionary, (B) in-place redraw for a clean
 - [x] No `requests` calls during gameplay (`cli.py` has no network imports).
 - [x] One board visible at a time; typed guess line doesn't remain; invalid guesses replace the previous error. *(logic done and unit-tested; confirm visually, see D.)*
 - [x] No escape codes or clears when output is not a terminal (`erase_lines` / `clear_screen` are guarded by `console.is_terminal`).
-- [ ] `pytest` passes. *(71 of 72; the failing test is described in F1.)*
+- [x] `pytest` passes. *(72 of 72; verified with `python -m pytest -q`.)*
