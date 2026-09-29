@@ -1,7 +1,7 @@
 # QA Report — Sprint 1-3 Integration
 
 **Project:** Wordle CLI V.2  
-**Sprint:** 1  
+**Sprint:** 1-3 (สถานะปัจจุบัน: จบ Sprint 3)  
 **Week:** 12  
 **Members:** เทน (Planner), ซอก (Coder), พี (Debugger)
 
@@ -9,28 +9,35 @@
 
 ## 1. Sprint Progress Summary
 
+### Sprint 1-2
 - [x] Defined CLI scope and Definition of Done in PLAN.md
 - [x] Implemented welcome banner and main menu
 - [x] Completed input validation for menu and guess handling
-- [x] Added core game logic for Wordle feedback calculation
-- [x] Added JSON-based history persistence and read-only word pool loading
-- [x] Added colorized feedback output using `colorama`
-- [x] Upgraded the CLI presentation layer to a `rich`-based UI (Panel/Table for menu, board, history, and stats; spinner while validating a guess)
-- [x] Added fallback word fetching from public API through `src/word_api.py`
-- [x] Added unit tests for logic and CLI validation
-- [x] Added deterministic tests for API success, invalid responses, network failure, and duplicate removal
-- [x] Added edge-case tests for duplicate letters and corrupted JSON
+- [x] Added core game logic for Wordle feedback calculation (duplicate-letter aware)
+- [x] Added JSON-based history persistence
 - [x] Restored and tested Statistics and How to Play menu features from the legacy project
-- [x] Restored word-pool validation so unknown words are rejected
-- [x] Added and tested in-game hint and answer commands
-- [x] Added validation against the complete filtered API word list with local fallback
-- [x] Added exact-word API fallback for meaningful words omitted from the top list
-- [x] Kept common words available through local fallback during Dictionary API timeout
-- [x] Verified Python-based CLI flow works without crashing
+- [x] Added and tested in-game `hint` and `answer` commands
+- [x] Upgraded the CLI presentation layer to a `rich`-based UI (Panel/Table for menu, board, history, and stats)
+- [x] Added edge-case tests for duplicate letters and corrupted JSON
+
+### Sprint 3
+- [x] Replaced API-based word validation with an offline-first word bank (`src/word_bank.py`, `data/answers.txt` 1,984 words, `data/valid_words.txt` 8,636 words); guesses are checked by set lookup, no network at runtime
+- [x] Moved Datamuse helpers to `scripts/` (build-time only); removed the Dictionary API, retry and cache
+- [x] Added `scripts/build_wordlists.py` to generate the word lists
+- [x] In-place redraw: `erase_lines()`, `clear_screen()`, `render_game_screen()`; invalid-guess line is replaced instead of stacked
+- [x] Extracted `BoardRenderer` and `history_manager` from `cli.py`; added `MAX_ATTEMPTS` / `WORD_LENGTH`; removed `colorize_feedback()` and colorama usage
+- [x] History is reloaded from disk before every write; `HISTORY_PATH` resolved from `Path(__file__)`
+- [x] `load_data()` returns `[]` for non-list JSON and drops non-dict records; save failure shows one warning
+- [x] `answer` discards the unfinished game so history/statistics never show it
+- [x] Added tests: `test_word_bank.py`, `test_sprint3.py`, `test_boardrenderer.py`, `test_today_word.py`
+- [ ] `pytest` fully green (71 of 72 pass)
+- [ ] Manual terminal checks (Windows Terminal, Unix terminal, redirected output)
 
 ---
 
 ## 2. Bug/Validation Report
+
+### 2.1 Input, logic and persistence (Sprint 1-2, still valid)
 
 | Test Case | Observation | Expected | Actual | Status |
 |---|---|---|---|---|
@@ -43,47 +50,82 @@
 | Valid 5-letter word | User enters `APPLE` | Accept and continue | Input accepted and returned uppercase | PASS |
 | Duplicate letters | Guess `ALLEY` against `APPLE` | Only available matching letters receive yellow feedback | Feedback is `['✓', '-', 'x', '-', 'x']` | PASS |
 | Corrupted history file | JSON cannot be decoded | Loader returns an empty list without crashing | `load_data()` returns `[]` | PASS |
-| API network failure | API request raises an exception | Word fetch returns `None` safely | `fetch_random_word()` returns `None` | PASS |
-| Duplicate API words | API returns the same word more than once | Word pool contains unique words | `fetch_word_pool()` removes duplicates | PASS |
 | Statistics | Saved history contains multiple games | Show win rate, streak, and guess distribution | Statistics summary is displayed correctly | PASS |
 | How to Play | User selects the help menu | Explain rules and feedback markers | Help text is displayed | PASS |
-| Unknown word | User enters a 5-letter word outside the pool | Reject the guess and ask again | Unknown word is rejected | PASS |
 | Hint command | User enters `hint` during a round | Reveal one letter without consuming an attempt | One letter is shown | PASS |
 | Answer command | User enters `answer` during a round | Reveal the secret and end the round | Secret word is displayed | PASS |
-| Dictionary word | Dictionary API returns a definition for `HELLO` | Accept the meaningful word | `HELLO` is accepted | PASS |
-| Unknown dictionary word | Dictionary API returns no entry for `QZXJK` | Reject when no definition exists | Unknown word is rejected | PASS |
-| Local fallback words | Dictionary API is unavailable | Accept known local words | `HELLO` and `WORLD` are accepted | PASS |
-| Local fallback word | Dictionary API is unavailable | Accept known word `ELECT` | `ELECT` is accepted | PASS |
-| Invalid spelling/length | User enters `POFIT` or `PROFIT` | Reject unknown or non-five-letter input | Invalid input is rejected | PASS |
+
+### 2.2 Word validation (changed in Sprint 3)
+
+| Test Case | Observation | Expected | Actual | Status |
+|---|---|---|---|---|
+| Common words offline | `HELLO`, `WORLD`, `ELECT`, `UPPER`, `MINER` | Accepted without any network call | Accepted from local `valid_words` | PASS |
+| Unknown word | User enters `QZXJK` or `POFIT` | Reject the guess and ask again | Rejected (not in word list) | PASS |
+| Wrong length | User enters `PROFIT` | Reject non-five-letter input | Rejected | PASS |
+| Word lists consistent | Real data files | Every answer is also a valid guess | `answers ⊆ valid_words` | PASS |
+| Files missing/empty/wrong length | No usable word file | Fall back to default pool, stay playable | `DEFAULT_WORD_POOL` used | PASS |
+| No network at load | `socket.connect` patched to raise | Loading the bank never touches the network | No error raised | PASS |
+| Any working directory | Run from another CWD | Same data files are found | Bank loads from `tmp_path` CWD | PASS |
+| Test word | `WORDLE_TEST_WORD=grape` | Used as secret and accepted as a guess | Accepted | PASS |
+
+> Sprint 1-2 cases about the Dictionary API (`HELLO` via API, retry/cache, unknown dictionary word) were removed with the API in Sprint 3.
+
+### 2.3 Integration and UX (Sprint 3)
+
+| Test Case | Observation | Expected | Actual | Status |
+|---|---|---|---|---|
+| Consecutive invalid guesses | `abc`, `abc`, then `APPLE` | Each error replaces the previous one | `erase_lines` called with `[1, 2, 2]` | PASS |
+| Output not a terminal | `erase_lines(3)` / `clear_screen()` with `force_terminal=False` | Nothing written | Nothing written | PASS |
+| Answer mid-game | `crane` then `answer` | Partial game not left in history | History is `[]` | PASS |
+| Answer before any guess | `answer` immediately | No history file written | File not created | PASS |
+| Full game win | `crane` then `grape` | Both guesses saved, correct flags and secret stored | Records match | PASS |
+| Second game | Play twice | `game_number` increments | `[1, 2]` | PASS |
+| History deleted mid-game | File rewritten to `[]` between guesses | Stale in-memory copy must not overwrite it | Only the later guess remains | PASS |
+| Save fails | `save_data` returns `False` | One warning, game continues | One warning shown | PASS |
+| History JSON is `{}`, `"abc"`, `42`, `null` | Wrong top-level type | Loader returns `[]` | Returns `[]` | PASS |
+| History has junk records | `["x", 3, None, {...}]` | Only dict records kept | Only the dict kept | PASS |
+| History path | Check `HISTORY_PATH` | Absolute, independent of CWD | Absolute, `history.json` | PASS |
+| Hint message reaches next redraw | `hint` then `grape`, `render_game_screen` recorded | Test expects hint passed as `message=` | `message` is `None`; hint was printed directly under the board | **FAIL** |
+
+**Note on the failing case:** the hint is shown to the player correctly. The current code prints it under the board and skips the redraw (`needs_render = False`), adding one to `_last_render_lines`. The test was written for an earlier design. Fix the test or change the code so both agree.
+
+### 2.4 Known leftovers
+
+| Item | Detail |
+|---|---|
+| `requirements.txt` | Still lists `colorama`, which the code no longer imports |
+| Duplicate helpers | `search_history` / `filter_history` exist in both `src/game_logic.py` and `src/history_manager.py` |
+| Manual checks | Not yet run: Windows Terminal, Unix terminal, output redirected to a file |
 
 ---
 
 ## 3. Retrospective
 
 ### Wow!
-- ระบบ CLI แยกฟังก์ชันได้ชัดเจนตาม Single Responsibility
+- ระบบ CLI แยกฟังก์ชันได้ชัดเจนตาม Single Responsibility และแยกเป็นโมดูลย่อย (`BoardRenderer`, `history_manager`, `word_bank`)
 - การ normalize input ด้วย `.strip()` และ `.lower()` ทำให้ผู้ใช้พิมพ์ผิดแบบเล็ก/ใหญ่หรือมีช่องว่างนำหน้า/ตามหลังยังทำงานได้
-- มี automated test ครอบคลุมความผิดพลาดหลักได้อย่างเหมาะสม
+- เปลี่ยนเป็น offline-first ทำให้ตรวจคำเร็วขึ้นมาก (จาก 3-10 วินาทีเป็นทันที) และเล่นได้โดยไม่ต้องมีอินเทอร์เน็ต
+- ทดสอบครอบคลุมทั้ง logic, persistence, word bank และ edge case ของการทำงานร่วมกัน (72 เคส)
 
 ### Whoops!
-- ในช่วงแรกยังมีความสับสนเรื่องการจัดโครงสร้างไฟล์และ README
-- ได้แก้ไขด้วยการใช้ [PLAN.md](./PLAN.md) เป็นแผนงานหลักและจัดโครงสร้างโปรเจกต์ให้ชัดเจนตาม Sprint
-- การเปลี่ยน `cli.py` ไปใช้ `rich` ทำให้เทสต์เดิมบางส่วนที่ `monkeypatch` บน `builtins.input`/`capsys` plain text ไม่ผ่านอีกต่อไป ต้องปรับเทสต์ให้ mock `console` ของ Rich ก่อน (ดู [TEST_PLAN.md](./tests/TEST_PLAN.md))
+- ในช่วงแรกยังมีความสับสนเรื่องการจัดโครงสร้างไฟล์และ README ซึ่งแก้ด้วยการใช้ [PLAN.md](./PLAN.md) เป็นแผนงานหลัก
+- ออกแบบให้ตรวจคำผ่าน Dictionary API ต่อคำทาย ซึ่งช้าและพึ่งพา network จึงต้องรื้อใน Sprint 3
+- การเปลี่ยนวิธีแสดง hint ทำให้เทสต์เดิมไม่ตรงกับโค้ด (ค้าง 1 เคส)
+- เอกสารตามโค้ดไม่ทัน ทำให้ README, TEST_PLAN และสไลด์ยังอ้างถึงสิ่งที่ถูกลบไปแล้ว (แก้แล้วในรอบนี้)
 
 ---
 
 ## 4. Delivery Status
 
-**Status:** Sprint 1-3 core features completed; Sprint Final CI/CD and AI integration remain.
+**Status:** Sprint 1-3 core features completed; Sprint Final (CI/CD, AI integration, global `wordle` command) ยังไม่เริ่ม
 
 **Pull Request Summary:**
-- Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hints, answer reveal, and meaningful-word API fallback
-- Testing: `pytest` executed successfully
-- Evidence: `33 passed`
+- Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hint/answer, offline-first word bank, in-place redraw, Rich UI
+- Testing: `python -m pytest -q` → 72 tests, **71 passed, 1 failed** (see 2.3)
 
 **PR Link:** To be filled when repository PR is created.
 
 ## 5. Test Plan and Sprint Test Cases
 
-รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](./TEST_PLAN.md)
-ตาราง Test Cases แบบ Quality Assurance Matrix อยู่ที่ [TEST_CASES.md](./TEST_CASES.md)
+รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](./tests/TEST_PLAN.md)
+ตาราง Test Cases แบบ Quality Assurance Matrix อยู่ที่ [TEST_CASES.md](./tests/TEST_CASES.md)
