@@ -6,6 +6,12 @@ Paths are relative to this module so the game works from any CWD.
 
 from pathlib import Path
 
+DEFAULT_WORD_POOL = [
+    "APPLE", "BRAVE", "CLOUD", "GRAPE", "LIGHT",
+    "MUSIC", "PEARL", "STONE", "SWORD", "TIGER",
+]
+
+
 def load_word_bank(length=5):
     """Load word bank from local files.
 
@@ -20,13 +26,10 @@ def load_word_bank(length=5):
     valid_words = _load_lines(base / "valid_words.txt", length)
 
     if not answers or not valid_words:
-        #console.print("[bold red]No word bank found. Please run `make data` to download the word lists.[/bold red]")
-        return (tuple(None), frozenset(None))
+        return (tuple(DEFAULT_WORD_POOL), frozenset(DEFAULT_WORD_POOL))
 
     valid_set = set(valid_words) | set(answers)
     return (tuple(answers), frozenset(valid_set))
-
-
 
 def _load_lines(path, length):
     """Return uppercase alpha words of the given length from a text file."""
