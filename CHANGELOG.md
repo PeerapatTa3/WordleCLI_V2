@@ -30,59 +30,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.2.0] - Sprint 2: Business Logic & Data Access
 ### Added
+- `WordleGame` domain model and `calculate_feedback()` in `src/game_logic.py` (duplicate-letter aware).
+- `search_history()` and `filter_history()` for guess history.
+- JSON persistence in `src/data_manager.py` (`save_data` / `load_data`) that never crashes on missing or corrupted files.
+- Statistics (win rate, streak, guess distribution) with per-game numbering in history records.
+- Legacy-compatible grouped history view (game status, secret word, guess sequence) and `How to Play` menu.
+- In-game `hint` and `answer` commands.
+- Optional `WORDLE_TEST_WORD` mode for testing with a known secret word.
+- Automated tests for duplicate-letter feedback, corrupted JSON, and persistence round-trips.
 
 ### Changed
-- Restored the legacy grouped history view with game status, secret word, and guess sequence.
-- Added three-attempt Dictionary API retry and successful-word cache for reliable definition checks.
-- `data/history.json` and `data/word_pool.json` are now used as persistent game state.
-- A live API fallback is also available through `src/word_api.py` for fetching 5-letter words when external connectivity is available.
-- Expanded automated tests to cover duplicate-letter feedback, corrupted JSON, API validation, network failure, and duplicate word removal.
-- Restored legacy-compatible `View Statistics` and `How to Play` menu features.
-- Added per-game numbering to history records for win rate, streak, and guess distribution calculations.
-- Restored legacy-compatible word-pool validation so guesses must be known words, while API-selected secret words remain valid guesses.
-- Added optional `WORDLE_TEST_WORD` mode for manual testing with a known secret word.
-- Replaced the disabled random-word endpoint with Datamuse API for larger lists of meaningful five-letter words.
-- Added popularity-score filtering and random selection from valid API results.
-- Added in-game `hint` and `answer` commands for assistance and manual testing.
-- Latest verification result: `35 passed`.
+- Word validation moved from "any 5 letters" to "must be a known word".
+
+### Note
+- Sprint 2 originally validated words through the Datamuse and Dictionary APIs. That design was
+  replaced in Sprint 3 (see below).
 
 ---
 
-## [v0.3.0] - Sprint 3: Full Integration (To be update)
+## [v0.3.0] - Sprint 3: Full Integration, Offline-First Words, In-Place Redraw
 ### Added
-- Connected CLI presentation, Wordle business logic, JSON persistence, and Datamuse API fallback through the main game flow.
-- Added synchronized history/statistics state with per-game numbering.
-- Added `hint` and `answer` commands that work inside an active game round.
-- Uses the complete filtered Datamuse word list to validate player guesses instead of only the local pool.
-- Added exact-word Datamuse fallback so common words omitted from the wildcard top list, such as `HELLO`, can still be used.
-- Switched exact-word meaning verification to `dictionaryapi.dev`, which checks that the word has dictionary meanings.
-- Added `HELLO` and `WORLD` to the read-only local fallback so common words remain playable during API timeouts.
+- `src/word_bank.py`: `load_word_bank()` returns `(answers, valid_words)` from local files
+  (`data/answers.txt`, `data/valid_words.txt`), resolved from `Path(__file__)`, with a built-in default pool.
+- `src/board_renderer.py` (`BoardRenderer`): shared tile/table rendering for the live board, history, and legend.
+- `src/history_manager.py`: history grouping and `calculate_stats()` extracted from the CLI.
+- In-place redraw helpers `erase_lines()`, `clear_screen()`, `render_game_screen()` (no-ops when output is not a terminal).
+- `hint_text()` pure function; hint messages now stay visible under the board.
+- `MAX_ATTEMPTS` and `WORD_LENGTH` constants.
+- `tests/test_word_bank.py`, `tests/test_boardrenderer.py`, `tests/test_sprint3.py`.
 
-### Completed
-- Handles missing/corrupted local data and unavailable API responses without crashing.
-- Keeps the word pool read-only from the user's perspective.
+### Changed
+- **Offline-first:** the secret word and guess validation use local files only. No network calls at runtime;
+  guess checking is an instant `set` lookup instead of a 3-10 second Dictionary API call.
+- `src/word_api.py` no longer serves the game; the Datamuse/Dictionary helpers live in `scripts/` as build-time tools.
+- Invalid guesses print a single error line that is replaced on retry instead of stacking.
+- `answer` now discards the unfinished game's records so history and statistics never show an incomplete game.
+- History is reloaded from disk before every write, so manual edits or a deleted file are respected.
+- `HISTORY_PATH` is resolved from `Path(__file__)` instead of the current working directory.
+- `load_data()` returns `[]` unless the file contains a JSON list, and drops non-dict records.
+- A failed history save shows a warning instead of failing silently.
+
+### Removed
+- Dead `colorize_feedback()` and the `colorama` dependency.
+- Runtime use of `data/word_pool.json` (file retired).
+- Per-guess Dictionary API validation, retry, and cache.
+
+### Fixed
+- Hint text was erased by the next screen redraw.
+- Consecutive invalid guesses stacked error lines.
+- `answer` left orphan games in `history.json`.
+- Running the game from another directory created a second history file.
 
 ---
 
 ## [Unreleased] - UI Enhancement: Rich-based Presentation Layer
 ### Added
-- Added `rich` as a new dependency in `requirements.txt`.
-- New `_render_wordle_board()` helper that renders each guess round as a bordered `rich.table.Table` inside a `rich.panel.Panel`.
-- Loading spinner (`console.status`) shown while a guess is checked against the word list/dictionary.
+- `rich` dependency; bordered Panel/Table rendering for the welcome banner, menu, board, history, statistics, and rules.
 
 ### Changed
-- Replaced plain `print()`/`input()` calls throughout `cli.py` with `console.print()`/`console.input()` from `rich.console.Console`.
-- Welcome banner, main menu, invalid-guess messages, victory, and game-over messages now render as color-coded `Panel`s instead of plain text.
-- `View History` now renders each past game as a colored letter grid inside a `Panel` instead of a text line of guesses.
-- `View Statistics` now renders win rate/streak inside a `Panel` table; guess distribution bars are bold green.
-
-### Known Issue
-- Tests in `tests/test_cli.py` that `monkeypatch("builtins.input", ...)` or assert plain text via `capsys` need to be updated for the Rich-based I/O and markup output before the suite returns to `35 passed`.
+- Replaced plain `print()`/`input()` in `cli.py` with `rich.console.Console` (`console.print` / `console.input`).
+- `View History` renders each past game as a colored letter grid; statistics use a Panel table with green bars.
 
 ---
 
 ## [v1.0.0] - Sprint Final: CI/CD & AI Integration (Planned)
 ### Planned
-- Add automated CI workflow through GitHub Actions.
+- Add automated CI workflow through GitHub Actions (lint + tests on push/PR).
+- Coverage reporting.
 - Extend AI or automation features such as gameplay statistics, smart word hints, or suggestion logic.
+- Global `wordle` / `wordle start` command via `pyproject.toml`.
 - Finalize presentation slides and project documentation.
