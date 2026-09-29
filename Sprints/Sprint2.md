@@ -2,25 +2,26 @@
 
 ## 1. สถานะปัจจุบัน
 
-Sprint 2 เสร็จสมบูรณ์แล้วและผ่านการตรวจสอบด้วยการรันเทสต์จริงของโปรเจกต์ โดยผลรวม: **35 passed**
+Sprint 2 เสร็จสมบูรณ์แล้วและผ่านการตรวจสอบด้วยการรันเทสต์จริงของโปรเจกต์ โดยผลรวม ณ ปิด Sprint: **35 passed** (ปัจจุบันทั้งโปรเจกต์มี 72 เคส ดู [Sprint3.md](Sprint3.md))
 
 ## 2. Scope ที่ทำเสร็จ
 
 ### Phase 1: Planning
 
-- กำหนดโครงสร้าง Business Logic และ Data Access ใน [PLAN.md](PLAN.md)
+- กำหนดโครงสร้าง Business Logic และ Data Access ใน [PLAN.md](../PLAN.md)
 - แยก logic เกมออกจาก CLI เพื่อให้เป็น Domain Model และ data helper ที่ชัดเจน
 - กำหนด DoD สำหรับการจัดการคำศัพท์, history, validation, และ exception handling
 
 ### Phase 2: Execution
 
-- สร้างคลาส `WordleGame` ใน [src/game_logic.py](src/game_logic.py)
+- สร้างคลาส `WordleGame` ใน [src/game_logic.py](../src/game_logic.py)
 - แยก `calculate_feedback()` สำหรับคำนวณผลตอบกลับแบบ Wordle
 - สร้างฟังก์ชัน `search_history()` และ `filter_history()` สำหรับค้นหาและกรองประวัติ
-- สร้าง `save_data()` และ `load_data()` ใน [src/data_manager.py](src/data_manager.py)
+- สร้าง `save_data()` และ `load_data()` ใน [src/data_manager.py](../src/data_manager.py)
 - สร้าง `load_word_pool()` เพื่อโหลดคำศัพท์และ fallback เมื่อไฟล์ว่าง/หาย
-- ดึงคำศัพท์จาก Datamuse และตรวจ validity ผ่าน Dictionary API ใน [src/word_api.py](src/word_api.py)
+- ดึงคำศัพท์จาก Datamuse และตรวจ validity ผ่าน Dictionary API ใน `src/word_api.py`
 - เพิ่ม retry และ cache สำหรับ handling API timeout
+- **หมายเหตุ:** ส่วน API นี้ถูกแทนที่ใน Sprint 3 ด้วย offline-first word bank (ดู [Sprint3.md](Sprint3.md)); โค้ด Datamuse ย้ายไป `scripts/`
 
 ### Phase 3: Review & Testing
 
@@ -41,7 +42,7 @@ Sprint 2 เสร็จสมบูรณ์แล้วและผ่าน�
 | Filter history | สำเร็จ |
 | Save/load JSON | สำเร็จ |
 | word_pool fallback | สำเร็จ |
-| Datamuse/Dictionary API helpers | สำเร็จ |
+| Datamuse/Dictionary API helpers | สำเร็จ (ตอนจบ Sprint 2; ถูกแทนที่ใน Sprint 3) |
 | Test suite ของโปรเจกต์ | 35 passed |
 
 ---

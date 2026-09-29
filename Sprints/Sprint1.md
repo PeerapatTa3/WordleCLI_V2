@@ -2,19 +2,19 @@
 
 ## 1. สถานะปัจจุบัน
 
-Sprint 1 เสร็จสมบูรณ์แล้วและผ่านการตรวจสอบด้วยการรันเทสต์จริงของโปรเจกต์ โดยผลการทดสอบรวมทั้งหมด: **35 passed**
+Sprint 1 เสร็จสมบูรณ์แล้วและผ่านการตรวจสอบด้วยการรันเทสต์จริงของโปรเจกต์ โดยผลการทดสอบรวม ณ ปิด Sprint: **35 passed** (ปัจจุบันทั้งโปรเจกต์มี 72 เคส ดู [Sprint3.md](Sprint3.md))
 
 ## 2. Scope ที่ทำเสร็จ
 
 ### Phase 1: Planning
 
-- กำหนดขอบเขตระบบ CLI ใน [PLAN.md](PLAN.md)
+- กำหนดขอบเขตระบบ CLI ใน [PLAN.md](../PLAN.md)
 - จัดทำโครงสร้าง Presentation Layer ให้แยกจาก Business Logic และ Data Layer
 - นิยาม Definition of Done สำหรับ UI/CLI และการตรวจสอบอินพุต
 
 ### Phase 2: Execution
 
-- สร้างเมนูหลักและข้อความต้อนรับใน [src/cli.py](src/cli.py)
+- สร้างเมนูหลักและข้อความต้อนรับใน [src/cli.py](../src/cli.py)
 - รองรับคำสั่งต่าง ๆ: Play, View History, View Statistics, How to Play, Exit
 - จัดการ input validation สำหรับเมนูและคำทาย
 - รองรับคำสั่ง `hint` และ `answer` ระหว่างเล่นเกม
