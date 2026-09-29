@@ -183,6 +183,10 @@
 - ตั้งค่า GitHub Actions workflow: รัน Linting + Unit Test อัตโนมัติทุกครั้งที่ push/PR
 - เพิ่มฟีเจอร์ AI หรือ Automation Agent เช่น วิเคราะห์สถิติการเล่น หรือแนะนำคำใบ้อัตโนมัติ
 - สรุปอุปสรรคที่พบตลอด Sprint 1-3 และแนวทาง Refactor
+- **Packaging ให้รันได้ทั่วเครื่อง (global install):** ทำให้เรียกเกมด้วยคำสั่ง `wordle` จาก terminal ไดเรกทอรีไหนก็ได้ ไม่ต้อง `cd` เข้า repo หรือพิมพ์ `python game.py`
+  - แก้ path ของ `history.json` / `answers.txt` / `valid_words.txt` ให้อ้างอิงจากตำแหน่งแพ็กเกจ (`Path(__file__)`) แทน current working directory
+  - เพิ่ม `pyproject.toml` พร้อม `[project.scripts]` ให้ `wordle = "src.cli:main"` เป็น entry point
+  - เพิ่มคำสั่งย่อย `wordle start` (ด้วย `argparse`) ให้เริ่มเกมทันทีโดยไม่ต้องผ่าน banner/เมนู
 
 ## 3. งานที่ต้องส่งมอบ
 | งาน | รายละเอียด |
@@ -190,6 +194,8 @@
 | `tests/test_logic.py` | Unit test ด้วย `unittest` หรือ `pytest` |
 | `.github/workflows/ci.yml` | Workflow รัน lint (เช่น `flake8`) + test อัตโนมัติ |
 | ฟีเจอร์ AI/Automation | เช่น สรุปสถิติคำที่ทายบ่อย หรือ agent ช่วยวิเคราะห์ผล |
+| `pyproject.toml` | Package metadata + `[project.scripts]` entry point (`wordle`) + `package-data` สำหรับไฟล์ word list |
+| `wordle start` subcommand | `argparse` sub-command เริ่มเกมทันที ข้าม banner/เมนู |
 | เอกสารสรุป Refactor | เปรียบเทียบทางเลือกโครงสร้างข้อมูล/สถาปัตยกรรมที่ใช้จริงกับทางเลือกอื่น (รวมกรณี validate คำผ่าน API ต่อคำทาย vs local set ใน Sprint 3) |
 
 ## 4. Definition of Done (DoD)
@@ -197,13 +203,15 @@
 - [ ] CI pipeline รันผ่านอัตโนมัติเมื่อเปิด PR และ block การ merge ถ้า test ไม่ผ่าน
 - [ ] ฟีเจอร์ AI ทำงานได้จริงและสาธิตได้ใน Live Demo
 - [ ] มีเอกสารสรุปปัญหาเทคนิคที่พบใน Sprint 1-3 พร้อมวิธีแก้ไข
+- [ ] รันคำสั่ง `wordle` ได้จากไดเรกทอรีใดก็ได้หลัง `pip install` (path ของไฟล์ข้อมูลไม่ผูกกับ CWD)
+- [ ] `wordle start` เริ่มเกมได้ทันทีโดยไม่แสดง banner/เมนู ส่วน `wordle` เปล่ายังทำงานเหมือนเดิม
 
 ## 5. สิ่งที่ต้องเตรียมนำเสนอ (5 ส่วนตาม Rubric)
 1. ปัญหา สถาปัตยกรรม และ UML Class Diagram
 2. Tech stack, เวอร์ชัน Python, ไลบรารี, Design Pattern ที่ใช้
 3. Live Demo ครบทุกฟังก์ชัน + Algorithm (search/filter/sort) + ทดสอบ error
 4. สรุปปัญหาเทคนิคที่พบ + การเปรียบเทียบทางเลือก
-5. สาธิต CI/CD บน GitHub Actions + ฟีเจอร์ AI + แนวทางต่อยอด
+5. สาธิต CI/CD บน GitHub Actions + ฟีเจอร์ AI + คำสั่ง `wordle` / `wordle start` แบบ global + แนวทางต่อยอด
 
 ## 6. Deliverable
 - Repository พร้อม CI/CD ที่ทำงานจริง

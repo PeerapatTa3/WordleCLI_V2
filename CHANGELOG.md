@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [v0.3.0] - Sprint 3: Full Integration
+## [v0.3.0] - Sprint 3: Full Integration (To be update)
 ### Added
 - Connected CLI presentation, Wordle business logic, JSON persistence, and Datamuse API fallback through the main game flow.
 - Added synchronized history/statistics state with per-game numbering.

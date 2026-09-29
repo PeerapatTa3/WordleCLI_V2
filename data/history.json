@@ -465,5 +465,103 @@
     "attempt": 3,
     "game_number": 14,
     "secret_word": "AGILE"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 1,
+    "game_number": 15,
+    "secret_word": "TRUCE"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "✓",
+      "x",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 15,
+    "secret_word": "TRUCE"
+  },
+  {
+    "guess": "SMOKE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 3,
+    "game_number": 15,
+    "secret_word": "TRUCE"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "-",
+      "✓",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 16,
+    "secret_word": "NOSEY"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 1,
+    "game_number": 17,
+    "secret_word": "CHORE"
+  },
+  {
+    "guess": "SOUND",
+    "correct": false,
+    "feedback": [
+      "x",
+      "-",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 17,
+    "secret_word": "CHORE"
+  },
+  {
+    "guess": "OCEAN",
+    "correct": false,
+    "feedback": [
+      "-",
+      "-",
+      "-",
+      "x",
+      "x"
+    ],
+    "attempt": 3,
+    "game_number": 17,
+    "secret_word": "CHORE"
   }
 ]

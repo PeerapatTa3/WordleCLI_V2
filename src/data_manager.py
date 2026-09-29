@@ -3,25 +3,12 @@
 import json
 from pathlib import Path
 
+HISTORY_PATH = Path("data/history.json")
 
-DEFAULT_WORD_POOL = [
-    "APPLE",
-    "BRAVE",
-    "CLOUD",
-    "GRAPE",
-    "LIGHT",
-    "MUSIC",
-    "PEARL",
-    "STONE",
-    "SWORD",
-    "TIGER",
-]
-
-
-def save_data(filepath, data):
+def save_data(data):
     """Save data to a JSON file and return True on success."""
     try:
-        path = Path(filepath)
+        path = Path(HISTORY_PATH)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=2)
@@ -30,23 +17,13 @@ def save_data(filepath, data):
         return False
 
 
-def load_data(filepath):
+def load_data():
     """Load data from a JSON file and return an empty list if missing."""
     try:
-        with open(filepath, "r", encoding="utf-8") as file:
+        with open(HISTORY_PATH, "r", encoding="utf-8") as file:
             return json.load(file)
     except FileNotFoundError:
         return []
     except (json.JSONDecodeError, OSError, TypeError):
         return []
-
-
-def load_word_pool(filepath):
-    """Load the word pool, creating a default list if the file does not exist."""
-    words = load_data(filepath)
-    if words:
-        return words
-    save_data(filepath, DEFAULT_WORD_POOL)
-    return DEFAULT_WORD_POOL.copy()
-
 
