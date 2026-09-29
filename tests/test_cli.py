@@ -1,4 +1,4 @@
-import os
+import io
 
 import pytest
 
@@ -101,13 +101,13 @@ def test_display_statistics_reports_wins_and_distribution(capsys):
     assert "3: █ (1)" in output
 
 
-def test_display_history_groups_records_by_game(capsys):
+def test_display_history_groups_records_by_game(monkeypatch, capsys):
     history = [
         {"guess": "HELLO", "correct": False, "game_number": 1, "secret_word": "APPLE"},
         {"guess": "APPLE", "correct": True, "game_number": 1, "secret_word": "APPLE"},
         {"guess": "WORLD", "correct": False, "game_number": 2, "secret_word": "ELECT"},
     ]
-    display_history.__globals__["load_data"] = lambda path: history
+    monkeypatch.setattr("src.cli.load_data", lambda *args, **kwargs: history)
     display_history()
     output = capsys.readouterr().out
     assert "Total Games Played: 2" in output
@@ -142,22 +142,24 @@ def test_display_answer_reveals_secret_word(capsys):
 def test_erase_lines_writes_nothing_when_not_terminal(monkeypatch):
     """erase_lines is a no-op when console.is_terminal is False."""
     from rich.console import Console
-    fake_console = Console(force_terminal=False, file=open(os.devnull, "w"))
+    buffer = io.StringIO()
+    fake_console = Console(force_terminal=False, file=buffer)
     monkeypatch.setattr("src.cli.console", fake_console)
-    written = []
-    monkeypatch.setattr(fake_console.file, "write", lambda s: written.append(s))
     erase_lines(3)
-    assert written == []
+    assert buffer.getvalue() == ""
+
 
 def test_clear_screen_writes_nothing_when_not_terminal(monkeypatch):
     """clear_screen is a no-op when console.is_terminal is False."""
     from rich.console import Console
-    fake_console = Console(force_terminal=False, file=open(os.devnull, "w"))
+    buffer = io.StringIO()
+    fake_console = Console(force_terminal=False, file=buffer)
     monkeypatch.setattr("src.cli.console", fake_console)
     cleared = []
     monkeypatch.setattr(fake_console, "clear", lambda: cleared.append(True))
     clear_screen()
     assert cleared == []
+    assert buffer.getvalue() == ""
 
 
 def test_word_bank_answers_subset_of_valid():

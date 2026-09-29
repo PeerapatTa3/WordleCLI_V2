@@ -1,6 +1,1 @@
-{
-  "tests/test_cli.py::test_display_history_groups_records_by_game": true,
-  "tests/test_logic.py::test_save_and_load_data_round_trip": true,
-  "tests/test_logic.py::test_load_data_returns_empty_list_for_missing_file": true,
-  "tests/test_logic.py::test_load_data_returns_empty_list_for_corrupted_json": true
-}
+{}

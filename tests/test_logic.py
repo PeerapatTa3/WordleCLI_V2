@@ -41,7 +41,7 @@ def test_filter_history_by_correct_flag():
 def test_save_and_load_data_round_trip(tmp_path):
     path = tmp_path / "history.json"
     payload = [{"guess": "APPLE", "correct": True}]
-    assert save_data(path, payload) is True
+    assert save_data(payload, path) is True
     assert load_data(path) == payload
 
 

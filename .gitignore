@@ -1,5 +1,38 @@
+# Existing project rules
 OLD_Miniproject_WordleCLI-main/
 OLD_PROJECT_HANDOVER(1)
 OLD_PROJECT_HANDOVER(1).md
 /OLD_Miniproject_WordleCLI-main
+
+# Byte-compiled / cache files
 __pycache__/
+.pytest_cache/
+*.pyc
+*.py[od]
+*$py.class
+
+# Environments & Virtual Envs
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Build & Distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Testing & Coverage
+.coverage
+htmlcov/
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
