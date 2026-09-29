@@ -460,5 +460,33 @@
     "attempt": 4,
     "game_number": 9,
     "secret_word": "BRINK"
+  },
+  {
+    "guess": "APPLE",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 1,
+    "game_number": 10,
+    "secret_word": "APPLE"
+  },
+  {
+    "guess": "APPLE",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 1,
+    "game_number": 11,
+    "secret_word": "APPLE"
   }
 ]
