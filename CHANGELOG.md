@@ -51,18 +51,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.3.0] - Sprint 3: Full Integration, Offline-First Words, In-Place Redraw
 ### Added
 - `src/word_bank.py`: `load_word_bank()` returns `(answers, valid_words)` from local files
-  (`data/answers.txt`, `data/valid_words.txt`), resolved from `Path(__file__)`, with a built-in default pool.
+  (`data/answers.txt` with 1,984 words, `data/valid_words.txt` with 8,636 words), resolved from `Path(__file__)`,
+  with a built-in default pool.
+- `scripts/build_wordlists.py` to generate the word lists from a source word list.
 - `src/board_renderer.py` (`BoardRenderer`): shared tile/table rendering for the live board, history, and legend.
 - `src/history_manager.py`: history grouping and `calculate_stats()` extracted from the CLI.
 - In-place redraw helpers `erase_lines()`, `clear_screen()`, `render_game_screen()` (no-ops when output is not a terminal).
 - `hint_text()` pure function; hint messages now stay visible under the board.
 - `MAX_ATTEMPTS` and `WORD_LENGTH` constants.
 - `tests/test_word_bank.py`, `tests/test_boardrenderer.py`, `tests/test_sprint3.py`.
+- Root `cli.py` compatibility wrapper (`from src.cli import *`).
 
 ### Changed
 - **Offline-first:** the secret word and guess validation use local files only. No network calls at runtime;
   guess checking is an instant `set` lookup instead of a 3-10 second Dictionary API call.
-- `src/word_api.py` no longer serves the game; the Datamuse/Dictionary helpers live in `scripts/` as build-time tools.
+- `src/word_api.py` no longer serves the game; the Datamuse helpers live in `scripts/word_api.py` as build-time tools
+  (the Dictionary API code was deleted).
 - Invalid guesses print a single error line that is replaced on retry instead of stacking.
 - `answer` now discards the unfinished game's records so history and statistics never show an incomplete game.
 - History is reloaded from disk before every write, so manual edits or a deleted file are respected.
@@ -71,12 +75,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A failed history save shows a warning instead of failing silently.
 
 ### Removed
-- Dead `colorize_feedback()` and the `colorama` dependency.
+- Dead `colorize_feedback()` and the `colorama` import/`init()` in the code (`colorama` is still listed in `requirements.txt` and can be deleted).
 - Runtime use of `data/word_pool.json` (file retired).
 - Per-guess Dictionary API validation, retry, and cache.
 
 ### Fixed
-- Hint text was erased by the next screen redraw.
+- Hint text was erased by the next screen redraw (now printed under the board and the extra line is counted).
 - Consecutive invalid guesses stacked error lines.
 - `answer` left orphan games in `history.json`.
 - Running the game from another directory created a second history file.
@@ -86,14 +90,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - UI Enhancement: Rich-based Presentation Layer
 ### Added
 - `rich` dependency; bordered Panel/Table rendering for the welcome banner, menu, board, history, statistics, and rules.
+- `src/word_api.py`: `today_word()` fetches the daily Wordle answer from the NYT endpoint (not used by the game at runtime) with `tests/test_today_word.py` (5 tests).
+- `load_data()` hardening tests: non-list JSON and non-dict records (`tests/test_sprint3.py`).
 
 ### Changed
 - Replaced plain `print()`/`input()` in `cli.py` with `rich.console.Console` (`console.print` / `console.input`).
 - `View History` renders each past game as a colored letter grid; statistics use a Panel table with green bars.
+- Test suite now has 72 tests across 7 files.
+
+### Known issues
+- `tests/test_sprint3.py::test_hint_message_is_passed_to_next_redraw` fails: it expects the hint to be passed as `message=` to `render_game_screen()`, but `play_game()` prints the hint directly under the board. Last run: 71 passed, 1 failed.
+- `colorama` is still in `requirements.txt` although no code imports it.
+- `search_history` / `filter_history` are defined in both `src/game_logic.py` and `src/history_manager.py`.
 
 ---
 
-## [v1.0.0] - Sprint Final: CI/CD & AI Integration (Planned)
+## [v....] - Sprint Final: CI/CD & AI Integration (Planned)
 ### Planned
 - Add automated CI workflow through GitHub Actions (lint + tests on push/PR).
 - Coverage reporting.
