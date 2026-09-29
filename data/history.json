@@ -320,5 +320,145 @@
     "attempt": 6,
     "game_number": 7,
     "secret_word": "TOTAL"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "x",
+      "-",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 8,
+    "secret_word": "FINAL"
+  },
+  {
+    "guess": "CLOUD",
+    "correct": false,
+    "feedback": [
+      "x",
+      "-",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 8,
+    "secret_word": "FINAL"
+  },
+  {
+    "guess": "PIZZA",
+    "correct": false,
+    "feedback": [
+      "x",
+      "✓",
+      "x",
+      "x",
+      "-"
+    ],
+    "attempt": 3,
+    "game_number": 8,
+    "secret_word": "FINAL"
+  },
+  {
+    "guess": "LOVER",
+    "correct": false,
+    "feedback": [
+      "-",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 4,
+    "game_number": 8,
+    "secret_word": "FINAL"
+  },
+  {
+    "guess": "JELLY",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "-",
+      "x",
+      "x"
+    ],
+    "attempt": 5,
+    "game_number": 8,
+    "secret_word": "FINAL"
+  },
+  {
+    "guess": "DEEPS",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 6,
+    "game_number": 8,
+    "secret_word": "FINAL"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "x"
+    ],
+    "attempt": 1,
+    "game_number": 9,
+    "secret_word": "BRINK"
+  },
+  {
+    "guess": "PHONE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "✓",
+      "x"
+    ],
+    "attempt": 2,
+    "game_number": 9,
+    "secret_word": "BRINK"
+  },
+  {
+    "guess": "BLINK",
+    "correct": false,
+    "feedback": [
+      "✓",
+      "x",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 3,
+    "game_number": 9,
+    "secret_word": "BRINK"
+  },
+  {
+    "guess": "BRINK",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 4,
+    "game_number": 9,
+    "secret_word": "BRINK"
   }
 ]

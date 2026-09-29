@@ -36,3 +36,5 @@ htmlcov/
 # OS Generated Files
 .DS_Store
 Thumbs.db
+
+history.json
