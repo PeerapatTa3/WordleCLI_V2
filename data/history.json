@@ -572,5 +572,89 @@
     "attempt": 6,
     "game_number": 12,
     "secret_word": "TESLA"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "-",
+      "-",
+      "x",
+      "-",
+      "-"
+    ],
+    "attempt": 1,
+    "game_number": 13,
+    "secret_word": "PENAL"
+  },
+  {
+    "guess": "PENAL",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 2,
+    "game_number": 13,
+    "secret_word": "PENAL"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "-"
+    ],
+    "attempt": 1,
+    "game_number": 14,
+    "secret_word": "ERECT"
+  },
+  {
+    "guess": "ERECT",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 2,
+    "game_number": 14,
+    "secret_word": "ERECT"
+  },
+  {
+    "guess": "APPLE",
+    "correct": false,
+    "feedback": [
+      "x",
+      "x",
+      "x",
+      "x",
+      "✓"
+    ],
+    "attempt": 1,
+    "game_number": 15,
+    "secret_word": "BRUTE"
+  },
+  {
+    "guess": "BRUTE",
+    "correct": true,
+    "feedback": [
+      "✓",
+      "✓",
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "attempt": 2,
+    "game_number": 15,
+    "secret_word": "BRUTE"
   }
 ]
