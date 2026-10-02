@@ -365,9 +365,7 @@ def main(argv=None):
     subparsers.add_parser("start", help="start a game immediately")
     args = parser.parse_args(argv)
 
-    if args.command == "start":
-        play_game()
-        return
+    handle_command_line_args(argv)
 
     display_welcome_message()
     while True:
@@ -388,6 +386,29 @@ def main(argv=None):
         else:
             console.print("[bold red]Invalid option. Please choose 1-5.[/bold red]")
 
+def handle_command_line_args(argv):
+    """Parse command-line arguments and execute the corresponding action."""
+    parser = argparse.ArgumentParser(description="Play Wordle in your terminal.")
+    subparsers = parser.add_subparsers(dest="command")
+    subparsers.add_parser("start", help="start a game immediately")
+    subparsers.add_parser("history", help="view guess history")
+    subparsers.add_parser("stats", help="view player statistics")
+    subparsers.add_parser("howto", help="view how to play instructions")
+
+    args = parser.parse_args(argv)
+
+    if args.command == "start":
+        play_game()
+    elif args.command == "history":
+        display_history()
+    elif args.command == "stats":
+        display_statistics()
+    elif args.command == "howto":
+        display_how_to_play()
+    elif args.command is not None:
+        console.print(f"[bold red]Unknown command: {args.command}[/bold red]")
+        parser.print_usage()
+        raise SystemExit(2)
 
 if __name__ == "__main__":
     main()
