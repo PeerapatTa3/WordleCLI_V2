@@ -22,6 +22,8 @@ def today_word():
         response.raise_for_status()
         solution = response.json()["solution"]
         logger.debug("Answer: %s", solution)
+        # print(f"Today's Wordle answer is: {solution.upper()}")
+        # print(f"date: {today:%Y-%m-%d}")
         return solution.upper()
     except (requests.RequestException, KeyError, ValueError, AttributeError):
         logger.warning("Could not fetch today's word", exc_info=True)

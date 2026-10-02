@@ -19,6 +19,7 @@ from src.game_logic import WordleGame, calculate_feedback
 from src.word_bank import load_word_bank
 from src.history_manager import calculate_stats
 from src.board_renderer import BoardRenderer
+from src.word_api import today_word
 
 MAX_ATTEMPTS = 6
 WORD_LENGTH = 5
@@ -26,8 +27,10 @@ WORD_LENGTH = 5
 console = Console()
 renderer = BoardRenderer(console)
 
-# Number of terminal lines used by the last game-screen render.
+# Number of terminal lines used by the last game-screen render and the last
+# under-board status message (hint/invalid guess).
 _last_render_lines = 0
+_last_status_lines = 0
 
 
 def display_welcome_message():
@@ -83,7 +86,7 @@ def clear_screen():
 
 def render_game_screen(board_history, attempt, max_attempts, word_length, message=None):
     """Redraw the game screen over the previous one instead of clearing the terminal."""
-    global _last_render_lines
+    global _last_render_lines, _last_status_lines
 
     # Render to a string first so we know how many lines it takes.
     with console.capture() as capture:
@@ -93,10 +96,11 @@ def render_game_screen(board_history, attempt, max_attempts, word_length, messag
             console.print(message)
     output = capture.get()
 
-    erase_lines(_last_render_lines)  # move up and wipe the old board
+    erase_lines(_last_render_lines + _last_status_lines)
     console.file.write(output)
     console.file.flush()
     _last_render_lines = output.count("\n")
+    _last_status_lines = 0
 
 
 def get_guess_input(word_length, valid_words=None):
@@ -106,59 +110,63 @@ def get_guess_input(word_length, valid_words=None):
     An invalid guess prints a single red line; on retry that line and the
     previous prompt are erased together so errors never stack.
     """
+    global _last_status_lines
     error_shown = False
     prompt = f"Enter a {word_length}-letter word: "
     while True:
         raw = console.input(f"[bold white]{prompt}[/bold white]")
         # Long input wraps onto extra terminal rows; erase all of them.
         typed_rows = max(1, -(-(cell_len(prompt) + cell_len(raw)) // console.width))
-        erase_lines(typed_rows + (1 if error_shown else 0))
+        erase_lines(typed_rows + max(1 if error_shown else 0, _last_status_lines))
         error_shown = False
         guess = raw.strip()
 
         if guess.lower() in {"hint", "answer"}:
+            _last_status_lines = 0
             return guess.lower()
 
         if is_valid_guess(guess, word_length, valid_words):
+            _last_status_lines = 0
             return guess.upper()
 
         console.print("[bold red]Invalid guess[/bold red]")
+        _last_status_lines = 1
         error_shown = True
 
 
-# def display_history():
-#     """Show saved history grouped by game like the legacy project."""
-#     history = load_data()
-#     if not history:
-#         console.print("[bold yellow]No guess history yet.[/bold yellow]")
-#         return
+def display_history():
+    """Show saved history grouped by game like the legacy project."""
+    history = load_data()
+    if not history:
+        console.print("\n[bold yellow]No guess history yet.[/bold yellow]\n")
+        return
 
-#     grouped_games = {}
-#     has_game_numbers = any("game_number" in record for record in history)
-#     if has_game_numbers:
-#         for record in history:
-#             game_number = record.get("game_number", 1)
-#             grouped_games.setdefault(game_number, []).append(record)
-#     else:
-#         grouped_games[1] = history
+    grouped_games = {}
+    has_game_numbers = any("game_number" in record for record in history)
+    if has_game_numbers:
+        for record in history:
+            game_number = record.get("game_number", 1)
+            grouped_games.setdefault(game_number, []).append(record)
+    else:
+        grouped_games[1] = history
 
-#     console.print(f"\n[bold cyan]Total Games Played: {len(grouped_games)}[/bold cyan]\n")
-#     for game_number, records in sorted(grouped_games.items()):
-#         is_won = any(record.get("correct", False) for record in records)
-#         status = "[bold green]WON[/bold green]" if is_won else "[bold red]LOST[/bold red]"
-#         secret_word = records[-1].get("secret_word", "UNKNOWN")
-#         word_len = len(secret_word) if secret_word != "UNKNOWN" else WORD_LENGTH
+    console.print(f"\n[bold cyan]Total Games Played: {len(grouped_games)}[/bold cyan]\n")
+    for game_number, records in sorted(grouped_games.items()):
+        is_won = any(record.get("correct", False) for record in records)
+        status = "[bold green]WON[/bold green]" if is_won else "[bold red]LOST[/bold red]"
+        secret_word = records[-1].get("secret_word", "UNKNOWN")
+        word_len = len(secret_word) if secret_word != "UNKNOWN" else WORD_LENGTH
 
-#         rows = [(r.get("guess", ""), r.get("feedback", [])) for r in records]
-#         table = renderer.build_history_table(rows, word_len)
+        rows = [(r.get("guess", ""), r.get("feedback", [])) for r in records]
+        table = renderer.build_history_table(rows, word_len)
 
-#         border_color = "green" if is_won else "red"
-#         console.print(Panel(
-#             table,
-#             title=f"[bold white]Game {game_number}[/bold white] ({status} | Secret: [bold yellow]{secret_word}[/bold yellow])",
-#             expand=False,
-#             border_style=border_color
-#         ))
+        border_color = "green" if is_won else "red"
+        console.print(Panel(
+            table,
+            title=f"[bold white]Game {game_number}[/bold white] ({status} | Secret: [bold yellow]{secret_word}[/bold yellow])",
+            expand=False,
+            border_style=border_color
+        ))
 
 
 def display_statistics(history=None):
@@ -168,7 +176,7 @@ def display_statistics(history=None):
 
     stats = calculate_stats(history)
     if not stats:
-        console.print("\n[bold yellow]No stats available yet. Play a game first![/bold yellow]")
+        console.print("\n[bold yellow]No stats available yet. Play a game first![/bold yellow]\n")
         return
 
     stats_table = Table(show_header=False, box=None)
@@ -200,6 +208,15 @@ def display_how_to_play():
         "4. Type '[bold cyan]hint[/bold cyan]' to reveal one letter or '[bold cyan]answer[/bold cyan]' to reveal the word."
     )
     console.print(Panel(rules, title="[bold yellow]HOW TO PLAY[/bold yellow]", expand=False, border_style="blue"))
+
+
+def display_today_word():
+    """Print today's Wordle solution if the NYT endpoint is reachable."""
+    word = today_word()
+    if word:
+        console.print(f"[bold cyan]Today's Wordle answer:[/bold cyan] [bold yellow]{word}[/bold yellow]")
+    else:
+        console.print("[bold yellow]Today's Wordle answer is unavailable right now.[/bold yellow]")
 
 
 def hint_text(secret_word, revealed_positions=None):
@@ -262,8 +279,14 @@ def _persist(update):
     return save_data(update(load_data()))
 
 
-def get_secret_word(answers):
-    """Return a test word when configured, otherwise pick randomly from answers."""
+def get_secret_word(answers, override_word=None):
+    """Return a chosen secret word from the test env, API override, or random pool."""
+    if override_word is not None:
+        secret_word = override_word.strip().upper()
+        if is_valid_guess(secret_word, WORD_LENGTH):
+            return secret_word, False
+        console.print("[bold yellow]Invalid daily secret. Falling back to a random word.[/bold yellow]")
+
     test_word = os.getenv("WORDLE_TEST_WORD", "").strip().upper()
     if test_word:
         if is_valid_guess(test_word, WORD_LENGTH):
@@ -274,17 +297,21 @@ def get_secret_word(answers):
     return secret_word, False
 
 
-def play_game():
-    """Run a full Wordle game round using the local word bank."""
-    global _last_render_lines
+def play_game(secret_word_override=None):
+    """Run a full Wordle game round using the local word bank or API override."""
+    global _last_render_lines, _last_status_lines
     _last_render_lines = 0  # first render must not erase the menu above
+    _last_status_lines = 0
 
     answers, valid_words = load_word_bank(WORD_LENGTH)
     if not answers:
         console.print("[bold red]No words available to play.[/bold red]")
         return
 
-    secret_word, is_test_mode = get_secret_word(answers)
+    if secret_word_override is not None:
+        secret_word, is_test_mode = get_secret_word(answers, secret_word_override)
+    else:
+        secret_word, is_test_mode = get_secret_word(answers)
     valid_words = valid_words | {secret_word}
     game = WordleGame(secret_word, WORD_LENGTH)
     history = load_data()
@@ -306,11 +333,11 @@ def play_game():
         needs_render = True
         guess = get_guess_input(game.word_length, valid_words)
         if guess == "hint":
-            # Print the hint below the board without redrawing it. Count the
-            # extra line so the next redraw erases it together with the board.
+            # Print the hint below the board without redrawing it; it should be
+            # replaced by the next invalid-guess or board redraw.
             hint_message, revealed_positions = hint_text(game.secret_word, revealed_positions)
             console.print(hint_message)
-            _last_render_lines += 1
+            _last_status_lines = 1
             needs_render = False
             continue
         if guess == "answer":
@@ -360,12 +387,8 @@ def play_game():
 
 def main(argv=None):
     """Run the CLI main loop or start a game from the command line."""
-    parser = argparse.ArgumentParser(description="Play Wordle in your terminal.")
-    subparsers = parser.add_subparsers(dest="command")
-    subparsers.add_parser("start", help="start a game immediately")
-    args = parser.parse_args(argv)
-
-    handle_command_line_args(argv)
+    if handle_command_line_args(argv):
+        return
 
     display_welcome_message()
     while True:
@@ -375,7 +398,7 @@ def main(argv=None):
         if choice == "1":
             play_game()
         elif choice == "2":
-            history_manager.group_history_by_game()
+            display_history()
         elif choice == "3":
             display_statistics()
         elif choice == "4":
@@ -386,13 +409,18 @@ def main(argv=None):
         else:
             console.print("[bold red]Invalid option. Please choose 1-5.[/bold red]")
 
-def handle_command_line_args(argv):
-    """Parse command-line arguments and execute the corresponding action."""
+def handle_command_line_args(argv=None):
+    """Run a command-line action and return whether a command was handled."""
+    if argv is not None and argv == ["help"]:
+        argparse.ArgumentParser(description="Play Wordle in your terminal.").print_help()
+        return True
+
     parser = argparse.ArgumentParser(description="Play Wordle in your terminal.")
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("start", help="start a game immediately")
     subparsers.add_parser("history", help="view guess history")
     subparsers.add_parser("stats", help="view player statistics")
+    subparsers.add_parser("today", help="get today's word from worldle.com")
     subparsers.add_parser("howto", help="view how to play instructions")
 
     args = parser.parse_args(argv)
@@ -405,10 +433,16 @@ def handle_command_line_args(argv):
         display_statistics()
     elif args.command == "howto":
         display_how_to_play()
-    elif args.command is not None:
-        console.print(f"[bold red]Unknown command: {args.command}[/bold red]")
-        parser.print_usage()
-        raise SystemExit(2)
+    elif args.command == "today":
+        today = today_word()
+        if not today:
+            display_today_word()
+            return True
+        play_game(today)
+    else:
+        return False
+
+    return True
 
 if __name__ == "__main__":
     main()
