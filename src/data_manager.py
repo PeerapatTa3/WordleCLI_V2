@@ -1,11 +1,17 @@
 """Data access helpers for saving and loading Wordle data."""
 
 import json
+import os
 from pathlib import Path
 
-# Resolved from this file, not the current working directory, so the same
-# history file is used no matter where the game is launched from.
-HISTORY_PATH = Path(__file__).resolve().parent.parent / "data" / "history.json"
+# Keep history outside the installed package so it persists across upgrades
+# and can be written regardless of the current working directory.
+HISTORY_PATH = Path(
+    os.environ.get(
+        "WORDLE_HISTORY_PATH",
+        str(Path.home() / ".wordle" / "history.json"),
+    )
+).expanduser().resolve()
 
 
 def save_data(data, path=None):

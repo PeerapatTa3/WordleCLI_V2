@@ -35,21 +35,3 @@ def calculate_feedback(guess, secret_word):
             remaining[g_char] -= 1
 
     return result
-
-
-def search_history(history, keyword):
-    """Search guess_history by matching a keyword in guess strings."""
-    keyword = (keyword or "").strip().upper()
-    if not keyword:
-        return history
-
-    return [item for item in history if keyword in str(item.get("guess", "")).upper()]
-
-
-def filter_history(history, condition):
-    """Filter history by a given condition such as correct guesses."""
-    if condition == "correct":
-        return [item for item in history if bool(item.get("correct"))]
-    if condition == "incorrect":
-        return [item for item in history if not bool(item.get("correct"))]
-    return history

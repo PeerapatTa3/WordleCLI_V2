@@ -7,9 +7,9 @@ import src.word_bank as wb
 
 @pytest.fixture
 def fake_data(tmp_path, monkeypatch):
-    """Point load_word_bank at tmp_path/data via a fake module location."""
-    data_dir = tmp_path / "data"
-    data_dir.mkdir()
+    """Point load_word_bank at tmp_path/src/data via a fake module location."""
+    data_dir = tmp_path / "src" / "data"
+    data_dir.mkdir(parents=True)
     monkeypatch.setattr(wb, "__file__", str(tmp_path / "src" / "word_bank.py"))
 
     def write(answers=None, valid=None):

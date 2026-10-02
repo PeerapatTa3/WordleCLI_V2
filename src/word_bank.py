@@ -1,6 +1,6 @@
 """Local word bank loader — no network calls at runtime.
 
-Loads answers and valid words from local text files in data/.
+Loads answers and valid words from local text files in src/data/.
 Paths are relative to this module so the game works from any CWD.
 """
 
@@ -21,7 +21,7 @@ def load_word_bank(length=5):
         Answers for picking the secret word, and the full valid-word set
         (answers ∪ valid_words) for guess validation.
     """
-    base = Path(__file__).resolve().parent.parent / "data"
+    base = Path(__file__).resolve().parent / "data"
     answers = _load_lines(base / "answers.txt", length)
     valid_words = _load_lines(base / "valid_words.txt", length)
 

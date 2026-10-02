@@ -4,6 +4,7 @@ This module handles menu display, user input, input validation,
 and integration with the game logic and JSON persistence modules.
 """
 
+import argparse
 import os
 import random
 
@@ -12,6 +13,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from src import history_manager
 from src.data_manager import load_data, save_data
 from src.game_logic import WordleGame, calculate_feedback
 from src.word_bank import load_word_bank
@@ -124,39 +126,39 @@ def get_guess_input(word_length, valid_words=None):
         error_shown = True
 
 
-def display_history():
-    """Show saved history grouped by game like the legacy project."""
-    history = load_data()
-    if not history:
-        console.print("[bold yellow]No guess history yet.[/bold yellow]")
-        return
+# def display_history():
+#     """Show saved history grouped by game like the legacy project."""
+#     history = load_data()
+#     if not history:
+#         console.print("[bold yellow]No guess history yet.[/bold yellow]")
+#         return
 
-    grouped_games = {}
-    has_game_numbers = any("game_number" in record for record in history)
-    if has_game_numbers:
-        for record in history:
-            game_number = record.get("game_number", 1)
-            grouped_games.setdefault(game_number, []).append(record)
-    else:
-        grouped_games[1] = history
+#     grouped_games = {}
+#     has_game_numbers = any("game_number" in record for record in history)
+#     if has_game_numbers:
+#         for record in history:
+#             game_number = record.get("game_number", 1)
+#             grouped_games.setdefault(game_number, []).append(record)
+#     else:
+#         grouped_games[1] = history
 
-    console.print(f"\n[bold cyan]Total Games Played: {len(grouped_games)}[/bold cyan]\n")
-    for game_number, records in sorted(grouped_games.items()):
-        is_won = any(record.get("correct", False) for record in records)
-        status = "[bold green]WON[/bold green]" if is_won else "[bold red]LOST[/bold red]"
-        secret_word = records[-1].get("secret_word", "UNKNOWN")
-        word_len = len(secret_word) if secret_word != "UNKNOWN" else WORD_LENGTH
+#     console.print(f"\n[bold cyan]Total Games Played: {len(grouped_games)}[/bold cyan]\n")
+#     for game_number, records in sorted(grouped_games.items()):
+#         is_won = any(record.get("correct", False) for record in records)
+#         status = "[bold green]WON[/bold green]" if is_won else "[bold red]LOST[/bold red]"
+#         secret_word = records[-1].get("secret_word", "UNKNOWN")
+#         word_len = len(secret_word) if secret_word != "UNKNOWN" else WORD_LENGTH
 
-        rows = [(r.get("guess", ""), r.get("feedback", [])) for r in records]
-        table = renderer.build_history_table(rows, word_len)
+#         rows = [(r.get("guess", ""), r.get("feedback", [])) for r in records]
+#         table = renderer.build_history_table(rows, word_len)
 
-        border_color = "green" if is_won else "red"
-        console.print(Panel(
-            table,
-            title=f"[bold white]Game {game_number}[/bold white] ({status} | Secret: [bold yellow]{secret_word}[/bold yellow])",
-            expand=False,
-            border_style=border_color
-        ))
+#         border_color = "green" if is_won else "red"
+#         console.print(Panel(
+#             table,
+#             title=f"[bold white]Game {game_number}[/bold white] ({status} | Secret: [bold yellow]{secret_word}[/bold yellow])",
+#             expand=False,
+#             border_style=border_color
+#         ))
 
 
 def display_statistics(history=None):
@@ -356,8 +358,17 @@ def play_game():
     ))
 
 
-def main():
-    """Run the CLI main loop."""
+def main(argv=None):
+    """Run the CLI main loop or start a game from the command line."""
+    parser = argparse.ArgumentParser(description="Play Wordle in your terminal.")
+    subparsers = parser.add_subparsers(dest="command")
+    subparsers.add_parser("start", help="start a game immediately")
+    args = parser.parse_args(argv)
+
+    if args.command == "start":
+        play_game()
+        return
+
     display_welcome_message()
     while True:
         display_menu()
@@ -366,7 +377,7 @@ def main():
         if choice == "1":
             play_game()
         elif choice == "2":
-            display_history()
+            history_manager.group_history_by_game()
         elif choice == "3":
             display_statistics()
         elif choice == "4":

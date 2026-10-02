@@ -1,6 +1,7 @@
 import json
 
-from src.game_logic import WordleGame, calculate_feedback, search_history, filter_history
+from src.game_logic import WordleGame, calculate_feedback
+from src.history_manager import search_history, filter_history
 from src.data_manager import save_data, load_data
 
 

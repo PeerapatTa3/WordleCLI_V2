@@ -4,8 +4,8 @@
 Takes a public-domain word list (e.g. ENABLE / CSW / TWL) and filters it to
 5-letter alpha words, uppercase, sorted, deduped.  Produces two output files:
 
-  data/valid_words.txt  — all acceptable 5-letter words (~9-13k)
-  data/answers.txt      — a smaller common-word subset (~1-3k)
+    src/data/valid_words.txt  — all acceptable 5-letter words (~9-13k)
+    src/data/answers.txt      — a smaller common-word subset (~1-3k)
 """
 
 import argparse
@@ -81,8 +81,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build Wordle word lists")
     parser.add_argument("source", help="Path to source word list (one word per line)")
     parser.add_argument(
-        "-o", "--output-dir", default="data",
-        help="Output directory (default: data/)",
+        "-o", "--output-dir",
+        default=Path(__file__).resolve().parent.parent / "src" / "data",
+        help="Output directory (default: src/data/)",
     )
     args = parser.parse_args()
 

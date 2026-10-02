@@ -5,7 +5,7 @@
 
 - Repository: [PeerapatTa3/WordleCLI_V2](https://github.com/PeerapatTa3/WordleCLI_V2)
 - Version: V.2 (สถานะปัจจุบัน: จบ Sprint 3)
-- Status: Sprint 1-3 เสร็จและใช้งานได้; Sprint Final (CI/CD, AI integration, global `wordle` command) ยังไม่เริ่ม
+- Status: Sprint 1-3 เสร็จและใช้งานได้; Sprint Final (CI/CD, AI integration, global `wordle` command) กำลังดำเนินการ
 - **สไลด์นำเสนอ:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
 
 ---
@@ -13,7 +13,8 @@
 ## 📋 คุณสมบัติ (Features)
 
 - 🎮 เล่นเกม Wordle ทายคำศัพท์ 5 ตัวอักษร ภายใน 6 ครั้ง
-- 📴 **Offline-first:** สุ่มคำเฉลยและตรวจคำทายจากไฟล์ในเครื่อง (`data/answers.txt` 1,984 คำ, `data/valid_words.txt` 8,636 คำ) ไม่มีการเรียก network ตอนเล่น ตรวจคำเสร็จทันทีด้วย `set` lookup
+- 📴 **Offline-first:** สุ่มคำเฉลยและตรวจคำทายจากไฟล์ในแพ็กเกจ (`src/data/answers.txt` 1,984 คำ, `src/data/valid_words.txt` 8,636 คำ) ไม่มีการเรียก network ตอนเล่น ตรวจคำเสร็จทันทีด้วย `set` lookup
+- 🌐 ติดตั้งคำสั่ง `wordle` ใช้งานจากไดเรกทอรีใดก็ได้; `wordle start` เริ่มเกมทันที
 - 🖼️ Rich UI (`rich`) — เมนู, กระดานทาย, ประวัติ, สถิติ และวิธีเล่นแสดงเป็น Panel/Table มีกรอบและสี
 - ♻️ **In-place redraw:** กระดานวาดทับตำแหน่งเดิม คำที่พิมพ์ไม่ค้างบนจอ และข้อความ `Invalid guess` ถูกแทนที่เมื่อทายใหม่ (ไม่ส่ง escape code เมื่อ output ไม่ใช่ terminal)
 - 📊 ดูประวัติรายเกม (WON/LOST, คำเฉลย, ลำดับคำทายเป็นตารางสี)
@@ -46,16 +47,16 @@ WordleCLI_V2/
 │   ├── board_renderer.py   # BoardRenderer: tile/table ที่ใช้ร่วมกันทั้งกระดาน ประวัติ และ legend
 │   ├── game_logic.py       # WordleGame, calculate_feedback, search/filter
 │   ├── history_manager.py  # group_history_by_game, calculate_stats
-│   ├── data_manager.py     # save_data / load_data (HISTORY_PATH อิงจาก Path(__file__))
+│   ├── data_manager.py     # save_data / load_data (ประวัติใน ~/.wordle/history.json)
 │   ├── word_bank.py        # load_word_bank() -> (answers, valid_words) จากไฟล์ local
+│   ├── data/
+│   │   ├── answers.txt     # คำเฉลยที่รวมในแพ็กเกจ
+│   │   └── valid_words.txt # คำที่ทายได้ที่รวมในแพ็กเกจ
 │   └── word_api.py         # today_word() ดึงคำเฉลย NYT ของวันนี้ (ไม่ได้ใช้ตอนเล่น)
 ├── scripts/                # เครื่องมือ build-time (ไม่ใช้ตอนรันเกม)
 │   ├── build_wordlists.py  # สร้าง data/answers.txt และ data/valid_words.txt
 │   └── word_api.py         # ตัวช่วยดึงคำจาก Datamuse
-├── data/
-│   ├── answers.txt         # คำเฉลย (1,984 คำ)
-│   ├── valid_words.txt     # คำที่ทายได้ (8,636 คำ; ⊇ answers)
-│   └── history.json        # ประวัติการเล่น
+├── data/                   # สำเนาเดิมใน checkout; ไม่ใช้โดยแพ็กเกจที่ติดตั้ง
 ├── tests/                  # pytest (7 ไฟล์ รวม 72 เคส)
 ├── Sprints/                # สรุปผลแต่ละ Sprint
 ├── PLAN.md  CHANGELOG.md  QA_REPORT.md  LEARNINGLOG.md  Sprint3_todo.md
@@ -81,14 +82,19 @@ WordleCLI_V2/
    cd WordleCLI_V2
    ```
 
-2. ติดตั้ง dependencies
+2. ติดตั้งโปรแกรมและ dependencies
    ```bash
-   pip install -r requirements.txt
+   pip install .
    ```
 
-3. รันโปรแกรม (รันจากโฟลเดอร์ไหนก็ได้ — path ของ history และ word list อิงจากตำแหน่งไฟล์โค้ด)
+3. รันโปรแกรมจากโฟลเดอร์ไหนก็ได้
    ```bash
-   python game.py
+   wordle
+   ```
+
+   คำสั่งนี้แสดงเมนูตามปกติ; ใช้ `wordle start` เพื่อเริ่มเกมทันที โดยโปรแกรมจะจบหลังเกมนั้นสิ้นสุด
+
+   ประวัติจะบันทึกที่ `~/.wordle/history.json` (Windows: `%USERPROFILE%\.wordle\history.json`) ตั้งค่า `WORDLE_HISTORY_PATH` เพื่อเปลี่ยนตำแหน่งได้
    ```
 
 4. เลือกเมนูจากตัวเลข 1-5 ตามที่แสดงในหน้าจอ
@@ -97,7 +103,7 @@ WordleCLI_V2/
 
 ```powershell
 $env:WORDLE_TEST_WORD="APPLE"
-python game.py
+wordle start
 ```
 
 โหมดนี้จะแสดงคำเฉลยพร้อมข้อความ `[TEST MODE]` และคำนั้นถูกนับเป็นคำที่ทายได้เสมอ
@@ -105,7 +111,7 @@ python game.py
 ### สร้าง word list ใหม่ (ไม่จำเป็นตอนเล่น)
 
 ```bash
-python scripts/build_wordlists.py <path-to-source-word-list> -o data
+python scripts/build_wordlists.py <path-to-source-word-list>
 ```
 
 ---
