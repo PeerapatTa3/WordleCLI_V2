@@ -16,7 +16,11 @@ dependencies = [
 
 [project.optional-dependencies]
 api = ["requests"]
-dev = ["pytest"]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "flake8",
+]
 
 [project.scripts]
 wordle = "src.cli:main"
