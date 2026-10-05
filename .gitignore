@@ -4,37 +4,50 @@ OLD_PROJECT_HANDOVER(1)
 OLD_PROJECT_HANDOVER(1).md
 /OLD_Miniproject_WordleCLI-main
 
-# Byte-compiled / cache files
+# Python bytecode and caches
 __pycache__/
 .pytest_cache/
-*.pyc
-*.py[od]
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+*.pyo
+*.pyd
 *$py.class
 
-# Environments & Virtual Envs
+# Environments & virtual environments
 .env
-.venv
+.env.*
+.venv/
 env/
 venv/
 ENV/
+.python-version
 
-# Build & Distribution artifacts
+# Build & distribution artifacts
 build/
 dist/
 *.egg-info/
+.eggs/
+pip-wheel-metadata/
 
-# Testing & Coverage
+# Testing & coverage
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 
-# IDEs & Editors
+# Local app data and logs
+history.json
+history*.json
+*.log
+
+# IDEs & editors
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-workspace
 
-# OS Generated Files
+# OS generated files
 .DS_Store
 Thumbs.db
-
-history.json

@@ -31,6 +31,7 @@ def load_word_bank(length=5):
     valid_set = set(valid_words) | set(answers)
     return (tuple(answers), frozenset(valid_set))
 
+
 def _load_lines(path, length):
     """Return uppercase alpha words of the given length from a text file."""
     try:

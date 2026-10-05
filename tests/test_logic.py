@@ -1,4 +1,4 @@
-import json
+import pytest
 
 from src.game_logic import WordleGame, calculate_feedback
 from src.history_manager import search_history, filter_history
@@ -55,3 +55,12 @@ def test_load_data_returns_empty_list_for_corrupted_json(tmp_path):
     path = tmp_path / "corrupted.json"
     path.write_text("{not valid json", encoding="utf-8")
     assert load_data(path) == []
+
+
+@pytest.mark.parametrize("data", [[object()], {"not": object()}])
+def test_save_data_returns_false_for_non_serializable_data(tmp_path, data):
+    assert save_data(data, tmp_path / "history.json") is False
+
+
+def test_save_data_returns_false_when_path_is_a_directory(tmp_path):
+    assert save_data([], tmp_path) is False

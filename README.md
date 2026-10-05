@@ -1,5 +1,7 @@
 # 🟩 Wordle CLI V.2
 
+[![CI](https://github.com/PeerapatTa3/WordleCLI_V2/actions/workflows/ci.yml/badge.svg)](https://github.com/PeerapatTa3/WordleCLI_V2/actions/workflows/ci.yml)
+
 โปรแกรมเกมทายคำศัพท์ (Wordle) แบบ Command Line Interface พัฒนาด้วย Python
 โปรเจกต์นี้จัดทำเป็น Final Project รายวิชา **CP352301 Script Programming**
 
