@@ -30,31 +30,31 @@ CI comes before the feature work so every later change is checked automatically.
 
 **Goal (PLAN DoD):** unit tests cover at least 80% of the important Business/Data layer cases (normal + edge).
 
-- [ ] Add dev tooling: `pytest-cov`, `flake8` (put them in `pyproject.toml` extras `dev`, and/or `requirements-dev.txt`).
-- [ ] Add a flake8 config (`.flake8` or `setup.cfg`): set `max-line-length` (long banner/panel strings in `src/cli.py` exceed 79), exclude `.venv`, `build`, `dist`. Root `cli.py` already uses `# noqa` for the star import.
-- [ ] Run once locally and record the baseline: `python -m pytest --cov=src --cov-report=term-missing` and `flake8`. Paste the numbers into `QA_REPORT.md` as "before".
-- [ ] Fix lint findings (or deliberately ignore with a comment explaining why).
-- [ ] Close the obvious coverage gaps:
-  - [ ] `src/history_manager.py` has no test file of its own (`calculate_stats`, `group_history_by_game` are only hit through `display_statistics`). Add `tests/test_history_manager.py`: empty history, legacy records without `game_number`, streak reset after a loss, distribution counts.
-  - [ ] `main()` loop: choices `1`-`5`, invalid option, `5` exits. Script `console.input` like `tests/test_sprint3.py` does.
-  - [ ] `play_game()` loss path (6 wrong guesses → GAME OVER panel with the secret).
-  - [ ] `get_secret_word()` with an invalid `WORDLE_TEST_WORD` (falls back to random, prints a warning).
-  - [ ] `data_manager.save_data()` failure path (unwritable path or non-serializable data returns `False`).
-  - [ ] `display_welcome_message()` and `display_history()` with empty history.
-- [ ] Decide the coverage target and enforce it in CI (`--cov-fail-under=80`). Record the final number.
+- [x] Add dev tooling: `pytest-cov`, `flake8` in the `dev` extra in `pyproject.toml`.
+- [x] Add `.flake8` config with `max-line-length=120` and exclude `.venv`, `build`, `dist`. Root `cli.py` already uses `# noqa` for the star import.
+- [x] Run and record baseline checks in `QA_REPORT.md`, then record final results.
+- [x] Fix all Flake8 findings without suppressions.
+- [x] Close the obvious coverage gaps:
+  - [x] Add `tests/test_history_manager.py` for empty history, legacy records, streak reset, and distribution counts.
+  - [x] Cover `main()` choices `1`-`5`, invalid option, and exit.
+  - [x] Cover the six-guess `play_game()` loss path.
+  - [x] Cover invalid `WORDLE_TEST_WORD` fallback and warning.
+  - [x] Cover `data_manager.save_data()` failure paths.
+  - [x] Cover `display_welcome_message()` and empty `display_history()`.
+- [x] Enforce the 80% coverage target in CI and record the final 93.46% result.
 
 ## C. CI/CD with GitHub Actions
 
 **Goal (PLAN DoD):** CI runs automatically on PRs and blocks merging when tests fail.
 
-- [ ] Create `.github/workflows/ci.yml`:
+- [x] Create `.github/workflows/ci.yml`:
   - Triggers: `push` and `pull_request`.
   - Matrix: Python 3.12 and 3.13 (the versions already tested by the team); consider `ubuntu-latest` + `windows-latest`, since the team develops on Windows and the UI uses `✓` and Rich ANSI output.
   - Steps: checkout → `actions/setup-python` (with pip cache) → install (`pip install -e ".[dev]"` once packaging exists, otherwise `pip install -r requirements.txt flake8 pytest-cov`) → `flake8` → `pytest --cov=src --cov-fail-under=80`.
-- [ ] Make sure the test suite is network-free in CI (it already is: `test_load_word_bank_makes_no_network_calls`, `requests` is mocked everywhere).
-- [ ] Confirm the tests do not depend on a local `data/history.json` (they patch `HISTORY_PATH` via `tmp_path`; `data/history.json` is in `.gitignore` but a sample is currently committed. Decide whether to remove it from git).
+- [x] Make sure the test suite is network-free in CI (`test_load_word_bank_makes_no_network_calls`; API requests are mocked).
+- [x] Confirm tests use temporary history paths; removed the obsolete tracked `data/history.json` so CI cannot depend on local gameplay data.
 - [ ] Repo settings (manual, GitHub UI): branch protection on `main` → require the CI check to pass before merging.
-- [ ] Add a CI status badge to `README.md`.
+- [x] Add a CI status badge to `README.md`.
 - [ ] Prove it works for the demo: open a PR with one deliberately failing test, screenshot the red check blocking the merge, then fix it.
 
 ## D. Global `wordle` command and `wordle start`

@@ -21,6 +21,7 @@ from src.cli import (
 )
 from src.word_bank import load_word_bank
 
+
 def test_is_valid_guess_accepts_five_letters():
     assert is_valid_guess("APPLE", 5) is True
     assert is_valid_guess("apple", 5) is True
@@ -334,3 +335,69 @@ def test_save_failure_shows_warning_once(history_file, monkeypatch):
     cli.play_game()
     warnings = [m for m in messages if m and "could not save" in m]
     assert len(warnings) == 1
+
+
+def test_get_secret_word_invalid_test_word_warns_and_uses_random(monkeypatch, capsys):
+    monkeypatch.setenv("WORDLE_TEST_WORD", "not-a-word")
+    monkeypatch.setattr(cli.random, "choice", lambda words: words[-1])
+
+    word, is_test_mode = get_secret_word(["APPLE", "GRAPE"])
+
+    assert (word, is_test_mode) == ("GRAPE", False)
+    assert "Invalid WORDLE_TEST_WORD" in capsys.readouterr().out
+
+
+def test_display_welcome_message(capsys):
+    cli.display_welcome_message()
+    assert "WELCOME" in capsys.readouterr().out
+
+
+def test_display_history_with_empty_history(monkeypatch, capsys):
+    monkeypatch.setattr(cli, "load_data", lambda: [])
+
+    display_history()
+
+    assert "No guess history yet." in capsys.readouterr().out
+
+
+def test_play_game_loss_shows_secret_after_six_wrong_guesses(
+    history_file, monkeypatch, capsys
+):
+    guesses = ["CRANE", "STONE", "BLIMP", "CLOUD", "TIGER", "BRAVE"]
+    valid_words = frozenset(guesses)
+    monkeypatch.setattr(cli, "load_word_bank", lambda _: (["APPLE"], valid_words))
+    monkeypatch.setattr(cli.random, "choice", lambda words: "APPLE")
+    monkeypatch.delenv("WORDLE_TEST_WORD", raising=False)
+    script_input(monkeypatch, *guesses)
+
+    cli.play_game()
+
+    output = capsys.readouterr().out
+    assert "GAME OVER" in output
+    assert "The secret word was: APPLE" in output
+    records = dm.load_data(history_file)
+    assert len(records) == cli.MAX_ATTEMPTS
+    assert all(record["correct"] is False for record in records)
+
+
+def test_main_menu_dispatches_all_options_and_rejects_invalid_choice(
+    monkeypatch, capsys
+):
+    choices = iter(["invalid", "1", "2", "3", "4", "5"])
+    called = []
+    menus = []
+    monkeypatch.setattr(cli, "display_welcome_message", lambda: called.append("welcome"))
+    monkeypatch.setattr(cli, "display_menu", lambda: menus.append(True))
+    monkeypatch.setattr(cli, "get_menu_choice", lambda: next(choices))
+    monkeypatch.setattr(cli, "play_game", lambda: called.append("play"))
+    monkeypatch.setattr(cli, "display_history", lambda: called.append("history"))
+    monkeypatch.setattr(cli, "display_statistics", lambda: called.append("stats"))
+    monkeypatch.setattr(cli, "display_how_to_play", lambda: called.append("how-to"))
+
+    cli.main([])
+
+    output = capsys.readouterr().out
+    assert called == ["welcome", "play", "history", "stats", "how-to"]
+    assert len(menus) == 6
+    assert "Invalid option. Please choose 1-5." in output
+    assert "Goodbye!" in output

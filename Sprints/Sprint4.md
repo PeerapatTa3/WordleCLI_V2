@@ -1,12 +1,12 @@
-# Sprint 4: Sprint Final — Packaging, Global CLI, and Daily Word Mode
+# Sprint 4: Sprint Final — CI/CD, Packaging, Global CLI, and Daily Word Mode
 
 ## 1. สถานะปัจจุบัน
 
-Sprint 4 ได้บรรลุส่วนสำคัญของโครงการที่มีผลลัพธ์ตรวจสอบแล้ว: global CLI command, installable package, daily API-driven secret word, และการรันเกมแบบจริงโดยใช้คำตอบประจำวันจาก NYT endpoint
+Sprint 4 ยังดำเนินอยู่ โดยส่วนที่ยืนยันผลแล้วประกอบด้วย global CLI command, installable package, daily API-driven secret word, และ CI/test/lint tooling ในเครื่อง
 
-การจัดระเบียบชุดทดสอบยังคงดำเนินต่อ: โครงสร้างการทดสอบที่เคยรวมไว้ใน `tests/test_sprint3.py` ถูกย้ายเข้าไฟล์ที่เกี่ยวข้องตามความเหมาะสม (`tests/test_cli.py` และ `tests/test_entrypoint.py`) แล้วลบไฟล์เดิมออก เพื่อให้โครงสร้างชุดทดสอบสอดคล้องกับการใช้งานจริงของโปรเจกต์
+Workflow `.github/workflows/ci.yml` ตั้งให้รันเมื่อ push และ pull request บน Python 3.12/3.13 ทั้ง Ubuntu และ Windows โดยติดตั้ง `.[dev]`, รัน Flake8 และทดสอบพร้อม coverage gate 80% ชุดทดสอบใช้ temporary history paths และ API requests ถูก mock ไว้
 
-การตรวจสอบล่าสุด: `python -m pytest -q` → **82 passed in 1.13s**
+การตรวจสอบล่าสุดในเครื่อง Windows/Python 3.13.14: **93 tests passed, 93.46% coverage**, และ Flake8 ผ่านทั้งหมด ยังไม่มีหลักฐานการรัน workflow บน GitHub Actions; branch protection และ PR demo ที่จงใจทำให้ check fail ยังเป็นงาน manual
 
 งานที่ถือว่าเสร็จแล้วในเวอร์ชันปัจจุบัน:
 - `wordle` รันจากไดเรกทอรีใดก็ได้หลัง `pip install .`
@@ -42,14 +42,26 @@ Sprint 4 ได้บรรลุส่วนสำคัญของโคร�
 ### Phase 4: Verification and regression coverage
 
 - เพิ่ม regression tests สำหรับ entrypoint ของ `today` และ help flow
-- Suite ปัจจุบันครอบคลุม CLI, word bank, hint, answer, history, and daily-mode behavior
-- ผลการรายงานจากการรันจริง: 82 tests ผ่านทั้งหมด
+- เพิ่ม direct tests สำหรับ `history_manager`, menu dispatch, loss path, invalid test-word fallback, empty displays, และ save failure
+- Suite ปัจจุบันครอบคลุม CLI, word bank, hint, answer, history, daily-mode behavior, และ edge cases ของ data layer
+- ผลการรันล่าสุด: 93 tests ผ่าน; total coverage 93.46%; `history_manager.py` coverage 89%
+
+### Phase 5: CI, coverage, and lint
+
+- เพิ่ม `pytest-cov` และ `flake8` ใน `pyproject.toml` extra `dev`; `pip install -e ".[dev]"` ติดตั้งเครื่องมือได้
+- เพิ่ม `.flake8` (line length 120; exclude `.venv`, `build`, `dist`) และแก้ lint findings โดยไม่ suppress
+- GitHub Actions matrix ครอบคลุม Python 3.12/3.13 บน Ubuntu/Windows; ติดตั้ง package จาก `.[dev]`, รัน Flake8 และ pytest ด้วย `--cov-fail-under=80`
+- เพิ่ม CI badge ใน README และลบ `data/history.json` ที่เคย tracked เพื่อไม่ให้ CI พึ่งพา local gameplay history
+- ยังต้องเปิดใช้ branch protection ใน GitHub และเก็บหลักฐาน PR demo; workflow run จริงยังไม่ได้ยืนยันในรายงานนี้
 
 ## 3. ผลการทดสอบจริง (Verified)
 
 | รายการทดสอบ | ผลลัพธ์ |
 | :--- | :--- |
-| `python -m pytest -q` | 82 passed |
+| `python -m pytest --cov=src --cov-fail-under=80` | 93 passed; 93.46% total coverage |
+| `flake8 --max-line-length=120 --exclude=.venv,build,dist` | Passed; zero findings |
+| `python -m pip install -e ".[dev]"` | ติดตั้ง package และ dev tools สำเร็จ |
+| GitHub Actions matrix | Workflow configured; remote Actions run not yet verified |
 | `wordle start` | เริ่มเกมทันทีโดยไม่แสดง menu |
 | `wordle` | แสดง menu ตามปกติ |
 | `wordle today` | เริ่มเกมด้วยคำจาก API |
@@ -63,12 +75,14 @@ Sprint 4 ได้บรรลุส่วนสำคัญของโคร�
 ### Wow!
 - การใช้ `today_word()` เป็นโหมดเกมจริงทำให้ `wordle today` เป็น feature ที่สมบูรณ์และไม่ต้องแยกโหมดพิเศษในการเล่น
 - การเก็บ history และ word data ไว้ภายนอก repo ช่วยให้กระบวนการ deploy/packaging น่าเชื่อถือขึ้น
-- การรัน full suite ผ่านโดยมีหลักฐานชัดเจน แสดงว่าการเปลี่ยนแปลงล่าสุดยังคงสอดคล้องกับระบบเดิม
+- เพิ่ม CI matrix สำหรับ Linux/Windows และ Python 3.12/3.13 พร้อม coverage gate ที่สูงกว่าเป้าหมาย (93.46% เทียบกับ 80%)
+- แก้ lint findings ทั้งหมด และ direct coverage ของ `history_manager.py` เพิ่มจาก 79% เป็น 89%
 
 ### Whoops!
 - NYT API เป็น dependency ภายนอกและอาจไม่พร้อมเสมอ ดังนั้นต้องมี graceful fallback
 - Wordle daily mode ดึงคำจาก API แต่เกมหลักยังคงใช้ local word bank เพื่อให้ offline-first และ deterministic stay true
 - CLI เกี่ยวกับ help และ today command ต้องมีการคุม contract ให้ชัดเจนเพื่อไม่ให้ปัญหากลับมา
+- ยังไม่มีการยืนยัน workflow run บน GitHub, ตั้ง branch protection, หรือทำ PR demo ที่แสดง check fail/block merge
 
 ## 5. Deliverable Status
 
@@ -78,8 +92,13 @@ Sprint 4 ได้บรรลุส่วนสำคัญของโคร�
 - [x] Fallback handling when API is unavailable
 - [x] Packaging and installable entry point
 - [x] Local word list and external history path
-- [x] Full test verification with real pytest run
+- [x] Full test verification: 93 passed, 93.46% coverage; Flake8 clean
 - [x] Regression coverage for CLI behavior
+- [x] GitHub Actions workflow configured for push/PR and Python 3.12/3.13 on Ubuntu/Windows
+- [x] CI status badge added to README
+- [ ] Verify successful GitHub Actions run for the matrix
+- [ ] Enable `main` branch protection requiring CI
+- [ ] Demonstrate a failing CI check on a PR and capture evidence
 
 ---
 

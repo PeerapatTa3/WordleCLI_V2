@@ -129,3 +129,19 @@
 
 รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](./tests/TEST_PLAN.md)
 ตาราง Test Cases แบบ Quality Assurance Matrix อยู่ที่ [TEST_CASES.md](./tests/TEST_CASES.md)
+
+## 6. Coverage and lint baseline (before Sprint Final B)
+
+Recorded 2026-10-04 before adding focused coverage tests or fixing lint findings:
+
+| Check | Baseline |
+|---|---|
+| `python -m pytest --cov=src --cov-report=term-missing` | 82 passed; 89.13% total coverage; `src/history_manager.py` at 79% |
+| `flake8 --max-line-length=120 --exclude=.venv,build,dist` | Failed with 31 findings across `scripts/`, `src/`, and `tests/` (unused imports, line length, spacing, whitespace, and missing final newlines) |
+
+After the Sprint Final B coverage and lint work:
+
+| Check | Final result |
+|---|---|
+| `python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80` | 93 passed; 93.46% total coverage; `src/history_manager.py` at 89% |
+| `flake8` | Passed with zero findings |

@@ -13,7 +13,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from src import history_manager
 from src.data_manager import load_data, save_data
 from src.game_logic import WordleGame, calculate_feedback
 from src.word_bank import load_word_bank
@@ -163,7 +162,10 @@ def display_history():
         border_color = "green" if is_won else "red"
         console.print(Panel(
             table,
-            title=f"[bold white]Game {game_number}[/bold white] ({status} | Secret: [bold yellow]{secret_word}[/bold yellow])",
+            title=(
+                f"[bold white]Game {game_number}[/bold white] "
+                f"({status} | Secret: [bold yellow]{secret_word}[/bold yellow])"
+            ),
             expand=False,
             border_style=border_color
         ))
@@ -176,7 +178,9 @@ def display_statistics(history=None):
 
     stats = calculate_stats(history)
     if not stats:
-        console.print("\n[bold yellow]No stats available yet. Play a game first![/bold yellow]\n")
+        console.print(
+            "\n[bold yellow]No stats available yet. Play a game first![/bold yellow]\n"
+        )
         return
 
     stats_table = Table(show_header=False, box=None)
@@ -187,7 +191,12 @@ def display_statistics(history=None):
     stats_table.add_row("Win Rate:", f"{stats['win_rate']:.1f}%")
     stats_table.add_row("Current Streak:", str(stats["current_streak"]))
 
-    console.print(Panel(stats_table, title="[bold yellow]PLAYER STATISTICS[/bold yellow]", expand=False, border_style="magenta"))
+    console.print(Panel(
+        stats_table,
+        title="[bold yellow]PLAYER STATISTICS[/bold yellow]",
+        expand=False,
+        border_style="magenta",
+    ))
 
     console.print("\n[bold cyan]Guess Distribution:[/bold cyan]")
     for attempt, count in stats["distribution"].items():
@@ -205,7 +214,8 @@ def display_how_to_play():
         f"   {tile('✓', '✓')} Correct letter in the correct position.\n"
         f"   {tile('-', '-')} Correct letter in the wrong position.\n"
         f"   {tile('x', 'x')} Letter is not in the secret word.\n"
-        "4. Type '[bold cyan]hint[/bold cyan]' to reveal one letter or '[bold cyan]answer[/bold cyan]' to reveal the word."
+        "4. Type '[bold cyan]hint[/bold cyan]' to reveal one letter or "
+        "'[bold cyan]answer[/bold cyan]' to reveal the word."
     )
     console.print(Panel(rules, title="[bold yellow]HOW TO PLAY[/bold yellow]", expand=False, border_style="blue"))
 
@@ -367,7 +377,8 @@ def play_game(secret_word_override=None):
         if is_correct:
             render_game_screen(board_history, attempt, MAX_ATTEMPTS, game.word_length)
             console.print(Panel(
-                f"[bold white on green] 🎉 CONGRATULATIONS! [/bold white on green]\n\nYou solved it in [bold yellow]{attempt}[/bold yellow] attempts!",
+                "[bold white on green] 🎉 CONGRATULATIONS! [/bold white on green]\n\n"
+                f"You solved it in [bold yellow]{attempt}[/bold yellow] attempts!",
                 title="[bold green]VICTORY[/bold green]",
                 border_style="green",
                 expand=False
@@ -378,7 +389,8 @@ def play_game(secret_word_override=None):
 
     render_game_screen(board_history, attempt - 1, MAX_ATTEMPTS, game.word_length)
     console.print(Panel(
-        f"[bold white on red] 💥 GAME OVER! [/bold white on red]\n\nThe secret word was: [bold yellow]{game.secret_word}[/bold yellow]",
+        "[bold white on red] 💥 GAME OVER! [/bold white on red]\n\n"
+        f"The secret word was: [bold yellow]{game.secret_word}[/bold yellow]",
         title="[bold red]OUT OF TRIES[/bold red]",
         border_style="red",
         expand=False
@@ -408,6 +420,7 @@ def main(argv=None):
             break
         else:
             console.print("[bold red]Invalid option. Please choose 1-5.[/bold red]")
+
 
 def handle_command_line_args(argv=None):
     """Run a command-line action and return whether a command was handled."""
@@ -443,6 +456,7 @@ def handle_command_line_args(argv=None):
         return False
 
     return True
+
 
 if __name__ == "__main__":
     main()

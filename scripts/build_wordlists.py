@@ -9,7 +9,6 @@ Takes a public-domain word list (e.g. ENABLE / CSW / TWL) and filters it to
 """
 
 import argparse
-import re
 from pathlib import Path
 
 

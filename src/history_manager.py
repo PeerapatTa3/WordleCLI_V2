@@ -1,5 +1,6 @@
 """History and statistics calculation logic."""
 
+
 def group_history_by_game(history):
     """Group flat history records into a dictionary keyed by game number."""
     if not history:
@@ -34,7 +35,7 @@ def calculate_stats(history):
 
     games = [grouped_games[key] for key in sorted(grouped_games)]
     wins = [any(record.get("correct", False) for record in game) for game in games]
-    
+
     total_games = len(games)
     win_count = sum(wins)
     win_rate = (win_count / total_games * 100) if total_games > 0 else 0.0
