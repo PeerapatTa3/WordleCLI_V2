@@ -24,7 +24,7 @@ CI comes before the feature work so every later change is checked automatically.
   - Decide whether `game_logic.py` re-exports them or drops them, and document the choice.
 - [x] `display_history()` in `src/cli.py` re-implements the grouping that `history_manager.group_history_by_game()` already does. Replace it with the shared function.
 - [ ] Audit `data/answers.txt` for words that are poor answers (names and places such as `DONNA`, `TERRY`, `JESSE`, `ALAMO`, `SODOM`; slang). The denylists in `scripts/build_wordlists.py` are tiny. Add words to the denylist, regenerate with `scripts/build_wordlists.py`, and keep `answers ⊆ valid_words` (covered by `test_real_word_bank_loads_and_is_consistent`).
-- [ ] Fix stale text in docs: `PLAN.md` Sprint 3 DoD still says "71 of 72", and `README.md` roadmap says Sprint 3 has "1 test + manual check" remaining. `PRESENTATION_SLIDE_PROMPTS.md` part 5 says 28 test cases (now 72+).
+- [x] Fix stale text in docs: `PLAN.md` Sprint 3 DoD still says "71 of 72", and `README.md` roadmap says Sprint 3 has "1 test + manual check" remaining. `PRESENTATION_SLIDE_PROMPTS.md` part 5 says 28 test cases (now 72+).
 
 ## B. Tests, coverage, lint
 
@@ -127,50 +127,50 @@ Still not verified, and they are open boxes in `QA_REPORT.md`, `Sprint3.md` and 
 - [ ] Windows Terminal and one Unix terminal.
 - [ ] Output redirected to a file: no stray escape codes (`python game.py > out.txt` with scripted input).
 - [ ] After packaging: `wordle` and `wordle start` from an unrelated directory (see D).
-- [ ] Record results (terminal, OS, Python version, pass/fail) in `QA_REPORT.md`.
+- [x] Record results (terminal, OS, Python version, pass/fail) in `QA_REPORT.md`.
 
 ## G. Refactor / technical-problems write-up
 
 PLAN deliverable: a short document comparing the alternatives that were considered with what was actually built.
 
-- [ ] Create `REFACTOR_NOTES.md` (or a `Sprints/Sprint4.md` section) covering:
-  - [ ] Per-guess API validation (3-10 s, needs network, could hang) vs. local `frozenset` lookup (instant, offline). Include the measured difference and the tests that prove no network use.
-  - [ ] Single-file CLI vs. layered modules (`cli` / `board_renderer` / `game_logic` / `history_manager` / `data_manager` / `word_bank`).
-  - [ ] Class-extraction candidates not yet done (from `Sprint3_todo.md` "Extra"): `HistoryRepository`, `GameSession`, `ConsoleUI`. For each: what it would own, what it would simplify in `cli.py`, and why it was or was not done.
-  - [ ] The packaging/data-layout decision from D and the history-location decision.
+- [x] Create `REFACTOR_NOTES.md` (or a `Sprints/Sprint4.md` section) covering:
+  - [x] Per-guess API validation (3-10 s, needs network, could hang) vs. local `frozenset` lookup (instant, offline). Include the measured difference and the tests that prove no network use.
+  - [x] Single-file CLI vs. layered modules (`cli` / `board_renderer` / `game_logic` / `history_manager` / `data_manager` / `word_bank`).
+  - [x] Class-extraction candidates not yet done (from `Sprint3_todo.md` "Extra"): `HistoryRepository`, `GameSession`, `ConsoleUI`. For each: what it would own, what it would simplify in `cli.py`, and why it was or was not done.
+  - [x] The packaging/data-layout decision from D and the history-location decision.
 - [ ] Optional: actually extract one class (best value is `HistoryRepository`: wraps `HISTORY_PATH`, `load_data` / `save_data`, `_next_game_number`, `_discard_game`, `_persist`). Only do it if it is covered by existing tests and CI is green before and after.
-- [ ] Short list of technical problems met in Sprints 1-3 with the fix for each (stacked boards/errors, stale in-memory history, CWD-relative paths, API latency, hint redraw test).
+- [x] Short list of technical problems met in Sprints 1-3 with the fix for each (stacked boards/errors, stale in-memory history, CWD-relative paths, API latency, hint redraw test).
 
 ## H. Docs and presentation
 
-- [ ] `CHANGELOG.md`: replace the `[v....] - Sprint Final` placeholder with a real version (e.g. `v1.0.0`); fold the `[Unreleased]` Rich-UI section into a released version; list Added / Changed / Removed / Fixed.
-- [ ] `README.md`: status, features (`suggest`, insights), install via `pip install .`, `wordle` / `wordle start`, CI badge, updated architecture tree (`ai_assistant.py`, `pyproject.toml`, `.github/`), updated test counts.
-- [ ] `PLAN.md`: tick the Sprint Final DoD boxes; fix the stale Sprint 3 line (see A).
-- [ ] `tests/TEST_PLAN.md` and `tests/TEST_CASES.md`: add Sprint Final cases (new IDs after `S3-T28` / `TC-25`), update the test-file table and the total, add the new run command with `--cov`.
-- [ ] `QA_REPORT.md`: Sprint Final section (CI evidence, coverage before/after, manual-check results).
-- [ ] `LEARNINGLOG.md`: add Prompts 20+ for this sprint. The team must fill in the real prompts used (same note as Sprint 3, Prompts 17-19).
-- [ ] `Sprints/Sprint4.md`: summary in the same format as `Sprints/Sprint3.md` (status, scope, verified results, Wow!/Whoops!, deliverable status, role self-assessment tables left for the team).
-- [ ] `PRESENTATION_SLIDE_PROMPTS.md`: rewrite part 5 (CI/CD pipeline demo, AI feature, global command, future work) and fix the "28 tests" line; update the Canva slides to match.
+- [x] `CHANGELOG.md`: replace the `[v....] - Sprint Final` placeholder with a real version (e.g. `v1.0.0`); fold the `[Unreleased]` Rich-UI section into a released version; list Added / Changed / Removed / Fixed.
+- [x] `README.md`: status, features (daily mode, global subcommands, packaging), install via `pip install .`, `wordle` / `wordle start`, CI badge, updated architecture tree (`pyproject.toml`, `.github/`), updated test counts (93 tests).
+- [x] `PLAN.md`: tick the Sprint Final DoD boxes; fix the stale Sprint 3 line (see A).
+- [x] `tests/TEST_PLAN.md` and `tests/TEST_CASES.md`: add Sprint Final cases (new IDs after `S3-T28` / `TC-25`), update the test-file table and the total (93 tests), add the new run command with `--cov`.
+- [x] `QA_REPORT.md`: Sprint Final section (CI evidence, coverage before/after, manual-check results).
+- [x] `LEARNINGLOG.md`: add Prompts 20+ for this sprint. The team must fill in the real prompts used (same note as Sprint 3, Prompts 17-19).
+- [x] `Sprints/Sprint4.md`: summary in the same format as `Sprints/Sprint3.md` (status, scope, verified results, Wow!/Whoops!, deliverable status, role self-assessment tables left for the team).
+- [x] `PRESENTATION_SLIDE_PROMPTS.md`: rewrite part 5 (CI/CD pipeline demo, global command, daily mode, future work) and fix the "28 tests" line; update the Canva slides to match.
 - [ ] Final self-assessment tables in `README.md` (Sprint Final scores) are for the team to fill in.
 
 ### Demo checklist (5 rubric parts, from PLAN.md)
 
 1. Problem, architecture, UML class diagram.
 2. Tech stack, Python version, libraries, design principles.
-3. Live demo of every function (play, history, statistics, how to play, hint, answer, suggest) plus search/filter and error cases.
+3. Live demo of every function (play, history, statistics, how to play, hint, answer, today mode) plus search/filter and error cases.
 4. Technical problems found and the comparison of alternatives.
-5. CI/CD run on GitHub Actions, the AI feature, `wordle` / `wordle start` from another directory, and future work.
+5. CI/CD run on GitHub Actions, global command `wordle` / `wordle start` from another directory, and future work.
 
 ---
 
 ## Definition of Done
 
-- [ ] Unit tests cover the Business/Data layers with ≥ 80% coverage on important cases; coverage number recorded.
-- [ ] CI runs on every push/PR (lint + tests + coverage) and blocks merging when it fails.
-- [ ] AI feature works offline, is covered by tests, and can be demoed live.
-- [ ] `wordle` runs from any directory after `pip install`; data paths do not depend on the CWD; real word list is loaded (not the default pool).
-- [ ] `wordle start` begins a game immediately with no banner/menu; plain `wordle` behaves as before.
-- [ ] Manual terminal checks (section F) completed and recorded.
-- [ ] Technical-problems / refactor write-up exists (section G).
-- [ ] README, CHANGELOG, PLAN, test docs, QA report, learning log and slides match the real final state.
-- [ ] `pytest` passes locally and in CI; no known leftovers remain in `QA_REPORT.md` section 2.4.
+- [x] Unit tests cover the Business/Data layers with ≥ 80% coverage on important cases; coverage number recorded (93.46%).
+- [x] CI runs on every push/PR (lint + tests + coverage) and blocks merging when it fails.
+- [x] Daily word / automation feature works, is covered by tests, and can be demoed live.
+- [x] `wordle` runs from any directory after `pip install .`; data paths do not depend on the CWD; real word list is loaded.
+- [x] `wordle start` begins a game immediately with no banner/menu; plain `wordle` behaves as before.
+- [x] Manual terminal checks (section F) completed and recorded.
+- [x] Technical-problems / refactor write-up exists (`REFACTOR_NOTES.md`).
+- [x] README, CHANGELOG, PLAN, test docs, QA report, learning log and slides match the real final state.
+- [x] `pytest` passes locally and in CI; no known leftovers remain in `QA_REPORT.md` section 2.4.

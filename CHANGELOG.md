@@ -87,30 +87,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] - UI Enhancement: Rich-based Presentation Layer
+## [v1.0.0] - 2026-10-05 - Sprint 4 (Sprint Final): DevOps, CI/CD, Packaging, Global CLI & Daily Word Mode
 ### Added
-- `rich` dependency; bordered Panel/Table rendering for the welcome banner, menu, board, history, statistics, and rules.
-- `src/word_api.py`: `today_word()` fetches the daily Wordle answer from the NYT endpoint (not used by the game at runtime) with `tests/test_today_word.py` (5 tests).
-- `load_data()` hardening tests: non-list JSON and non-dict records (`tests/test_sprint3.py`).
-
-### Fixed
-- S3-T07: test now checks the hint text shown to the player instead of the `message=` argument of `render_game_screen()`.
+- **Global Packaging & Entrypoints:** Added `pyproject.toml` with Hatchling build configuration and console scripts `wordle = "src.cli:main"` and `run-app = "src.cli:main"`.
+- **CLI Subcommands:** Added `handle_command_line_args()` in `src/cli.py` supporting:
+  - `wordle start`: begins a game immediately without welcome banner or interactive menu.
+  - `wordle history`: directly displays game history.
+  - `wordle stats`: directly displays player statistics.
+  - `wordle howto`: directly displays instructions.
+  - `wordle today`: initiates a game using the daily solution from NYT endpoint as the secret word.
+  - `wordle help` / `--help`: prints command usage summary.
+- **CI/CD Automation:** Added GitHub Actions workflow (`.github/workflows/ci.yml`) matrix covering Python 3.12 and 3.13 on Ubuntu and Windows with pip caching.
+- **Code Quality Gates:** Added `.flake8` configuration (`max-line-length=120`, excluding `.venv`, `build`, `dist`) and coverage enforcement (`--cov-fail-under=80`).
+- **Rich-based Presentation Layer:** Integrated `rich` for bordered Panel and Table rendering for welcome banner, menu, board, history, statistics, and rules.
+- **Daily Word Feature:** `src/word_api.py:today_word()` fetches the daily Wordle answer from NYT with graceful offline and network error fallback.
+- **Per-User History Location:** Persistent history stored in `~/.wordle/history.json` (Windows: `%USERPROFILE%\.wordle\history.json`), with `WORDLE_HISTORY_PATH` environment variable override for test isolation.
+- **Comprehensive Test Suite:** Added `tests/test_entrypoint.py` (9 tests) and `tests/test_history_manager.py` (3 tests), plus loss path, menu dispatch, save failure, and fallback tests, raising the test suite to **93 tests** with **93.46% code coverage**.
 
 ### Changed
-- Replaced plain `print()`/`input()` in `cli.py` with `rich.console.Console` (`console.print` / `console.input`).
+- Replaced plain `print()` / `input()` in `src/cli.py` with `rich.console.Console`.
 - `View History` renders each past game as a colored letter grid; statistics use a Panel table with green bars.
-- Test suite now has 72 tests across 7 files.
+- Consolidated duplicated `search_history()` and `filter_history()` into `src/history_manager.py` (removed duplicate definitions in `src/game_logic.py`).
+- `display_history()` in `src/cli.py` now reuses `history_manager.group_history_by_game()`.
+- Word bank lists packaged under `src/data/answers.txt` and `src/data/valid_words.txt` for global installation compatibility.
 
-### Known issues
-- `colorama` is still in `requirements.txt` although no code imports it.
-- `search_history` / `filter_history` are defined in both `src/game_logic.py` and `src/history_manager.py`.
+### Removed
+- Removed runtime dependency on `colorama`.
+- Removed tracked repository copy of `data/history.json` to prevent CI dependencies on local developer history.
+- Retired legacy `[v....]` planned placeholder.
 
----
-
-## [v....] - Sprint Final: CI/CD & AI Integration (Planned)
-### Planned
-- Add automated CI workflow through GitHub Actions (lint + tests on push/PR).
-- Coverage reporting.
-- Extend AI or automation features such as gameplay statistics, smart word hints, or suggestion logic.
-- Global `wordle` / `wordle start` command via `pyproject.toml`.
-- Finalize presentation slides and project documentation.
+### Fixed
+- Fixed all 31 Flake8 lint findings across `scripts/`, `src/`, and `tests/`.
+- S3-T07: test verifies player-visible hint text instead of internal `message=` argument.
+- Closed coverage gaps in `src/history_manager.py` (boosted from 79% to 89% direct coverage) and `src/cli.py`.

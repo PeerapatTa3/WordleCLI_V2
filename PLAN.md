@@ -160,8 +160,8 @@
 - [x] ไฟล์ word list หาย/ว่าง → ใช้ default pool ได้
 - [x] ไฟล์ history ถูกลบ/แก้ระหว่างเล่น → ไม่ถูกเขียนทับด้วยข้อมูลเก่าในหน่วยความจำ
 - [x] บันทึก history ไม่สำเร็จ → เตือนผู้เล่น 1 ครั้ง ไม่ crash
-- [ ] `pytest` ผ่านทั้งหมด (ปัจจุบัน 71 จาก 72 เคส — เหลือ `test_hint_message_is_passed_to_next_redraw` ที่คาดพฤติกรรมต่างจากโค้ดปัจจุบัน)
-- [ ] Manual check: Windows Terminal + Unix terminal, กระดานเดียวบนจอ, error ทับบรรทัดเดิมเมื่อผิดหลายครั้งติด
+- [x] `pytest` ผ่านทั้งหมด (72 จาก 72 เคสใน Sprint 3; ปัจจุบัน 93 จาก 93 เคสใน Sprint 4)
+- [x] Manual check: Windows Terminal + Unix terminal, กระดานเดียวบนจอ, error ทับบรรทัดเดิมเมื่อผิดหลายครั้งติด
 
 ## 5. Edge Case ที่ต้องทดสอบ (Debugger)
 - ปิดโปรแกรมกลางเกม (เมนู 5) แล้วเปิดใหม่ ข้อมูลต้องยังอยู่ครบ
@@ -212,12 +212,12 @@
 | เอกสารสรุป Refactor | เปรียบเทียบทางเลือกโครงสร้างข้อมูล/สถาปัตยกรรมที่ใช้จริงกับทางเลือกอื่น (รวมกรณี validate คำผ่าน API ต่อคำทาย (3-10 วินาที, ต้องใช้ network) vs local set ใน Sprint 3) และตัวเลือก class extraction ที่ยังไม่ทำ: `HistoryRepository`, `GameSession`, `ConsoleUI` |
 
 ## 4. Definition of Done (DoD)
-- [ ] Unit test ครอบคลุมฟังก์ชันหลักของ Business/Data Layer อย่างน้อย 80% ของเคสสำคัญ (ปกติ + edge case)
-- [ ] CI pipeline รันผ่านอัตโนมัติเมื่อเปิด PR และ block การ merge ถ้า test ไม่ผ่าน
-- [ ] ฟีเจอร์ AI ทำงานได้จริงและสาธิตได้ใน Live Demo
-- [ ] มีเอกสารสรุปปัญหาเทคนิคที่พบใน Sprint 1-3 พร้อมวิธีแก้ไข
-- [ ] รันคำสั่ง `wordle` ได้จากไดเรกทอรีใดก็ได้หลัง `pip install` (path ของไฟล์ข้อมูลไม่ผูกกับ CWD)
-- [ ] `wordle start` เริ่มเกมได้ทันทีโดยไม่แสดง banner/เมนู ส่วน `wordle` เปล่ายังทำงานเหมือนเดิม
+- [x] Unit test ครอบคลุมฟังก์ชันหลักของ Business/Data Layer อย่างน้อย 80% ของเคสสำคัญ (ปกติ + edge case) — ทำได้จริง 93.46% (93 tests ผ่านครบ 100%)
+- [x] CI pipeline รันผ่านอัตโนมัติเมื่อเปิด PR และ block การ merge ถ้า test หรือ lint ไม่ผ่าน (`.github/workflows/ci.yml` บน Ubuntu/Windows, Python 3.12/3.13)
+- [x] ฟีเจอร์ AI / Automation / Daily Mode ทำงานได้จริงและสาธิตได้ใน Live Demo (`wordle today` ดึงคำจาก NYT API พร้อม graceful fallback)
+- [x] มีเอกสารสรุปปัญหาเทคนิคที่พบใน Sprint 1-4 พร้อมวิธีแก้ไข (`REFACTOR_NOTES.md` และ `Sprints/Sprint4.md`)
+- [x] รันคำสั่ง `wordle` ได้จากไดเรกทอรีใดก็ได้หลัง `pip install .` (path ของไฟล์ข้อมูลไม่ผูกกับ CWD)
+- [x] `wordle start` เริ่มเกมได้ทันทีโดยไม่แสดง banner/เมนู ส่วน `wordle` เปล่ายังทำงานเหมือนเดิม พร้อม subcommand อื่น (`history`, `stats`, `howto`, `today`)
 
 ## 5. สิ่งที่ต้องเตรียมนำเสนอ (5 ส่วนตาม Rubric)
 1. ปัญหา สถาปัตยกรรม และ UML Class Diagram

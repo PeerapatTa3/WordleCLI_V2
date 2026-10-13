@@ -401,6 +401,62 @@
   tests/test_sprint3.py: 17 passed; full suite: 72 passed in 0.82s
   ```
 
+### 🔹 Sprint 4 work records (20-22)
+
+> **ทีมต้องเติมช่อง Student Prompt ด้วย prompt จริงที่ใช้** — ส่วน AI Response Summary และ Verified Result ด้านล่างสรุปจากการเปลี่ยนแปลงใน repo และผลรัน `pytest`
+
+### 🔹 Prompt 20: Packaging, Console Scripts, and Global CLI Subcommands
+- **Student Prompt:**
+  ```text
+  ช่วยตั้งค่า pyproject.toml ให้โปรเจกต์สามารถติดตั้งผ่าน pip install . และรันคำสั่ง wordle จากที่ไหนก็ได้
+  พร้อมเพิ่ม subcommand เช่น wordle start ที่เริ่มเล่นเกมทันทีโดยไม่ต้องผ่านเมนูหลัก, wordle today สำหรับเล่นโหมดคำศัพท์ประจำวัน, และคำสั่ง help/stats/history
+  ```
+- **AI Response Summary:**
+  สร้าง `pyproject.toml` โดยใช้ build-backend เป็น `hatchling` กำหนด `[project.scripts]` ให้ `wordle = "src.cli:main"` และ alias `run-app`; เพิ่ม `handle_command_line_args()` ใน `src/cli.py` เพื่อตรวจสอบและประมวลผลคำสั่งย่อย `start`, `today`, `history`, `stats`, `howto`, และ `help`; โหมด `today` ดึงคำจาก `today_word()` มาใช้เป็นคำเฉลยรอบพิเศษ และมี error handling ป้องกันโปรแกรม crash เมื่อ API ขัดข้อง
+- **Live Verification Code:**
+  ```powershell
+  pip install .
+  wordle --help
+  wordle start
+  wordle today
+  ```
+- **Verified Result:**
+  ```text
+  tests/test_entrypoint.py: 9 passed (ครอบคลุม start, today, history, stats, howto, help, และ unknown subcommand)
+  ```
+
+---
+
+### 🔹 Prompt 21: CI/CD Matrix on GitHub Actions and Flake8 Linting
+- **Student Prompt:**
+  ```text
+  ออกแบบ GitHub Actions workflow (.github/workflows/ci.yml) สำหรับรันเทสต์อัตโนมัติทุกครั้งที่ push และ pull request
+  โดยให้ทดสอบทั้งบน Ubuntu และ Windows กับ Python 3.12 และ 3.13 ติดตั้ง dependencies dev, ตรวจ lint ด้วย flake8, และบังคับ coverage ไม่ต่ำกว่า 80%
+  ```
+- **AI Response Summary:**
+  สร้าง workflow `.github/workflows/ci.yml` ด้วย strategy matrix (`os: [ubuntu-latest, windows-latest]`, `python-version: ["3.12", "3.13"]`); ใช้ `actions/setup-python@v5` พร้อม pip cache; ติดตั้งแพ็กเกจด้วย `pip install -e ".[dev]"`; รัน Flake8 ด้วย config line length 120; รัน `pytest --cov=src --cov-fail-under=80`; ลบไฟล์ `data/history.json` ออกจาก git เพื่อป้องกันไม่ให้ CI พึ่งพาประวัติการเล่นเดิม
+- **Verified Result:**
+  ```text
+  Flake8 แก้ไขครบ 31 findings (0 findings เหลืออยู่); CI workflow รัน lint และ pytest พร้อม coverage gate 80% สำเร็จ
+  ```
+
+---
+
+### 🔹 Prompt 22: Closing Test Coverage Gaps and Hardening Edge Cases
+- **Student Prompt:**
+  ```text
+  ตรวจสอบ code coverage ของโปรเจกต์ Wordle CLI และเพิ่ม unit test ปิดจุดที่ยังไม่มีเทสต์คลุม เช่น การคำนวณสถิติใน history_manager เมื่อข้อมูลว่างหรือเป็น format เก่า,
+  ทางเลือกเมนูหลัก 1-5, กรณีที่ทายผิดครบ 6 ครั้งจนแพ้, และกรณีบันทึกไฟล์ไม่สำเร็จ
+  เพื่อให้ coverage รวมเกิน 80% ตามข้อกำหนด
+  ```
+- **AI Response Summary:**
+  สร้าง `tests/test_history_manager.py` (3 tests) ทดสอบ empty history, legacy records ไม่มี `game_number`, และการนับ win distribution พร้อมรีเซ็ต streak เมื่อแพ้; เพิ่มเทสต์ใน `tests/test_cli.py` สำหรับ menu choices 1-5, invalid menu choice loop, 6-guess loss flow, fallback เมื่อ `WORDLE_TEST_WORD` ผิดกฎ, และ save failure; เพิ่ม coverage ของ `history_manager.py` จาก 79% เป็น 89% และ total coverage ทะลุ 93.46%
+- **Verified Result:**
+  ```text
+  python -m pytest --cov=src --cov-fail-under=80
+  93 passed in 2.57s; Total coverage: 93.46%
+  ```
+
 ---
 
 ## 3. Key Learning Outcomes
@@ -413,7 +469,10 @@
 - การใช้ `tmp_path` ช่วยทดสอบการอ่านเขียนไฟล์โดยไม่เปลี่ยนแปลงข้อมูลจริงในโฟลเดอร์ `data/`
 - การพึ่งพา API ภายนอกทุกคำทายทำให้ช้าและเปราะบาง การย้ายไปใช้ข้อมูลในเครื่อง (offline-first) ทำให้เร็วและทดสอบง่ายขึ้น
 - การอ่านไฟล์ประวัติใหม่ก่อนเขียนทุกครั้งช่วยไม่ให้ข้อมูลในหน่วยความจำที่เก่าไปทับไฟล์ที่ถูกแก้ระหว่างรัน
-- เมื่อเปลี่ยน design ต้องอัปเดตเทสต์และเอกสารตามทันที (เช่น เคส hint ที่ยังค้าง)
+- เมื่อเปลี่ยน design ต้องอัปเดตเทสต์และเอกสารตามทันที
+- การทำ Packaging ผ่าน `pyproject.toml` และ console scripts ทำให้โปรเจกต์กลายเป็นเครื่องมือ CLI ที่ติดตั้งและใช้งานได้จริงในทุกโฟลเดอร์
+- การตั้งค่า CI/CD Matrix บน GitHub Actions ช่วยการันตีว่าซอฟต์แวร์ทำงานได้ข้ามระบบปฏิบัติการ (Windows & Linux) และหลายเวอร์ชันของ Python
+- การบังคับ Code Quality Gates ทั้ง Lint (Flake8) และ Coverage Gate (≥80%) ช่วยป้องกัน code regression และรักษามาตรฐานของโค้ดในระยะยาว
 
 ---
 
@@ -422,25 +481,28 @@
 ### Wow!
 - โค้ด CLI มีกระบวนการแยกฟังก์ชันชัดเจนและง่ายต่อการวิเคราะห์
 - สามารถทดสอบ valid/invalid input ได้จริงและปรับปรุงความปลอดภัยของโปรแกรม
-- เพิ่ม automated test จาก 13 เป็น 22 เคส และครอบคลุม business logic, persistence, API fallback และ legacy-compatible CLI features มากขึ้น
-
+- เพิ่ม automated test จาก 13 เคสใน Sprint 1 สู่ 72 เคสใน Sprint 3 และ **93 เคสใน Sprint 4** พร้อม Coverage **93.46%**
 - (Sprint 3) เล่นได้ offline และตรวจคำทันที; กระดานและ error ไม่ซ้อนกันอีก; `cli.py` เบาลงหลังแยก `BoardRenderer` และ `history_manager`
+- (Sprint 4) ติดตั้งและรันคำสั่ง `wordle` ได้ทั่วระบบ; มีโหมด `wordle start` และ `wordle today`; ระบบ CI/CD Matrix บน GitHub Actions รันผ่านฉลุยพร้อม Flake8 Clean
 
 ### Whoops!
 - (Sprint 3) เปลี่ยนวิธีแสดง hint แล้วเทสต์เก่าไม่ตรง (ค้าง 1 เคส); `colorama` ยังค้างใน `requirements.txt`; เอกสารตามโค้ดไม่ทันจนต้องไล่แก้ทีเดียว
-- ในช่วงแรกยังคงมีความสับสนเรื่องโครงสร้างโมดูลและการจัดการเอกสาร README
-- ได้แก้ไขโดยปรับใช้แผนงานใน [PLAN.md](./PLAN.md) และจัดทีมตามบทบาทตาม Sprint
+- (Sprint 4) ไฟล์ประวัติเดิม `data/history.json` ที่ถูก commit ไว้ใน repo ทำให้การทดสอบ CI เกิดผลข้างเคียง จึงต้องลบทิ้งและย้ายไปใช้ User Directory (`~/.wordle/history.json`)
+- API ดึงคำประจำวันจากภายนอกอาจมี downtime จึงต้องออกแบบ graceful handling ไม่ให้โปรแกรม crash
 
 ---
 
 ## 5. Evidence of Work
 
-- Entry point: [game.py](./game.py)
-- Presentation layer: [src/cli.py](./src/cli.py), [src/board_renderer.py](./src/board_renderer.py) (root [cli.py](./cli.py) เป็น wrapper)
+- Package metadata & scripts: [pyproject.toml](./pyproject.toml), [.flake8](./.flake8)
+- CI/CD workflow: [.github/workflows/ci.yml](./.github/workflows/ci.yml)
+- Entry points: [game.py](./game.py), [cli.py](./cli.py)
+- Presentation layer: [src/cli.py](./src/cli.py), [src/board_renderer.py](./src/board_renderer.py)
 - Game logic: [src/game_logic.py](./src/game_logic.py), [src/history_manager.py](./src/history_manager.py)
-- Data access: [src/data_manager.py](./src/data_manager.py), [src/word_bank.py](./src/word_bank.py), [data/](./data)
+- Data access & assets: [src/data_manager.py](./src/data_manager.py), [src/word_bank.py](./src/word_bank.py), [src/data/](./src/data), [src/word_api.py](./src/word_api.py)
 - Build-time tools: [scripts/build_wordlists.py](./scripts/build_wordlists.py), [scripts/word_api.py](./scripts/word_api.py)
-- Tests: [tests/](./tests) (72 เคส, 7 ไฟล์)
+- Tests: [tests/](./tests) (93 เคส, 8 ไฟล์, Coverage 93.46%)
+- Architectural & Refactoring Notes: [REFACTOR_NOTES.md](./REFACTOR_NOTES.md)
 - Plan: [PLAN.md](./PLAN.md)
 - Changelog: [CHANGELOG.md](./CHANGELOG.md)
-- QA: [QA_REPORT.md](./QA_REPORT.md), [Sprint3_todo.md](./Sprint3_todo.md), [Sprints/](./Sprints)
+- QA: [QA_REPORT.md](./QA_REPORT.md), [Sprint4_todo.md](./Sprint4_todo.md), [Sprints/](./Sprints)

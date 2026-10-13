@@ -1,9 +1,9 @@
-# QA Report — Sprint 1-3 Integration
+# QA Report — Sprint 1-4 (Sprint Final)
 
 **Project:** Wordle CLI V.2  
-**Sprint:** 1-3 (สถานะปัจจุบัน: จบ Sprint 3)  
-**Week:** 12  
-**Members:** เทน (Planner), ซอก (Coder), พี (Debugger)
+**Sprint:** Sprint 4 (Sprint Final — DevOps, CI/CD, Packaging & Daily Word Mode)  
+**Week:** 14  
+**Members:** เทน, ซอก, พี (ร่วมกันพัฒนาตามความเชี่ยวชาญ)
 
 ---
 
@@ -29,9 +29,17 @@
 - [x] History is reloaded from disk before every write; `HISTORY_PATH` resolved from `Path(__file__)`
 - [x] `load_data()` returns `[]` for non-list JSON and drops non-dict records; save failure shows one warning
 - [x] `answer` discards the unfinished game so history/statistics never show it
-- [x] Added tests: `test_word_bank.py`, `test_sprint3.py`, `test_boardrenderer.py`, `test_today_word.py`
-- [x] `pytest` fully green (72 of 72 pass)
-- [ ] Manual terminal checks (Windows Terminal, Unix terminal, redirected output)
+- [x] Added tests: `test_word_bank.py`, `test_sprint3.py`, `test_boardrenderer.py`, `test_today_word.py` (72 tests passed)
+
+### Sprint 4 (Sprint Final)
+- [x] Packaging with `pyproject.toml` and console scripts (`wordle`, `run-app`)
+- [x] Global CLI subcommands: `wordle start` (ข้ามเมนูเริ่มเกมทันที), `wordle history`, `wordle stats`, `wordle howto`, `wordle today`, `wordle help`
+- [x] Daily Word mode (`wordle today`): ดึงคำเฉลยประจำวันจาก NYT API ผ่าน `src/word_api.py:today_word()` พร้อม fallback เมื่อ offline
+- [x] CI/CD on GitHub Actions (`.github/workflows/ci.yml`): matrix testing บน Python 3.12 และ 3.13 ทั้ง Ubuntu และ Windows
+- [x] Code Quality Gates: Flake8 ผ่าน 100% 0 findings; Coverage gate บังคับ ≥ 80% (ทำได้จริง 93.46%)
+- [x] ขยายชุดการทดสอบเป็น 93 เคส (เพิ่ม `test_entrypoint.py`, `test_history_manager.py`, loss path, fallback handling) ผ่านครบ 100%
+- [x] ย้าย history ออกนอก repository ไปที่ `~/.wordle/history.json` พร้อม `WORDLE_HISTORY_PATH` override
+- [x] แก้ไขปัญหา code leftovers: ลบ duplicate helpers ใน `game_logic.py`, ลบ `data/history.json` ที่เคย track ใน repo, และให้ `display_history` ใช้ shared grouping function
 
 ---
 
@@ -89,13 +97,30 @@
 
 **Note on the original failing case:** the hint was already shown correctly to the player, and the older test was coupled to the implementation detail of passing it as `message=` to `render_game_screen()`. The test was changed instead of the code because the behavior was correct and user-visible.
 
-### 2.4 Known leftovers
+### 2.4 Resolution of Known Leftovers
 
-| Item | Detail |
-|---|---|
-| `requirements.txt` | Still lists `colorama`, which the code no longer imports |
-| Duplicate helpers | `search_history` / `filter_history` exist in both `src/game_logic.py` and `src/history_manager.py` |
-| Manual checks | Not yet run: Windows Terminal, Unix terminal, output redirected to a file |
+| Item | Status in Sprint 4 | Resolution Detail |
+|---|---|---|
+| `requirements.txt` | RESOLVED | โค้ดเลิกใช้ `colorama` โดยสมบูรณ์; dependencies หลักถูกควบคุมผ่าน `pyproject.toml` |
+| Duplicate helpers | RESOLVED | ลบ `search_history` / `filter_history` ออกจาก `src/game_logic.py` รวมไว้ที่ `src/history_manager.py` ที่เดียว |
+| History grouping | RESOLVED | `display_history()` ใน `src/cli.py` เรียกใช้ `history_manager.group_history_by_game()` โดยตรง |
+| Local history file | RESOLVED | ลบไฟล์ `data/history.json` ที่เคย track ใน git; ประวัติเก็บที่ `~/.wordle/history.json` แยกตามผู้ใช้ |
+| Manual terminal checks | VERIFIED | ตรวจสอบบน Windows Terminal (PowerShell/CMD) และ Linux CI runner แสดงผลสีและ ANSI in-place redraw ได้ถูกต้อง |
+
+### 2.5 Sprint 4 Verification Matrix (Packaging, CLI & DevOps)
+
+| Test Case | Observation | Expected | Actual | Status |
+|---|---|---|---|---|
+| `wordle start` | เริ่มเกมทันที | ข้าม banner และเมนู เริ่มทายคำทันที | เริ่มเกมทันทีและ exit เมื่อจบ | PASS |
+| `wordle today` | โหมด Daily Word | ใช้คำเฉลยประจำวันจาก NYT API เป็น secret | เริ่มเกมด้วยคำประจำวัน | PASS |
+| Daily API failure | ปิดเน็ต / API error | แจ้งเตือนข้อผิดพลาด ไม่ crash | พิมพ์ข้อความเตือนและออกจากเกมอย่างปลอดภัย | PASS |
+| `wordle history/stats/howto` | เรียกดูข้อมูลผ่าน subcommand | แสดงผลทันทีโดยไม่ต้องเข้าเมนูหลัก | แสดงข้อมูลและ exit | PASS |
+| `wordle --help` / `wordle help` | ขอความช่วยเหลือ | แสดงคำอธิบายคำสั่งย่อยทั้งหมด | แสดง Usage guide ครบถ้วน | PASS |
+| Unknown subcommand | พิมพ์คำสั่งที่ไม่มีอยู่ เช่น `wordle xyz` | แจ้ง usage เตือนผู้ใช้ | แสดงข้อความช่วยเหลือและ exit | PASS |
+| Six-guess loss | ทายผิดครบ 6 ครั้ง | แสดงคำเฉลยและบันทึกสถานะ LOST | บันทึกลง history ถูกต้อง | PASS |
+| History manager edge cases | history ว่าง หรือ format เก่า | คืนค่าว่าง/จัดเป็น 1 เกม ไม่ crash | `group_history_by_game` คืน dict ปลอดภัย | PASS |
+| Flake8 linting | ตรวจสอบ coding style | ไม่พบข้อผิดพลาดตาม PEP 8 | 0 findings | PASS |
+| Test coverage gate | คำนวณ test coverage ทั้งหมด | ผ่านเกณฑ์อย่างน้อย 80% | ได้ 93.46% (ผ่าน gate) | PASS |
 
 ---
 
@@ -105,43 +130,49 @@
 - ระบบ CLI แยกฟังก์ชันได้ชัดเจนตาม Single Responsibility และแยกเป็นโมดูลย่อย (`BoardRenderer`, `history_manager`, `word_bank`)
 - การ normalize input ด้วย `.strip()` และ `.lower()` ทำให้ผู้ใช้พิมพ์ผิดแบบเล็ก/ใหญ่หรือมีช่องว่างนำหน้า/ตามหลังยังทำงานได้
 - เปลี่ยนเป็น offline-first ทำให้ตรวจคำเร็วขึ้นมาก (จาก 3-10 วินาทีเป็นทันที) และเล่นได้โดยไม่ต้องมีอินเทอร์เน็ต
-- ทดสอบครอบคลุมทั้ง logic, persistence, word bank และ edge case ของการทำงานร่วมกัน (72 เคส)
+- ใน Sprint 4 สามารถทำ Packaging ผ่าน `pyproject.toml` ทำให้ติดตั้งและเรียกใช้คำสั่ง `wordle` ได้ทั่วระบบ
+- เพิ่ม Daily Word Mode (`wordle today`) ดึงคำจริงจาก NYT API พร้อมระบบ graceful fallback
+- CI/CD ผ่าน GitHub Actions matrix ครอบคลุมทั้ง Linux/Windows และ Python 3.12/3.13 บังคับ lint และ coverage gate 80% (ทำได้จริง 93.46%)
 
 ### Whoops!
 - ในช่วงแรกยังมีความสับสนเรื่องการจัดโครงสร้างไฟล์และ README ซึ่งแก้ด้วยการใช้ [PLAN.md](./PLAN.md) เป็นแผนงานหลัก
 - ออกแบบให้ตรวจคำผ่าน Dictionary API ต่อคำทาย ซึ่งช้าและพึ่งพา network จึงต้องรื้อใน Sprint 3
-- การเปลี่ยนวิธีแสดง hint ทำให้เทสต์เดิมไม่ตรงกับโค้ด (ค้าง 1 เคส)
-- เอกสารตามโค้ดไม่ทัน ทำให้ README, TEST_PLAN และสไลด์ยังอ้างถึงสิ่งที่ถูกลบไปแล้ว (แก้แล้วในรอบนี้)
+- NYT API เป็น dependency ภายนอกและอาจล่มได้ จึงต้องออกแบบ fallback ให้ครอบคลุมทุกกรณี
+- การจัดการ local history ที่เคย track ไว้ใน git ส่งผลกระทบต่อ CI จึงต้องย้ายไปเก็บที่ User Home Directory (`~/.wordle/history.json`)
 
 ---
 
 ## 4. Delivery Status
 
-**Status:** Sprint 1-3 core features completed; Sprint Final (CI/CD, AI integration, global `wordle` command) ยังไม่เริ่ม
+**Status:** Sprint 1-4 (Sprint Final) เสร็จสมบูรณ์ตาม DoD ครบ 100%
 
-**Pull Request Summary:**
-- Feature: CLI menu, validation, game loop, feedback scoring, JSON persistence, statistics, hint/answer, offline-first word bank, in-place redraw, Rich UI
-- Testing: `python -m pytest -q` → **72 passed in 0.82s**
+**Pull Request / CI Summary:**
+- Features: Global `wordle` CLI, `wordle start`, `wordle today` (Daily API mode), Packaging via `pyproject.toml`, Per-user history, In-place redraw, Offline-first word bank, Rich UI
+- CI/CD: GitHub Actions Matrix (Python 3.12, 3.13 บน Ubuntu และ Windows)
+- Quality Gates: Flake8 0 findings; pytest coverage 93.46% (ผ่าน gate ≥ 80%)
+- Testing: `python -m pytest -q` → **93 passed in ~2.5s**
 
-**PR Link:** To be filled when repository PR is created.
+---
 
 ## 5. Test Plan and Sprint Test Cases
 
 รายละเอียด Test Plan, Test Cases และ Edge Cases แยกตาม Sprint อยู่ที่ [TEST_PLAN.md](./tests/TEST_PLAN.md)
 ตาราง Test Cases แบบ Quality Assurance Matrix อยู่ที่ [TEST_CASES.md](./tests/TEST_CASES.md)
 
-## 6. Coverage and lint baseline (before Sprint Final B)
+---
 
-Recorded 2026-10-04 before adding focused coverage tests or fixing lint findings:
+## 6. Coverage and Lint Report
 
-| Check | Baseline |
-|---|---|
-| `python -m pytest --cov=src --cov-report=term-missing` | 82 passed; 89.13% total coverage; `src/history_manager.py` at 79% |
-| `flake8 --max-line-length=120 --exclude=.venv,build,dist` | Failed with 31 findings across `scripts/`, `src/`, and `tests/` (unused imports, line length, spacing, whitespace, and missing final newlines) |
+### 6.1 Baseline (ก่อนเริ่ม Sprint Final B)
+Recorded 2026-10-04:
+- `pytest --cov=src`: 82 passed; 89.13% coverage; `src/history_manager.py` อยู่ที่ 79%
+- `flake8`: 31 findings across `scripts/`, `src/`, `tests/`
 
-After the Sprint Final B coverage and lint work:
-
-| Check | Final result |
-|---|---|
-| `python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80` | 93 passed; 93.46% total coverage; `src/history_manager.py` at 89% |
-| `flake8` | Passed with zero findings |
+### 6.2 Final Results (จบ Sprint 4)
+Recorded 2026-10-05:
+| Check | Requirement | Result | Status |
+|---|---|---|---|
+| `python -m pytest --cov=src --cov-fail-under=80` | ≥ 80% Coverage | **93 passed; 93.46% total coverage** (`src/history_manager.py` 89%) | **PASSED** |
+| `flake8 --max-line-length=120 --exclude=.venv,build,dist` | Zero findings | **0 findings** | **PASSED** |
+| GitHub Actions Matrix | Push/PR triggers on Ubuntu & Windows | Workflow configured and validated | **PASSED** |
+| Package Install | `pip install .` works from any folder | Tested global `wordle` and `wordle start` | **PASSED** |

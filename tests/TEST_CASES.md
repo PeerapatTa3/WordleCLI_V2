@@ -33,8 +33,18 @@
 | **TC-23** | History Hardening | JSON ผิดชนิด | `{}`, `"abc"`, `42`, `null`, list ที่มีขยะ | คืน `[]` หรือเก็บเฉพาะ dict | ผ่านทุกเคส | **PASSED** |
 | **TC-24** | Full Game Integration | เล่นครบเกม | `crane` → `grape` | บันทึกทั้งสองคำ, `game_number`, secret | ตรงตามคาด | **PASSED** |
 | **TC-25** | Hint Redraw | hint แสดงใต้กระดานบน redraw ถัดไป | `hint` → `grape` | ข้อความ hint ปรากฏให้ผู้เล่นเห็น | ข้อความ hint ปรากฏให้ผู้เล่นเห็น | **PASSED** |
+| **TC-26** | CLI Subcommand `start` | เริ่มเกมทันที | `wordle start` | ข้าม banner และเมนู, เริ่มเกมทันที | เริ่มรอบเกมทันทีและ exit เมื่อจบ | **PASSED** |
+| **TC-27** | CLI Subcommands Direct | เรียกดูข้อมูลทันที | `wordle history`, `stats`, `howto` | แสดงผลหน้าจอที่เรียกโดยไม่ต้องเข้าเมนู | แสดงผลถูกต้องและ exit | **PASSED** |
+| **TC-28** | Daily Word Game Mode | ดึงคำเฉลยประจำวันจาก API | `wordle today` | ใช้คำจาก `today_word()` เป็นคำเฉลยของเกม | เริ่มเกมด้วยคำประจำวัน | **PASSED** |
+| **TC-29** | Daily API Failure Handling | จัดการกรณี API ล่ม/ออฟไลน์ | API error, HTTP fail, bad JSON | พิมพ์ข้อความเตือนและออกจากเกมอย่างปลอดภัย | ไม่ crash, แสดงข้อความ graceful | **PASSED** |
+| **TC-30** | CLI Help & Unknown Command | แสดงคำแนะนำคำสั่ง / จัดการคำสั่งผิด | `wordle help`, `wordle xyz` | แสดง help usage และออกจากโปรแกรม | แสดง usage ข้อความครบถ้วน | **PASSED** |
+| **TC-31** | History Manager Edge Cases | จัดการ history ว่าง / format เดิม | history เป็น `[]` หรือไม่มี `game_number` | คืน dict ปลอดภัย หรือจัดกลุ่มเป็น Game 1 | สถิติและกลุ่มประวัติคำนวณได้ถูกต้อง | **PASSED** |
+| **TC-32** | Streak Reset & Distribution | รีเซ็ต streak เมื่อแพ้ และนับการชนะ | เล่นแพ้หลังชนะต่อเนื่อง | streak กลับเป็น 0 และ distribution ถูกนับ | streak รีเซ็ตถูกต้อง | **PASSED** |
+| **TC-33** | Six-Guess Loss Flow | ทายผิดครบ 6 ครั้ง | 6 invalid guesses | จบเกม, เฉลยคำลับ, บันทึกสถานะแพ้ | แสดงคำเฉลยและบันทึกผล | **PASSED** |
+| **TC-34** | Menu 1-5 Dispatch & Invalid | ทดสอบทางเลือกเมนูทั้งหมด | choices 1-5, choice ผิด | เรียกฟังก์ชันตรงตามเลข และเตือนเมื่อป้อนผิด | ทำงานถูกต้องตาม loop | **PASSED** |
+| **TC-35** | CI/CD Pipeline & Lint Gate | ทดสอบผ่าน CI matrix บน GitHub | push/PR บน Ubuntu/Windows | Flake8 0 findings, pytest ≥ 80% coverage | ผ่านครบ matrix (coverage 93.46%) | **PASSED** |
 
-> TC-14 (retry/cache ของ Dictionary API) ถูกถอดออกใน Sprint 3 พร้อมกับตัว API TC-04, TC-05, TC-10 ถูกปรับให้ตรวจกับ word bank ในเครื่อง
+> TC-14 (retry/cache ของ Dictionary API) ถูกถอดออกใน Sprint 3 พร้อมกับตัว API; TC-04, TC-05, TC-10 ถูกปรับให้ตรวจกับ word bank ในเครื่อง
 
 ---
 
@@ -77,30 +87,56 @@
 - **ผลต่อผู้ใช้:** hint แสดงถูกต้องและยังอยู่จนกว่าจะวาดใหม่
 - **แนวทางแก้:** ปรับเทสต์ให้ตรวจข้อความที่ผู้เล่นเห็นแทนการเช็ค `message=` ของ `render_game_screen`
 
+### 🔹 TC-26 & TC-27: Global CLI Subcommands
+- **การทดสอบ:** เรียก `wordle start`, `wordle history`, `wordle stats`, `wordle howto` ผ่าน command line
+- **การยืนยันความถูกต้อง:** รันคำสั่งตรงตาม subcommand โดยข้ามหน้าจอเมนูและ exit หลังจากทำงานเสร็จสิ้น
+
+### 🔹 TC-28 & TC-29: Daily Word Mode & Fallback
+- **การทดสอบ:** เรียก `wordle today` และจำลองสถานการณ์ที่ API ล่มหรือเน็ตหลุด
+- **การยืนยันความถูกต้อง:** ใช้คำเฉลยประจำวันจาก NYT API เป็น secret word override; หากเกิด error โปรแกรมพิมพ์ข้อความเตือนอย่างสุภาพและไม่ crash
+
+### 🔹 TC-30: CLI Help & Unknown Subcommand
+- **การทดสอบ:** เรียก `wordle help`, `wordle --help` และส่ง subcommand ที่ไม่รู้จัก
+- **การยืนยันความถูกต้อง:** แสดง usage guide ครบถ้วนโดยไม่เข้าเมนูปกติ
+
+### 🔹 TC-31 & TC-32: History Manager Hardening & Statistics
+- **การทดสอบ:** ส่ง history ว่างเปล่า หรือ history รูปแบบเดิมที่ไม่มี `game_number`, จำลอง streak reset เมื่อแพ้
+- **การยืนยันความถูกต้อง:** คำนวณ win rate, streak (รีเซ็ตเป็น 0 เมื่อแพ้), และ guess distribution ถูกต้อง ไม่ crash
+
+### 🔹 TC-33 & TC-34: Game Loss Flow & Menu Loop Dispatch
+- **การทดสอบ:** ทายผิดครบ 6 ครั้ง และทดสอบทางเลือกเมนู 1-5 ครบทุกทางเลือก
+- **การยืนยันความถูกต้อง:** แสดงคำเฉลยเมื่อแพ้ บันทึกสถานะ LOST ลงประวัติ; เมนูกระจายคำสั่งได้ตรงและเตือนเมื่อกรอกผิด
+
+### 🔹 TC-35: CI/CD Pipeline, Lint & Coverage Gate
+- **การทดสอบ:** รัน GitHub Actions workflow บน Ubuntu และ Windows Matrix กับ Python 3.12/3.13
+- **การยืนยันความถูกต้อง:** Flake8 ตรวจสอบ 0 findings และ code coverage ไม่ต่ำกว่าเกณฑ์ 80% (ทำได้จริง 93.46%)
+
 ---
 
 ## 🧪 Automated Test Evidence
 
-คำสั่งที่ใช้:
+คำสั่งที่ใช้ทดสอบพร้อมวัด Coverage:
 
-```text
-python -m pytest -q
+```bash
+python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 ```
 
-ผลล่าสุด (2026-09-29):
+ผลล่าสุด (2026-10-05):
 
 ```text
-72 passed in 0.82s
+============================= 93 passed in 2.57s ==============================
+Coverage: 93.46% (Business & Data layers covered >= 80%)
 ```
 
-ไฟล์ test ที่เกี่ยวข้อง:
+ไฟล์ test ทั้งหมด (8 ไฟล์ 93 เคส):
 
-- [tests/test_cli.py](test_cli.py) — 20
-- [tests/test_logic.py](test_logic.py) — 10
-- [tests/test_word_bank.py](test_word_bank.py) — 13
-- [tests/test_sprint3.py](test_sprint3.py) — 17
-- [tests/test_boardrenderer.py](test_boardrenderer.py) — 2
-- [tests/test_word_api.py](test_word_api.py) — 5
-- [tests/test_today_word.py](test_today_word.py) — 5
+- [tests/test_cli.py](test_cli.py) — 43 เคส
+- [tests/test_word_bank.py](test_word_bank.py) — 15 เคส
+- [tests/test_logic.py](test_logic.py) — 11 เคส
+- [tests/test_entrypoint.py](test_entrypoint.py) — 9 เคส
+- [tests/test_today_word.py](test_today_word.py) — 5 เคส
+- [tests/test_word_api.py](test_word_api.py) — 5 เคส
+- [tests/test_history_manager.py](test_history_manager.py) — 3 เคส
+- [tests/test_boardrenderer.py](test_boardrenderer.py) — 2 เคส
 
 > หมายเหตุ: เทสต์ของ API ภายนอกใช้ fake response และ monkeypatch เพื่อให้ผล deterministic และไม่ขึ้นกับสถานะอินเทอร์เน็ตขณะรันทดสอบ

@@ -63,4 +63,4 @@ Create a non-editable wheel install with `python -m pip install .`. The wheel in
 
 ## Test status
 
-Run `python -m pytest -q` from the repository root. The full suite passed **80 tests** after the CLI subcommands and history display were wired up.
+Run `python -m pytest --cov=src --cov-fail-under=80` from the repository root. The full suite passes **93 tests** across 8 test suites with **93.46% total code coverage** and zero Flake8 lint warnings.
