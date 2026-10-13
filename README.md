@@ -8,8 +8,9 @@
 - Repository: [PeerapatTa3/WordleCLI_V2](https://github.com/PeerapatTa3/WordleCLI_V2)
 - Version: v1.0.0 (สถานะปัจจุบัน: จบ Sprint 4 / Sprint Final)
 - Status: ทุก Sprint เสร็จสมบูรณ์ (Packaging, Global CLI, Subcommands, Daily Word Mode, CI/CD Pipeline, Flake8 Clean, 93 tests passing พร้อม 93.46% coverage)
-- **สไลด์นำเสนอ:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
-
+- **สไลด์นำเสนอ Sprint 1-2:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
+- **สไลด์นำเสนอ Sprint 3:** [Wordle CLI Slide](https://canva.link/7xanqzsz6flopto)
+- - **สไลด์นำเสนอ Sprint Final:** [Wordle CLI Slide](https://canva.link/frq4wtjzq16phtw)
 ---
 
 ## 📋 คุณสมบัติ (Features)
@@ -362,7 +363,7 @@ python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 | การย้ายและจัดการ History Path ออกนอก Repository อย่างปลอดภัย | 10 | 10 | 10 | 10 |
 | **รวมคะแนนบุคคล** | **10** | **10** | **10** | **10/10** |
 
-### การประเมินบทบาท: ซอก — Core Logic & Automation / AI Integration Lead
+### การประเมินบทบาท: ซอก — Core Logic & Automation & Code Quality Lead
 
 | เกณฑ์การประเมิน | เทน | ซอก (Self) | พี | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
@@ -371,7 +372,7 @@ python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 | การวิเคราะห์และเปรียบเทียบสถาปัตยกรรมใน `REFACTOR_NOTES.md` | 10 | 10 | 10 | 10 |
 | **รวมคะแนนบุคคล** | **10** | **10** | **10** | **10/10** |
 
-### การประเมินบทบาท: พี — Quality Assurance, Testing & Code Quality Lead
+### การประเมินบทบาท: พี — Quality Assurance, Testing 
 
 | เกณฑ์การประเมิน | เทน | ซอก | พี (Self) | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
