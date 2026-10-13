@@ -10,7 +10,7 @@
 - Status: ทุก Sprint เสร็จสมบูรณ์ (Packaging, Global CLI, Subcommands, Daily Word Mode, CI/CD Pipeline, Flake8 Clean, 93 tests passing พร้อม 93.46% coverage)
 - **สไลด์นำเสนอ Sprint 1-2:** [Wordle CLI Slide](https://canva.link/hnnokmn8fgtewi9)
 - **สไลด์นำเสนอ Sprint 3:** [Wordle CLI Slide](https://canva.link/7xanqzsz6flopto)
-- - **สไลด์นำเสนอ Sprint Final:** [Wordle CLI Slide](https://canva.link/frq4wtjzq16phtw)
+- **สไลด์นำเสนอ Sprint Final:** [Wordle CLI Slide](https://canva.link/frq4wtjzq16phtw)
 ---
 
 ## 📋 คุณสมบัติ (Features)
