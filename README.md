@@ -363,7 +363,7 @@ python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 | การย้ายและจัดการ History Path ออกนอก Repository อย่างปลอดภัย | 10 | 10 | 10 | 10 |
 | **รวมคะแนนบุคคล** | **10** | **10** | **10** | **10/10** |
 
-### การประเมินบทบาท: ซอก — Core Logic & Automation & Code Quality Lead
+### การประเมินบทบาท: ซอก — Core Logic & Automation 
 
 | เกณฑ์การประเมิน | เทน | ซอก (Self) | พี | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
@@ -372,7 +372,7 @@ python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 | การวิเคราะห์และเปรียบเทียบสถาปัตยกรรมใน `REFACTOR_NOTES.md` | 10 | 10 | 10 | 10 |
 | **รวมคะแนนบุคคล** | **10** | **10** | **10** | **10/10** |
 
-### การประเมินบทบาท: พี — Quality Assurance, Testing 
+### การประเมินบทบาท: พี — Quality Assurance, Testing & Code Quality Lead
 
 | เกณฑ์การประเมิน | เทน | ซอก | พี (Self) | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
