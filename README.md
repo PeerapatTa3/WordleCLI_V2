@@ -129,8 +129,6 @@ WordleCLI_V2/
 
    ประวัติจะบันทึกที่ `~/.wordle/history.json` (Windows: `%USERPROFILE%\.wordle\history.json`) ตั้งค่า `WORDLE_HISTORY_PATH` เพื่อเปลี่ยนตำแหน่งได้
 
-   ```
-   ```
 5. เลือกเมนูจากตัวเลข 1-5 ตามที่แสดงในหน้าจอ
 
 สำหรับทดสอบแบบรู้คำเฉลยล่วงหน้า:
