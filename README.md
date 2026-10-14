@@ -117,7 +117,7 @@ WordleCLI_V2/
 2. ติดตั้งโปรแกรมและ dependencies (ภายใน environment ที่เปิดอยู่)
 
    ```bash
-   pip install get+https://github.com/PeerapatTa3/WordleCLI_V2.git
+   pip install git+https://github.com/PeerapatTa3/WordleCLI_V2.git
    ```
 3. รันโปรแกรมจากโฟลเดอร์ไหนก็ได้
 
