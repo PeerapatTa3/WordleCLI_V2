@@ -107,31 +107,31 @@ Workflow `.github/workflows/ci.yml` ตั้งให้รันเมื่�
 ## Sprint 4 — Sprint Final (Role-Specialized Development)
 
 สมาชิกในทีมแบ่งงานตามความเชี่ยวชาญเฉพาะบุคคล:
-- **เทน:** DevOps & Packaging / Architecture Lead
-- **ซอก:** Core Logic & Automation / AI Integration Lead
-- **พี:** Quality Assurance, Testing & Code Quality Lead
+- **นายพิสิษฐ์ ทรัพย์อุดมโชติ 673380285-2 (เทน):** DevOps & Packaging / Architecture Lead
+- **นายพีรพล แก้วเจริญสันติสุข 673380287-8 (ซอก):** Core Logic & Automation / AI Integration Lead
+- **นายพีรพัฒน์ แท่นประยุทร 673380288-6 (พี):** Quality Assurance, Testing & Code Quality Lead
 
-### การประเมินบทบาท: เทน — DevOps & Packaging / Architecture Lead
+### การประเมินบทบาท: นายพิสิษฐ์ ทรัพย์อุดมโชติ 673380285-2 (เทน) — DevOps & Packaging / Architecture Lead
 
-| เกณฑ์การประเมิน | เทน (Self) | ซอก | พี | สรุปคะแนน (0–10) |
+| เกณฑ์การประเมิน | นายพิสิษฐ์ (Self) | นายพีรพล | นายพีรพัฒน์ | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
 | การออกแบบ Packaging ด้วย `pyproject.toml` และ Console Scripts | 10 | 10 | 10 | 10 |
 | การจัดวาง CI/CD Matrix บน GitHub Actions (Ubuntu/Windows) | 10 | 10 | 10 | 10 |
 | การย้ายและจัดการ History Path ออกนอก Repository อย่างปลอดภัย | 10 | 10 | 10 | 10 |
 | **รวมคะแนนบุคคล** | **10** | **10** | **10** | **10/10** |
 
-### การประเมินบทบาท: ซอก — Core Logic & Automation 
+### การประเมินบทบาท: นายพีรพล แก้วเจริญสันติสุข 673380287-8 (ซอก) — Core Logic & Automation 
 
-| เกณฑ์การประเมิน | เทน | ซอก (Self) | พี | สรุปคะแนน (0–10) |
+| เกณฑ์การประเมิน | นายพิสิษฐ์ | นายพีรพล (Self) | นายพีรพัฒน์ | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
 | การพัฒนาฟีเจอร์ Daily Word (`wordle today`) และ Fallback | 10 | 10 | 10 | 10 |
 | การปรับปรุง In-place Redraw และ Clean up Code De-duplication | 10 | 10 | 10 | 10 |
 | การวิเคราะห์และเปรียบเทียบสถาปัตยกรรมใน `REFACTOR_NOTES.md` | 10 | 10 | 10 | 10 |
 | **รวมคะแนนบุคคล** | **10** | **10** | **10** | **10/10** |
 
-### การประเมินบทบาท: พี — Quality Assurance, Testing & Code Quality Lead
+### การประเมินบทบาท: นายพีรพัฒน์ แท่นประยุทร 673380288-6 (พี) — Quality Assurance, Testing & Code Quality Lead
 
-| เกณฑ์การประเมิน | เทน | ซอก | พี (Self) | สรุปคะแนน (0–10) |
+| เกณฑ์การประเมิน | นายพิสิษฐ์ | นายพีรพล | นายพีรพัฒน์ (Self) | สรุปคะแนน (0–10) |
 | --- | :---: | :---: | :---: | :---: |
 | การพัฒนา Unit Test ครอบคลุม 93 เคส และวัดผล Coverage 93.46% | 10 | 10 | 10 | 10 |
 | การตรวจแก้มาตรฐานโค้ดด้วย Flake8 จนได้ 0 findings | 10 | 10 | 10 | 10 |

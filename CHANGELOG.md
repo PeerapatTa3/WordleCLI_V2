@@ -22,9 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clarified the project roadmap based on [PLAN.md](./PLAN.md).
 
 ### Planner / Coder / Debugger Roles
-- **Planner / PM (เทน):** Defined Sprint 1 scope, CLI requirements, and validation rules.
-- **Coder (ซอก):** Implemented the menu flow and the core CLI functions.
-- **Debugger / QA (พี):** Created unit tests for input validation and verified edge-case behavior.
+- **Planner / PM (นายพิสิษฐ์ ทรัพย์อุดมโชติ 673380285-2):** Defined Sprint 1 scope, CLI requirements, and validation rules.
+- **Coder (นายพีรพล แก้วเจริญสันติสุข 673380287-8):** Implemented the menu flow and the core CLI functions.
+- **Debugger / QA (นายพีรพัฒน์ แท่นประยุทร 673380288-6):** Created unit tests for input validation and verified edge-case behavior.
 
 ---
 
