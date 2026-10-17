@@ -3,8 +3,8 @@
 **Project Title:** Wordle CLI V.2 — Final Project in Script Programming
 **Team Members & Roles:**
 - 👩‍💻 **นายพิสิษฐ์ ทรัพย์อุดมโชติ 673380285-2 (เทน):** Planner / PM
-- 👨‍💻 **นายพีรพล แก้วเจริญสันติสุข 673380287-8 (ซอก):** Coder / Developer
-- 👨‍💻 **นายพีรพัฒน์ แท่นประยุทร 673380288-6 (พี):** Debugger / QA
+- 👨‍💻 **นายพีรพัฒน์ แท่นประยุทร 673380288-6 (ซอก):** Coder / Developer
+- 👨‍💻 **นายพีรพล แก้วเจริญสันติสุข 673380287-8 (พี):** Debugger / QA
 
 ---
 
